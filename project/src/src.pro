@@ -9,14 +9,20 @@ CONFIG( debug, debug|release ) {
 
 }
 
+QT += xml
 TEMPLATE = lib
 
 DEFINES += EXPORT_LIBRARY
 
 SOURCES += main.cpp
+SOURCES += rpcruntimefunction.cpp
+SOURCES += rpcruntimeinterpreter.cpp
 SOURCES += mainwindow.cpp
 
+
 HEADERS += mainwindow.h
+HEADERS += rpcruntimefunction.h
+HEADERS += rpcruntimeinterpreter.h
 
 
 

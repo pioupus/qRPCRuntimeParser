@@ -6,10 +6,12 @@ QT +=  testlib
 
 DEFINES += EXPORT_APPLICATION
 
-HEADERS += autotest.h
+HEADERS += autotest.h \
+    testrpcruntimeinterpreter.h
 HEADERS +=  testqstring.h
 
-SOURCES +=  main.cpp
+SOURCES +=  main.cpp \
+    testrpcruntimeinterpreter.cpp
 SOURCES +=  testqstring.cpp
 
 #message($$PWD/../)
