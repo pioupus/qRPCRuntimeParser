@@ -3,6 +3,7 @@ include(../defaults.pri)
 TEMPLATE = app
 CONFIG += console
 QT +=  testlib
+QT +=  xml
 
 DEFINES += EXPORT_APPLICATION
 

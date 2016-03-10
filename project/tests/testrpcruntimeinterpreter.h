@@ -9,10 +9,14 @@ class TestRPCRuntimeInterpreter : public QObject
 
 
 private slots:
-    void initTestCase();
-    void cleanupTestCase();
 
-    void loadXMLFile();
+
+    void loadXMLFile_rpcInt32ReplyTest();
+    void loadXMLFile_rpcInt16EnumTest();
+    void loadXMLFile_rpcSignedUnsignedTest();
+
+
+        void loadXMLFile_rpcArrayInputTest();
 };
 DECLARE_TEST(TestRPCRuntimeInterpreter)
 

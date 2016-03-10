@@ -1,30 +1,58 @@
 #ifndef RPCRUNTIMEFUNCTION_H
 #define RPCRUNTIMEFUNCTION_H
 
+#include <QtXml>
+#include <memory>
+#include <QString>
+#include <QList>
+#include <QPair>
 
-#include<QString>
-#include<QList>
-#include<QPair>
 
-enum class RPCParamType_t {param_int,param_enum,param_character};
+enum class RPCParamType_t {param_none,param_int,param_enum,param_character,param_array,param_struct};
 
-class RPCRuntimeFunctionParamter
+class RPCRuntimeParamter
 {
 public:
-    RPCRuntimeFunctionParamter();
-    ~RPCRuntimeFunctionParamter();
+    RPCRuntimeParamter();
+    ~RPCRuntimeParamter();
+
+    int elementBitLength;
+    int elementCount;
+    int indexPosition;
 
     QString name;
-    int elementBitLength;
-    int bitPosition;
-    int indexPosition;
-    bool isSigned;
     QString typeName;
+    RPCParamType_t rpcParamType;
+    bool isSigned;
+
     QList<QPair<int,QString>> enumValues;
+
+   // QList<std::shared_ptr<RPCRuntimeParamter>> subParamters;
+    QList<RPCRuntimeParamter> subParamters;
+    bool loadFromXML(QDomElement xmlParams);
 
     bool setTypeByString(QString typeName);
 
-    RPCParamType_t rpcParamType;
+public:
+
+    void calcLength();
+};
+
+class RPCRuntimeTransfer
+{
+public:
+    RPCRuntimeTransfer();
+    ~RPCRuntimeTransfer();
+
+
+    QList<RPCRuntimeParamter> paramList;
+    int ID;
+    bool isNull;
+    int getPackageLength();
+    void calcPackagelength();
+    bool loadParamListFromXML(QDomElement xmlParams);
+private:
+    bool isPackageLenghCalced; //inited false
 };
 
 class RPCRuntimeFunction
@@ -34,8 +62,9 @@ public:
     ~RPCRuntimeFunction();
 
     QString name;
-    QList<RPCRuntimeFunctionParamter> paramList;
-    int ID;
+
+    RPCRuntimeTransfer request;
+    RPCRuntimeTransfer reply;
 
 };
 

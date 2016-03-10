@@ -12,6 +12,7 @@ INCLUDEPATH += $$PWD/src/CommunicationDevices
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Werror
 CONFIG += warn
+CONFIG += c++11
 
 
 #exists( $$PWD/libs/PythonQt3.0/src/PythonQt.h ) {

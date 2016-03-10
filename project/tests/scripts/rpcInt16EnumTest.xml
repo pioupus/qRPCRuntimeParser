@@ -11,11 +11,7 @@
 				<enum name="enum1_A" value="1" />
 				<enum name="enum1_B" value="2" />
 				<enum name="enum1_C" value="3" />
-				<enum name="enum1_D" value="4" />
-				<enum name="enum1_E" value="5" />
-				<enum name="enum1_F" value="6" />
-				<enum name="enum1_G" value="7" />
-				<enum name="enum1_H" value="8" />
+
 			</parameter>
 			<parameter bits="8" ctype="enum2_t" name="param3" position="3" type="enum">
 				<enum name="enum2_A" value="0" />
