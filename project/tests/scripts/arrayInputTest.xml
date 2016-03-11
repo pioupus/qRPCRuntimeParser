@@ -5,6 +5,7 @@
 		<request ID="10">
 			<parameter name="text_in" type="array" position="1" ctype="char [42]" bits="336">
 				<array type="character" ctype="char" bits="8" elements="42"/>
+				
 			</parameter>
 		</request>
 		<reply ID="11"/>

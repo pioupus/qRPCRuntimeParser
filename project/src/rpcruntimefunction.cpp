@@ -56,19 +56,22 @@ bool RPCRuntimeTransfer::loadParamListFromXML(QDomElement xmlParams)
 bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
     bool ok = true;
     bool ok_gesamt = true;
-    bool isSubType = false;
+    bool isArrayType = false;
 
     if (xmlParams.tagName() == "array"){
-        isSubType = true;
+        isArrayType = true;
     }
     typeName = xmlParams.attribute("ctype","");
     elementBitLength = xmlParams.attribute("bits","").toInt(&ok);
     ok_gesamt &= ok;
-    elementCount = xmlParams.attribute("elements","").toInt(&ok);
+    elementCount = 1; //will be overwritten by array type
     ok_gesamt &= ok;
-    if(isSubType == false){
+    if(isArrayType == false){
         name = xmlParams.attribute("name","");
         indexPosition = xmlParams.attribute("position","").toInt(&ok);
+        if(!ok){
+            indexPosition = xmlParams.attribute("memberpos","").toInt(&ok);
+        }
         ok_gesamt |= ok;
     }
 
@@ -86,7 +89,22 @@ bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
             }
 
             subParamters.append(subparam);
-            elementCount = subparam.elementCount;
+            elementCount = elementBitLength / subparam.elementBitLength;
+            xmlSubParams = xmlSubParams.nextSibling().toElement();
+        }
+
+    }
+
+    if (rpcParamType == RPCParamType_t::param_struct){
+        elementBitLength = 0;
+        QDomElement xmlSubParams=xmlParams.firstChild().toElement();
+        while(!xmlSubParams.isNull()){
+            RPCRuntimeParamter subparam;
+            if (!subparam.loadFromXML(xmlSubParams)){
+                return false;
+            }
+            elementBitLength += subparam.elementBitLength;
+            subParamters.append(subparam);
             xmlSubParams = xmlSubParams.nextSibling().toElement();
         }
 
@@ -115,11 +133,9 @@ bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
                   //  qCritical() << "enum name not valid in function: " << parent->name << "and parameter" << param.name ;
                     return false;
                 }
-                if(!ok){
-                   // qCritical() << "enum value not valid in function: " << parent->name << "and parameter" << param.name ;
-                    return false;
+                if(ok){
+                    enumValues.append(enumItem);
                 }
-                enumValues.append(enumItem);
             }
             paramEnum = paramEnum.nextSibling().toElement();
         }
@@ -130,11 +146,11 @@ bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
         }
     }
 
-    if ((name=="")&&(isSubType==false) ){
+    if ((name=="")&&(isArrayType==false) ){
        // qCritical() << "didnt found param name in function: " << parent->name;
         return false;
     }
-    if ((typeName=="")&&(isSubType==false)){
+    if ((typeName=="")&&(isArrayType==false)){
        // qCritical() << "didnt found type name in function: " << parent->name;
         return false;
     }
@@ -151,6 +167,9 @@ bool RPCRuntimeParamter::setTypeByString(QString typeName)
         return true;
     }else if(typeName == "array"){
         rpcParamType = RPCParamType_t::param_array;
+        return true;
+    }else if(typeName == "struct"){
+        rpcParamType = RPCParamType_t::param_struct;
         return true;
     }else if(typeName == "character"){
         rpcParamType = RPCParamType_t::param_character;
