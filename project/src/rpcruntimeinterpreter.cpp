@@ -1,4 +1,5 @@
 #include "rpcruntimeinterpreter.h"
+
 #include <QtXml>
 #include <Qfile>
 #include <QDebug>
@@ -56,7 +57,7 @@ bool RPCRunTimeInterpreter::openProtocolDescription(QString filename)
                 return false;
             }
 
-            runtimefunction.reply.isNull = reply.isNull();
+            runtimefunction.reply.setIsNull(reply.isNull());
             runtimefunction.reply.ID = reply.attribute("ID","").toInt(&ok);
 
             if (!runtimefunction.request.loadParamListFromXML(request.firstChild().toElement())){
@@ -77,5 +78,33 @@ bool RPCRunTimeInterpreter::openProtocolDescription(QString filename)
 QList<RPCRuntimeFunction> RPCRunTimeInterpreter::getFunctionList()
 {
     return functionList;
+}
+
+
+
+RPCRuntimeDecodeResult RPCRunTimeInterpreter::decode(QByteArray inData)
+{
+    RPCRuntimeDecodeResult result=getFunctionByID(inData[0]);
+    return result;
+}
+
+RPCRuntimeDecodeResult RPCRunTimeInterpreter::getFunctionByID(uint8_t ID)
+{
+    RPCRuntimeDecodeResult result;
+    for(int i=0; i < functionList.count();i++){
+        RPCRuntimeFunction fun = functionList[i];
+        if (fun.reply.ID == ID){
+            result.name = fun.name;
+            result.transfer = fun.reply;
+            result.setIsReply(true);
+            break;
+        }else if(fun.request.ID == ID){
+            result.name = fun.name;
+            result.transfer = fun.request;
+            result.setIsReply(false);
+            break;
+        }
+    }
+    return result;
 }
 

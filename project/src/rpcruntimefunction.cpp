@@ -6,11 +6,17 @@
 RPCRuntimeFunction::RPCRuntimeFunction()
 {
 
+
 }
 
 RPCRuntimeFunction::~RPCRuntimeFunction()
 {
 
+}
+
+bool RPCRuntimeFunction::isNull()
+{
+   return ((request.isNull()) && (reply.isNull()));
 }
 
 RPCRuntimeParamter::RPCRuntimeParamter()
@@ -30,12 +36,37 @@ RPCRuntimeParamter::~RPCRuntimeParamter()
 }
 
 RPCRuntimeTransfer::RPCRuntimeTransfer(){
-    isNull = false;
+    empty = false;
 }
 
 RPCRuntimeTransfer::~RPCRuntimeTransfer(){
 
 }
+
+
+
+bool RPCRuntimeTransfer::isNull() const
+{
+    return empty;
+}
+
+void RPCRuntimeTransfer::setIsNull(bool value)
+{
+    empty = value;
+}
+
+int RPCRuntimeTransfer::getTotalLength()
+{
+    int result = 1;
+    for(int i=0;i<paramList.count();i++){
+        RPCRuntimeParamter item = paramList[i];
+        result += (item.elementBitLength/8);
+    }
+    return result;
+}
+
+
+
 
 bool RPCRuntimeTransfer::loadParamListFromXML(QDomElement xmlParams)
 {
@@ -52,6 +83,8 @@ bool RPCRuntimeTransfer::loadParamListFromXML(QDomElement xmlParams)
     }
     return true;
 }
+
+
 
 bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
     bool ok = true;

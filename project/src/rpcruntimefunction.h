@@ -47,12 +47,18 @@ public:
 
     QList<RPCRuntimeParamter> paramList;
     int ID;
-    bool isNull;
+
     int getPackageLength();
     void calcPackagelength();
     bool loadParamListFromXML(QDomElement xmlParams);
+    bool isNull() const;
+    void setIsNull(bool value);
+
+    int getTotalLength(void);
+
 private:
     bool isPackageLenghCalced; //inited false
+    bool empty;
 };
 
 class RPCRuntimeFunction
@@ -63,10 +69,14 @@ public:
 
     QString name;
 
+    bool isNull();
+
     RPCRuntimeTransfer request;
     RPCRuntimeTransfer reply;
 
 };
+
+
 
 
 

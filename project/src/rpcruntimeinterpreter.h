@@ -4,6 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include "rpcruntimefunction.h"
+#include "rpcruntimedecoderesult.h"
 
 class RPCRunTimeInterpreter
 {
@@ -19,8 +20,11 @@ public:
     QStringList getReport();
     QList<RPCRuntimeFunction> getFunctionList();
 
+    RPCRuntimeDecodeResult decode(QByteArray inData);
+
 private:
     QList<RPCRuntimeFunction> functionList;
+    RPCRuntimeDecodeResult getFunctionByID(uint8_t ID);
 };
 
 #endif // RPCRUNTIMEINTERPRETER_H

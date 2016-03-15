@@ -1,3 +1,4 @@
+
 #ifndef TESTRPCRUNTIMEINTERPRETER_H
 #define TESTRPCRUNTIMEINTERPRETER_H
 #include <QObject>
@@ -20,7 +21,9 @@ private slots:
     void loadXMLFile_rpcMultiArrayInputTest();
     void loadXMLFile_rpcStructInputTest();
     void loadXMLFile_rpcArrayInStructTest();
-    void loadXMLFile_rpcEnumInArrayTest();void loadXMLFile_rpcNegValueInEnumTest();
+    void loadXMLFile_rpcEnumInArrayTest();
+    void loadXMLFile_rpcNegValueInEnumTest();
+    void loadXMLFile_rpcDecodeTest_int32_t();
 
 
 };
