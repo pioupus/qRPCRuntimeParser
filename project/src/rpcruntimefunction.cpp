@@ -19,7 +19,7 @@ bool RPCRuntimeFunction::isNull()
    return ((request.isNull()) && (reply.isNull()));
 }
 
-RPCRuntimeParamter::RPCRuntimeParamter()
+RPCRuntimeParamterDescription::RPCRuntimeParamterDescription()
 {
     elementBitLength = 0;
     elementCount = 1;
@@ -30,7 +30,7 @@ RPCRuntimeParamter::RPCRuntimeParamter()
     isSigned = true;
 }
 
-RPCRuntimeParamter::~RPCRuntimeParamter()
+RPCRuntimeParamterDescription::~RPCRuntimeParamterDescription()
 {
 
 }
@@ -59,7 +59,7 @@ int RPCRuntimeTransfer::getTotalLength()
 {
     int result = 1;
     for(int i=0;i<paramList.count();i++){
-        RPCRuntimeParamter item = paramList[i];
+        RPCRuntimeParamterDescription item = paramList[i];
         result += (item.elementBitLength/8);
     }
     return result;
@@ -73,7 +73,7 @@ bool RPCRuntimeTransfer::loadParamListFromXML(QDomElement xmlParams)
     while (!xmlParams.isNull()){
 
         if (xmlParams.tagName()=="parameter"){
-            RPCRuntimeParamter param;
+            RPCRuntimeParamterDescription param;
             if (!param.loadFromXML(xmlParams)){
                 return false;
             }
@@ -86,7 +86,7 @@ bool RPCRuntimeTransfer::loadParamListFromXML(QDomElement xmlParams)
 
 
 
-bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
+bool RPCRuntimeParamterDescription::loadFromXML(QDomElement xmlParams){
     bool ok = true;
     bool ok_gesamt = true;
     bool isArrayType = false;
@@ -116,12 +116,12 @@ bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
     if (rpcParamType == RPCParamType_t::param_array){
         QDomElement xmlSubParams=xmlParams.firstChild().toElement();
         while(!xmlSubParams.isNull()){
-            RPCRuntimeParamter subparam;
+            RPCRuntimeParamterDescription subparam;
             if (!subparam.loadFromXML(xmlSubParams)){
                 return false;
             }
 
-            subParamters.append(subparam);
+            subParameters.append(subparam);
             elementCount = elementBitLength / subparam.elementBitLength;
             xmlSubParams = xmlSubParams.nextSibling().toElement();
         }
@@ -132,12 +132,12 @@ bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
         elementBitLength = 0;
         QDomElement xmlSubParams=xmlParams.firstChild().toElement();
         while(!xmlSubParams.isNull()){
-            RPCRuntimeParamter subparam;
+            RPCRuntimeParamterDescription subparam;
             if (!subparam.loadFromXML(xmlSubParams)){
                 return false;
             }
             elementBitLength += subparam.elementBitLength;
-            subParamters.append(subparam);
+            subParameters.append(subparam);
             xmlSubParams = xmlSubParams.nextSibling().toElement();
         }
 
@@ -190,7 +190,7 @@ bool RPCRuntimeParamter::loadFromXML(QDomElement xmlParams){
     return true;
 }
 
-bool RPCRuntimeParamter::setTypeByString(QString typeName)
+bool RPCRuntimeParamterDescription::setTypeByString(QString typeName)
 {
     if (typeName == "integer"){
         rpcParamType = RPCParamType_t::param_int;

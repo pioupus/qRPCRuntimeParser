@@ -4,13 +4,13 @@
 #include <QString>
 #include <QStringList>
 #include "rpcruntimefunction.h"
-#include "rpcruntimedecoderesult.h"
+//#include "rpcruntimedecoderesult.h"
 
-class RPCRunTimeInterpreter
+class RPCRunTimeProtocolDescription
 {
 public:
-    RPCRunTimeInterpreter();
-    ~RPCRunTimeInterpreter();
+    RPCRunTimeProtocolDescription();
+    ~RPCRunTimeProtocolDescription();
 
     bool openProtocolDescription(QString filename);
 
@@ -20,11 +20,9 @@ public:
     QStringList getReport();
     QList<RPCRuntimeFunction> getFunctionList();
 
-    RPCRuntimeDecodeResult decode(QByteArray inData);
 
 private:
     QList<RPCRuntimeFunction> functionList;
-    RPCRuntimeDecodeResult getFunctionByID(uint8_t ID);
 };
 
 #endif // RPCRUNTIMEINTERPRETER_H

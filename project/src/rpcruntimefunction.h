@@ -10,11 +10,11 @@
 
 enum class RPCParamType_t {param_none,param_int,param_enum,param_character,param_array,param_struct};
 
-class RPCRuntimeParamter
+class RPCRuntimeParamterDescription
 {
 public:
-    RPCRuntimeParamter();
-    ~RPCRuntimeParamter();
+    RPCRuntimeParamterDescription();
+    ~RPCRuntimeParamterDescription();
 
     int elementBitLength;
     int elementCount;
@@ -28,7 +28,7 @@ public:
     QList<QPair<int,QString>> enumValues;
 
    // QList<std::shared_ptr<RPCRuntimeParamter>> subParamters;
-    QList<RPCRuntimeParamter> subParamters;
+    QList<RPCRuntimeParamterDescription> subParameters;
     bool loadFromXML(QDomElement xmlParams);
 
     bool setTypeByString(QString typeName);
@@ -45,7 +45,7 @@ public:
     ~RPCRuntimeTransfer();
 
 
-    QList<RPCRuntimeParamter> paramList;
+    QList<RPCRuntimeParamterDescription> paramList;
     int ID;
 
     int getPackageLength();

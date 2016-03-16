@@ -23,7 +23,12 @@ private slots:
     void loadXMLFile_rpcArrayInStructTest();
     void loadXMLFile_rpcEnumInArrayTest();
     void loadXMLFile_rpcNegValueInEnumTest();
-    void loadXMLFile_rpcDecodeTest_int32_t();
+    void loadXMLFile_rpcDecodeTest_uint32_t();
+    void loadXMLFile_rpcDecodeTest_int8_t();
+    void loadXMLFile_rpcDecodeTest_int16_t();
+    void loadXMLFile_rpcDecodeTest_array_char();
+    void loadXMLFile_rpcDecodeTest_struct_int();
+    void loadXMLFile_rpcDecodeTest_enum();
 
 
 };

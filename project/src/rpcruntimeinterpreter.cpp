@@ -4,17 +4,17 @@
 #include <Qfile>
 #include <QDebug>
 
-RPCRunTimeInterpreter::RPCRunTimeInterpreter()
+RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription()
 {
 
 }
 
-RPCRunTimeInterpreter::~RPCRunTimeInterpreter()
+RPCRunTimeProtocolDescription::~RPCRunTimeProtocolDescription()
 {
 
 }
 
-bool RPCRunTimeInterpreter::openProtocolDescription(QString filename)
+bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
 {
     QDomDocument xmlBOM;
     QFile f(filename);
@@ -75,36 +75,9 @@ bool RPCRunTimeInterpreter::openProtocolDescription(QString filename)
     return true;
 }
 
-QList<RPCRuntimeFunction> RPCRunTimeInterpreter::getFunctionList()
+QList<RPCRuntimeFunction> RPCRunTimeProtocolDescription::getFunctionList()
 {
     return functionList;
 }
 
-
-
-RPCRuntimeDecodeResult RPCRunTimeInterpreter::decode(QByteArray inData)
-{
-    RPCRuntimeDecodeResult result=getFunctionByID(inData[0]);
-    return result;
-}
-
-RPCRuntimeDecodeResult RPCRunTimeInterpreter::getFunctionByID(uint8_t ID)
-{
-    RPCRuntimeDecodeResult result;
-    for(int i=0; i < functionList.count();i++){
-        RPCRuntimeFunction fun = functionList[i];
-        if (fun.reply.ID == ID){
-            result.name = fun.name;
-            result.transfer = fun.reply;
-            result.setIsReply(true);
-            break;
-        }else if(fun.request.ID == ID){
-            result.name = fun.name;
-            result.transfer = fun.request;
-            result.setIsReply(false);
-            break;
-        }
-    }
-    return result;
-}
 
