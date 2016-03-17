@@ -15,6 +15,7 @@
 *.lo
 
 *.d
+channel_codec_tests.txt
 
 # Shared objects (inc. Windows DLLs)
 *.dll
