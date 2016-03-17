@@ -4,3 +4,8 @@
 [submodule "project/libs/qtserialport"]
 	path = project/libs/qtserialport
 	url = git://code.qt.io/qt/qtserialport.git
+[submodule "project/libs/rpc_channel_codec"]
+	
+	path = project/libs/rpc_channel_codec
+
+	url = https://github.com/ArnePhotonics/RPC-ChannelCodec.git
