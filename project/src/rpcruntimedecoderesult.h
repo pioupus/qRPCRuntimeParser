@@ -41,9 +41,12 @@ public:
     RPCRunTimeProtocolDescription protocolDescription;
     QByteArray decode(QByteArray inBuffer);
 
+    QStringList getPrintableReport();
+
 private:
     bool reply;
     QByteArray decodeParams(QByteArray inBuffer, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
+    QStringList printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList , bool isArrayField);
 };
 
 #endif // RPCRUNTIMEDECODERESULT_H

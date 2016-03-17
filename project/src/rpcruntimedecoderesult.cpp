@@ -57,6 +57,71 @@ QByteArray RPCRuntimeDecoder::decode(QByteArray inBuffer)
     return result;
 }
 
+QStringList RPCRuntimeDecoder::printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList, bool isArrayField ){
+    QString line;
+    QStringList result;
+    QString tabPrefix = QString(tabDepth,'\t');
+
+    bool standardView = true;//when array and element
+
+    if ((isArrayField) && (decodedParamList.count() > 0)){
+        if (decodedParamList[0].subParams.count() == 0){
+            standardView = false;
+        }
+    }
+
+    for (int i=0;i<decodedParamList.count();i++){
+        RPCRuntimeDecodedParam decodedParam = decodedParamList[i];
+        RPCRuntimeParamterDescription paramDesc = decodedParam.getParamDescription();
+        QStringList subList;
+
+
+        if (standardView){
+            line = "";
+        }
+        if (isArrayField && standardView){
+            line += "["+QString::number(i)+"]:";
+        }
+        if (!isArrayField){
+            line += paramDesc.name+"("+paramDesc.typeName+"):\t";
+        }
+
+        if ((paramDesc.rpcParamType == RPCParamType_t::param_int) || (paramDesc.rpcParamType == RPCParamType_t::param_enum)){
+            line += decodedParam.string+" ";
+        }else if (paramDesc.rpcParamType == RPCParamType_t::param_character){
+            line += decodedParam.string;
+        }else if (paramDesc.rpcParamType == RPCParamType_t::param_array){
+            subList.append(printsubType(tabDepth+1, decodedParam.subParams,true));
+        }else if (paramDesc.rpcParamType == RPCParamType_t::param_struct){
+            subList = printsubType(tabDepth+1, decodedParam.subParams,false);
+
+        }
+        if (standardView){
+            result.append(tabPrefix+line);
+            result.append(subList);
+        }
+    }
+    if (standardView == false){
+        result.append(tabPrefix+line);
+    }
+    return result;
+}
+
+QStringList RPCRuntimeDecoder::getPrintableReport()
+{
+    QStringList result;
+    QString line;
+    if (isReply()){
+        line = "reply of: "+name;
+    }else{
+        line = "request: "+name;
+    }
+    result.append(line.toLatin1());
+    result.append("");
+    result.append(printsubType(0, decodedParams, false));
+    return result;
+}
+
 QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams)
 {
     for (int i = 0; i<paramDescriptionList.count();i++){
@@ -124,6 +189,10 @@ QByteArray RPCRuntimeDecodedParam::decode(QByteArray inBuffer)
         if (paramDescription.rpcParamType == RPCParamType_t::param_int){
 
             if (paramDescription.isSigned ==false){
+                if (lengthInByte==1)
+                    string = "0x"+QString("%1").arg(val, 2, 16, QChar('0')).toUpper();
+                else
+                    string = QString::number(val);
                 value = val;
             }else{
                 uint64_t v = 0;
@@ -132,6 +201,7 @@ QByteArray RPCRuntimeDecodedParam::decode(QByteArray inBuffer)
                 }
                 val += v;
                 value = (int64_t)val;
+                string = QString::number(value);
             }
         }else if(paramDescription.rpcParamType == RPCParamType_t::param_character){
             value = val;
