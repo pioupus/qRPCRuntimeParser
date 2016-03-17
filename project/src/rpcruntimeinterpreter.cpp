@@ -44,8 +44,14 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
                 qCritical() << "found RPC Function without name";
                 return false;
             }
+            QDomElement declaration=function.firstChildElement("declaration");
             QDomElement request=function.firstChildElement("request");
             QDomElement reply = function.firstChildElement("reply");
+
+            if (declaration.isNull()){
+                qCritical() << "didnt found declaration in function: " << runtimefunction.name;
+                return false;
+            }
 
             if (request.isNull()){
                 qCritical() << "didnt found request in function: " << runtimefunction.name;
@@ -57,6 +63,7 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
                 return false;
             }
 
+            runtimefunction.declaration = declaration.text();
             runtimefunction.reply.setIsNull(reply.isNull());
             runtimefunction.reply.ID = reply.attribute("ID","").toInt(&ok);
 

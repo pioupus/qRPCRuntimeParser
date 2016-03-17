@@ -30,6 +30,8 @@ private slots:
     void loadXMLFile_rpcDecodeTest_struct_int();
     void loadXMLFile_rpcDecodeTest_enum();
     void loadXMLFile_rpcDecodeTest_enum_report();
+    void loadXMLFile_rpcDecodeTest_struct_int_report();
+
 
 
 };

@@ -609,7 +609,8 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum()
     #endif
 }
 
-void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_report()
 {
     #if 1
 const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
@@ -647,11 +648,55 @@ const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6
         in.append(line_mask);
 
     } while (!line_mask.isNull());
+
+    for(int i=0;i<report.count();i++){
+        out << report[i]+'\n';
+    }
     QCOMPARE(in.count()-1,report.count());
     for(int i=0;i<report.count();i++){
         QCOMPARE(in[i],report[i]);
+    }
+    #endif
+}
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
+{
+    #if 1
+    const uint8_t inBinData_array[] = {0x1a, 0x01};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_enum.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.decode(inBinData);
+
+    QStringList report=  decoder.getPrintableReport();
+    QFile inFile("scripts/decodeTest_enum_report_mask.txt");
+
+    QFile outfile("scripts/decodeTest_enum_report_output.txt");
+    outfile.open(QIODevice::WriteOnly);
+    inFile.open(QIODevice::ReadOnly);
+    QTextStream out(&outfile);   // we will serialize the data into the file
+    QTextStream in_mask(&inFile);   // we will serialize the data into the file
+
+    QString line_mask;
+    QStringList in;
+    do {
+        line_mask = in_mask.readLine();
+        in.append(line_mask);
+
+    } while (!line_mask.isNull());
+
+    for(int i=0;i<report.count();i++){
         out << report[i]+'\n';
     }
-
+    QCOMPARE(in.count()-1,report.count());
+    for(int i=0;i<report.count();i++){
+        QCOMPARE(in[i],report[i]);
+    }
     #endif
 }

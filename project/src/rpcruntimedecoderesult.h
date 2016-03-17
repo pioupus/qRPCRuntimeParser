@@ -33,6 +33,7 @@ public:
     RPCRuntimeTransfer transfer;
 
     QString name;
+    QString declaration;
     bool isReply();
     void setIsReply(bool reply);
 

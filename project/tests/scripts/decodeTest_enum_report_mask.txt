@@ -1,0 +1,4 @@
+Request: enumTest1
+Function: RPC_UART_RESULT enumTest1(enum TestEnum testEnum);
+
+testEnum(enum TestEnum):	TEb 

@@ -68,6 +68,7 @@ public:
     ~RPCRuntimeFunction();
 
     QString name;
+    QString declaration;
 
     bool isNull();
 

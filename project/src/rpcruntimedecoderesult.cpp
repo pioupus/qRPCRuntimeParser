@@ -38,6 +38,7 @@ QByteArray RPCRuntimeDecoder::decode(QByteArray inBuffer)
         RPCRuntimeFunction fun = functionList[i];
         if (fun.reply.ID == ID){
             name = fun.name;
+            declaration = fun.declaration;
             transfer = fun.reply;
             setIsReply(true);
             result = inBuffer.mid(1);
@@ -45,6 +46,7 @@ QByteArray RPCRuntimeDecoder::decode(QByteArray inBuffer)
         }else if(fun.request.ID == ID){
             name = fun.name;
             transfer = fun.request;
+            declaration = fun.declaration;
             setIsReply(false);
             result = inBuffer.mid(1);
             break;
@@ -112,11 +114,12 @@ QStringList RPCRuntimeDecoder::getPrintableReport()
     QStringList result;
     QString line;
     if (isReply()){
-        line = "reply of: "+name;
+        line = "Reply of: "+name;
     }else{
-        line = "request: "+name;
+        line = "Request: "+name;
     }
-    result.append(line.toLatin1());
+    result.append(line);
+    result.append("Function: "+declaration);
     result.append("");
     result.append(printsubType(0, decodedParams, false));
     return result;

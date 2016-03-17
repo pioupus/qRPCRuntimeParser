@@ -1,4 +1,5 @@
-request: typedefStructTest
+Request: typedefStructTest
+Function: RPC_UART_RESULT typedefStructTest(TypedefTestStruct s_inout[1]);
 
 s_inout(TypedefTestStruct [1]):	
 	[0]:
