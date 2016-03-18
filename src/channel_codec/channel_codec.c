@@ -56,8 +56,8 @@ static void channel_encode(unsigned char byte);
 static cc_channel_state_t ccChannelState;
 
 static uint8_t searchForPreamble(uint8_t byte);
-static bool isRPCAnswer(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult, void* sender);
-static bool isRPCRequest(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult, void* sender);
+static bool isRPCAnswer(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult);
+static bool isRPCRequest(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult);
 
 static void reset_rx(void){
 	rxState.writePointer=0;
@@ -214,20 +214,14 @@ static uint8_t searchForPreamble(uint8_t byte){
 	return 0;
 }
 
-bool isRPCAnswer(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult, void *sender){
+bool isRPCAnswer(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult){
 	bool result=false;
 	RPC_TRANSMISSION_SIZE_RESULT testResult;
 	if(size_bytes == 0){
 		testResult.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
 		testResult.size = 1;
 	}else{
-#ifndef CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
         testResult = RPC_TRANSMISSION_get_answer_length(buffer, size_bytes);
-        (void)sender;
-#else
-        testResult = RPC_TRANSMISSION_get_answer_length(buffer, size_bytes,sender);
-#endif
-
 	}
 	if (testResult.result == RPC_TRANSMISSION_SUCCESS){
 		result = true;
@@ -239,20 +233,14 @@ bool isRPCAnswer(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_S
 	return result;
 }
 
-bool isRPCRequest(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult, void *sender){
+bool isRPCRequest(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult){
 	bool result=false;
 	RPC_TRANSMISSION_SIZE_RESULT testResult;
 	if(size_bytes == 0){
 		testResult.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
 		testResult.size = 1;
 	}else{
-#ifndef CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
         testResult = RPC_TRANSMISSION_get_request_size(buffer, size_bytes);
-        (void)sender;
-#else
-        testResult = RPC_TRANSMISSION_get_request_size(buffer, size_bytes,sender);
-#endif
-
 	}
 	if (testResult.result == RPC_TRANSMISSION_SUCCESS){
 		result = true;
@@ -267,12 +255,8 @@ bool isRPCRequest(const void *buffer, const size_t size_bytes, RPC_TRANSMISSION_
 }
 
 
-#ifndef CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
 void channel_push_byte_to_RPC(unsigned char byte)
-#define RPC_SENDER_CLASS_INSTANCE NULL
-#else
-void channel_push_byte_to_RPC(unsigned char byte, void* RPC_SENDER_CLASS_INSTANCE)
-#endif
+
 {
 	if(searchForPreamble(byte)){
 		reset_rx();
@@ -297,9 +281,9 @@ void channel_push_byte_to_RPC(unsigned char byte, void* RPC_SENDER_CLASS_INSTANC
 		#endif
 		if (rxState.messageResult.result != RPC_TRANSMISSION_SUCCESS){
 
-            if (isRPCAnswer(rxState.buffer,rxState.writePointer,&rxState.messageResult,RPC_SENDER_CLASS_INSTANCE) ) {
+            if (isRPCAnswer(rxState.buffer,rxState.writePointer,&rxState.messageResult) ) {
 
-            }else if (isRPCRequest(rxState.buffer,rxState.writePointer, &rxState.messageResult,RPC_SENDER_CLASS_INSTANCE)){
+            }else if (isRPCRequest(rxState.buffer,rxState.writePointer, &rxState.messageResult)){
 
             }
 
@@ -343,21 +327,17 @@ void channel_push_byte_to_RPC(unsigned char byte, void* RPC_SENDER_CLASS_INSTANC
 					&& (crc_16_lsb == (unsigned char)rxState.buffer[rxState.writePointer-CRC_LENGTH])){
 				RPC_TRANSMISSION_SIZE_RESULT rpcTRANSMISSIONSize;
 				rpcTRANSMISSIONSize.result = RPC_TRANSMISSION_COMMAND_UNKNOWN;
-                if (isRPCAnswer(rxState.buffer, rxState.writePointer-CRC_LENGTH, &rpcTRANSMISSIONSize,RPC_SENDER_CLASS_INSTANCE) ) {
+                if (isRPCAnswer(rxState.buffer, rxState.writePointer-CRC_LENGTH, &rpcTRANSMISSIONSize) ) {
 					if (rpcTRANSMISSIONSize.result == RPC_TRANSMISSION_SUCCESS){
-#ifndef CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
+
                         RPC_TRANSMISSION_parse_answer(rxState.buffer, rxState.writePointer-CRC_LENGTH);
-#else
-                        RPC_TRANSMISSION_parse_answer(rxState.buffer, rxState.writePointer-CRC_LENGTH,RPC_SENDER_CLASS_INSTANCE);
-#endif
+
 					}
-                }else if (isRPCRequest(rxState.buffer, rxState.writePointer-CRC_LENGTH, &rpcTRANSMISSIONSize,RPC_SENDER_CLASS_INSTANCE)){
+                }else if (isRPCRequest(rxState.buffer, rxState.writePointer-CRC_LENGTH, &rpcTRANSMISSIONSize)){
 					if (rpcTRANSMISSIONSize.result == RPC_TRANSMISSION_SUCCESS){
-#ifndef CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
+
                         RPC_TRANSMISSION_parse_request(rxState.buffer, rxState.writePointer-CRC_LENGTH);
-#else
-                        RPC_TRANSMISSION_parse_request(rxState.buffer, rxState.writePointer-CRC_LENGTH,RPC_SENDER_CLASS_INSTANCE);
-#endif
+
 					}
 				}else{
 					GEN_ASSERT(0,errlog_E_CHCODEC_RPC_parse_answer_request_Fail,"CC RPC_parse_answer/request Fail");
