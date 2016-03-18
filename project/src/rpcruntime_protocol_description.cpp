@@ -64,6 +64,7 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
             }
 
             runtimefunction.declaration = declaration.text();
+            runtimefunction.request.setIsNull(request.isNull());
             runtimefunction.reply.setIsNull(reply.isNull());
             runtimefunction.reply.ID = reply.attribute("ID","").toInt(&ok);
 

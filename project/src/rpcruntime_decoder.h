@@ -15,15 +15,12 @@ class RPCRuntimeDecodedParam{
 public:
     RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription);
     ~RPCRuntimeDecodedParam();
+    QByteArray decode(QByteArray inBuffer);
+    QList<RPCRuntimeDecodedParam> subParams;
+    RPCRuntimeParamterDescription getParamDescription() const;
 
     int64_t value;
     QString string;
-
-    QByteArray decode(QByteArray inBuffer);
-
-    QList<RPCRuntimeDecodedParam> subParams;
-
-    RPCRuntimeParamterDescription getParamDescription() const;
 
 private:
     RPCRuntimeParamterDescription paramDescription;
@@ -35,22 +32,12 @@ public:
     RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescription);
     ~RPCRuntimeDecoder();
     bool isNull();
-
-    RPCRuntimeTransfer transfer;
-
-    QString name;
-    QString declaration;
     bool isReply();
     void setIsReply(bool reply);
-
     int getTransferLength(uint8_t ID);
-
-    QList<RPCRuntimeDecodedParam> decodedParams;
-
     RPCRunTimeProtocolDescription protocolDescription;
     QByteArray RPCDecodeRPCData(QByteArray inBuffer);
     void RPCDecodeChannelCodedData(QByteArray inBuffer);
-
     QByteArray encodeToChannelCodedData(QByteArray inBuffer);
 
     QStringList getPrintableReport();
@@ -64,8 +51,12 @@ public:
     bool getErrorChannelCodecHappened() const;
     void setErrorChannelCodecHappened(bool value);
 
+    QString name;
+    QString declaration;
+    QList<RPCRuntimeDecodedParam> decodedParams;
+    RPCRuntimeTransfer transfer;
 private:
-    bool reply;
+
     QByteArray decodeParams(QByteArray inBuffer, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
     QStringList printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList , bool isArrayField);
     QByteArray codecOutput;
@@ -73,6 +64,7 @@ private:
     bool isReplyByID(uint8_t ID, RPCRuntimeFunction fun);
     RPCRuntimeTransfer getTransfer(RPCRuntimeFunction fun, bool isReply);
 
+    bool reply;
     bool errorCRCHappened;
     bool errorChannelCodecHappened;
 };

@@ -163,8 +163,10 @@ void RPCRuntimeDecoder::setErrorCRCHappened(bool value)
 
 bool RPCRuntimeDecoder::isReplyByID(uint8_t ID, RPCRuntimeFunction fun ){
     if (fun.reply.ID==ID){
+        //qDebug() << "Reply is Null:" << fun.reply.isNull();
         return true;
     }else {
+        //qDebug() << "Request is Null:" << fun.request.isNull();
         return false;
     }
 }
@@ -186,12 +188,13 @@ RPCRuntimeFunction RPCRuntimeDecoder::getFunctionByID(uint8_t ID ){
 void RPCRuntimeDecoder::clear(){
     RPCRuntimeTransfer emptyTransfer;
     decodedParams.clear();
-    reply = false;
     transfer = emptyTransfer;
     name = "";
     declaration = "";
+    reply = false;
     errorChannelCodecHappened = false;
     errorCRCHappened = false;
+
 }
 
 QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
@@ -207,12 +210,13 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     if (!fun.isNull()){
         reply = isReplyByID(ID,fun);
         transfer = getTransfer(fun,reply);
+        //qDebug() << "transfer null:" << transfer.isNull();
         name = fun.name;
         declaration = fun.declaration;
         result = inBuffer.mid(1);
     }
 
-    if (!isNull()){
+    if (!transfer.isNull()){
         result = decodeParams(result,transfer.paramList,decodedParams);
     }
     return result;
@@ -356,6 +360,7 @@ QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QList<RPCRuntime
 RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription)
 {
     this->paramDescription = paramDescription;
+    value = 0;
 }
 
 RPCRuntimeDecodedParam::~RPCRuntimeDecodedParam()

@@ -12,15 +12,18 @@
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest()
 {
+    #if 1
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/rpcInt16EnumTest.xml");
     QCOMPARE(result, true);
 
     QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
+
     QCOMPARE(funList.count(), 1);
     QCOMPARE(funList[0].name, QString("rpcFunc_sendUint16AndEnumAndEnum"));
     QCOMPARE(funList[0].request.ID, 2);
+    QCOMPARE(funList[0].request.isNull(), false);
 
     QCOMPARE(funList[0].request.paramList.count(), 3);
     QCOMPARE(funList[0].request.paramList[0].name, QString("param1"));
@@ -68,6 +71,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest()
     QCOMPARE(funList[0].request.paramList[2].enumValues[1].second, QString("enum2_B"));
 
     QCOMPARE(funList[0].reply.isNull(), true);
+#endif
 }
 
 

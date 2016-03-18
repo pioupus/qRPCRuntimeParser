@@ -6,7 +6,6 @@
 RPCRuntimeFunction::RPCRuntimeFunction()
 {
 
-
 }
 
 RPCRuntimeFunction::~RPCRuntimeFunction()
@@ -24,10 +23,9 @@ RPCRuntimeParamterDescription::RPCRuntimeParamterDescription()
     elementBitLength = 0;
     elementCount = 1;
     indexPosition = 0;
-    name = "";
-    typeName = "";
     rpcParamType = RPCParamType_t::param_none ;
     isSigned = true;
+
 }
 
 RPCRuntimeParamterDescription::~RPCRuntimeParamterDescription()
@@ -36,13 +34,14 @@ RPCRuntimeParamterDescription::~RPCRuntimeParamterDescription()
 }
 
 RPCRuntimeTransfer::RPCRuntimeTransfer(){
-    empty = false;
+    empty = true;
+    isPackageLenghCalced = false;
+    ID = 0;
 }
 
 RPCRuntimeTransfer::~RPCRuntimeTransfer(){
 
 }
-
 
 
 bool RPCRuntimeTransfer::isNull() const

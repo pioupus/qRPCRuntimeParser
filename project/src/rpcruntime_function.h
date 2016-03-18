@@ -16,23 +16,21 @@ public:
     RPCRuntimeParamterDescription();
     ~RPCRuntimeParamterDescription();
 
+    bool loadFromXML(QDomElement xmlParams);
+    bool setTypeByString(QString typeName);
+
+    QString name;
+    QString typeName;
+    QList<QPair<int,QString>> enumValues;
+    QList<RPCRuntimeParamterDescription> subParameters;
+
     int elementBitLength;
     int elementCount;
     int indexPosition;
 
-    QString name;
-    QString typeName;
+
     RPCParamType_t rpcParamType;
     bool isSigned;
-
-    QList<QPair<int,QString>> enumValues;
-
-   // QList<std::shared_ptr<RPCRuntimeParamter>> subParamters;
-    QList<RPCRuntimeParamterDescription> subParameters;
-    bool loadFromXML(QDomElement xmlParams);
-
-    bool setTypeByString(QString typeName);
-
 public:
 
     void calcLength();
