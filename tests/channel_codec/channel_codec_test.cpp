@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-
+#include "errorlogger/generic_eeprom_errorlogger.h"
 #include "CppUTestExt/MockSupport.h"
 #include "CppUTest/TestHarness.h"
 
@@ -34,6 +34,9 @@ extern "C"
 {
 	#include "CppUTestExt/MockSupport_c.h"
 
+	void ChannelCodec_errorHandler(channelCodecErrorNum_t errNum){
+		(void)errNum;
+	}
 
 	RPC_TRANSMISSION_RESULT phyPushDataBuffer(const char *buffer, size_t length){
 		/*printf("eunistonePushDataBuffer\n");*/
