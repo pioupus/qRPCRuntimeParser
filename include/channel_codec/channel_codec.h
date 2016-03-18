@@ -21,9 +21,12 @@ void channel_start_message_from_RPC(size_t size);
 void channel_push_byte_from_RPC(unsigned char byte);
 RPC_TRANSMISSION_RESULT channel_commit_from_RPC(void);
 
-
+#ifndef CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
 void channel_push_byte_to_RPC(unsigned char byte);
+#else
+void channel_push_byte_to_RPC(unsigned char byte, void* RPC_SENDER_CLASS_INSTANCE);
 
+#endif
 
 #ifdef __cplusplus
 }
