@@ -5,6 +5,7 @@
 #include "rpc_transmission/client/generated_general/RPC_TRANSMISSION_types.h"
 #include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h"
 #include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h"
+#include "errorlogger/generic_eeprom_errorlogger.h"
 
 #ifdef __cplusplus
 #define EXTERNC extern "C"
@@ -53,6 +54,15 @@ static void parse_transmission(const void *buffer, size_t size_bytes){
     sendingClass->RPCDecodeRPCData(inBuffer);
 }
 
+void ChannelCodec_errorHandler(channelCodecErrorNum_t errNum){
+    assert(sendingClassInstance);
+    if (errNum == errlog_W_CHCODEC_RX_CRC_fail){
+        sendingClassInstance->setErrorCRCHappened(true);
+    }else{
+        sendingClassInstance->setErrorChannelCodecHappened(true);
+    }
+}
+
 EXTERNC RPC_TRANSMISSION_RESULT phyPushDataBuffer(const char *buffer, size_t length){
     assert(sendingClassInstance);
 
@@ -88,8 +98,8 @@ EXTERNC void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_byte
 
 RPCRuntimeDecoder::RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescription)
 {
-    reply = false;
     this->protocolDescription = protocolDescription;
+    clear();
 }
 
 RPCRuntimeDecoder::~RPCRuntimeDecoder()
@@ -114,35 +124,92 @@ void RPCRuntimeDecoder::setIsReply(bool reply)
 
 int RPCRuntimeDecoder::getTransferLength(uint8_t ID)
 {
-    (void)ID;
-    return 0;
+    RPCRuntimeFunction fun = getFunctionByID(ID);
+    RPCRuntimeTransfer transfer = getTransfer(fun,reply);
+    if (transfer.isNull()){
+        return -1;
+    }else{
+        return transfer.getTotalLength();
+    }
+}
+
+RPCRuntimeTransfer RPCRuntimeDecoder::getTransfer(RPCRuntimeFunction fun, bool isReply){
+    if (isReply){
+        return fun.reply;
+    }else {
+        return fun.request;
+    }
+}
+bool RPCRuntimeDecoder::getErrorChannelCodecHappened() const
+{
+    return errorChannelCodecHappened;
+}
+
+void RPCRuntimeDecoder::setErrorChannelCodecHappened(bool value)
+{
+    errorChannelCodecHappened = value;
+}
+
+bool RPCRuntimeDecoder::getErrorCRCHappened() const
+{
+    return errorCRCHappened;
+}
+
+void RPCRuntimeDecoder::setErrorCRCHappened(bool value)
+{
+    errorCRCHappened = value;
+}
+
+
+bool RPCRuntimeDecoder::isReplyByID(uint8_t ID, RPCRuntimeFunction fun ){
+    if (fun.reply.ID==ID){
+        return true;
+    }else {
+        return false;
+    }
+}
+
+RPCRuntimeFunction RPCRuntimeDecoder::getFunctionByID(uint8_t ID ){
+    QList<RPCRuntimeFunction> functionList = protocolDescription.getFunctionList();
+    RPCRuntimeFunction fun;
+    for(int i=0; i < functionList.count();i++){
+        fun = functionList[i];
+        if (fun.reply.ID == ID){
+            return fun;
+        }else if(fun.request.ID == ID){
+            return fun;
+        }
+    }
+    return fun;
+}
+
+void RPCRuntimeDecoder::clear(){
+    RPCRuntimeTransfer emptyTransfer;
+    decodedParams.clear();
+    reply = false;
+    transfer = emptyTransfer;
+    name = "";
+    declaration = "";
+    errorChannelCodecHappened = false;
+    errorCRCHappened = false;
 }
 
 QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
 {
+
     QByteArray result = inBuffer;
 
-    QList<RPCRuntimeFunction> functionList = protocolDescription.getFunctionList();
-
     uint8_t ID = inBuffer[0];
+    clear();
 
-    for(int i=0; i < functionList.count();i++){
-        RPCRuntimeFunction fun = functionList[i];
-        if (fun.reply.ID == ID){
-            name = fun.name;
-            declaration = fun.declaration;
-            transfer = fun.reply;
-            setIsReply(true);
-            result = inBuffer.mid(1);
-            break;
-        }else if(fun.request.ID == ID){
-            name = fun.name;
-            transfer = fun.request;
-            declaration = fun.declaration;
-            setIsReply(false);
-            result = inBuffer.mid(1);
-            break;
-        }
+    RPCRuntimeFunction fun = getFunctionByID(ID);
+
+    if (!fun.isNull()){
+        reply = isReplyByID(ID,fun);
+        transfer = getTransfer(fun,reply);
+        name = fun.name;
+        declaration = fun.declaration;
+        result = inBuffer.mid(1);
     }
 
     if (!isNull()){
@@ -154,12 +221,10 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
 void RPCRuntimeDecoder::RPCDecodeChannelCodedData(QByteArray inBuffer)
 {
     sendingClassInstance = this;
-    QByteArray channelDecodedData = inBuffer;
     channel_init();
     for(int i=0;i<inBuffer.count();i++){
         channel_push_byte_to_RPC(inBuffer[i]);
     }
-    RPCDecodeRPCData(channelDecodedData);
 
     sendingClassInstance = NULL;
 

@@ -33,6 +33,9 @@ private slots:
     void loadXMLFile_rpcDecodeTest_enum();
     void loadXMLFile_rpcDecodeTest_enum_report();
     void loadXMLFile_rpcDecodeTest_struct_int_report();
+    void loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report();
+    void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
+    void loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC();
 
 
 

@@ -441,7 +441,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcNegValueInEnumTest()
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t()
 {
     #if 1
-    const uint8_t inBinData_array[5] = {0x04, 0x05, 0x10, 0x20, 0x30};
+    const uint8_t inBinData_array[] = { 0x04, 0x05, 0x10, 0x20, 0x30};
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
@@ -703,13 +703,112 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
     #endif
 }
 
+
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report()
+{
+    #if 1
+    const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x00, 0x1a, 0x01, 0x96, 0xe1, 'J', 'U', 'N', 'K'};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_enum.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.RPCDecodeChannelCodedData(inBinData);
+    QCOMPARE( decoder.getErrorCRCHappened() , false);
+    QStringList report=  decoder.getPrintableReport();
+    QFile inFile("scripts/decodeTest_enum_report_mask.txt");
+    inFile.open(QIODevice::ReadOnly);
+    QTextStream in_mask(&inFile);   // we will serialize the data into the file
+
+    QString line_mask;
+    QStringList in;
+    do {
+        line_mask = in_mask.readLine();
+        in.append(line_mask);
+
+    } while (!line_mask.isNull());
+
+    QCOMPARE(in.count()-1,report.count());
+    for(int i=0;i<report.count();i++){
+        QCOMPARE(in[i],report[i]);
+    }
+    #endif
+}
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report()
+{
+    #if 1
+const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32, 0x34, 0x34, 0x36, 0x36,
+                                   0x38, 0x1f, 0x38, 0x30, 0x30, 0x32, 0x32, 0x34, 0x34, 0x36, 0x36, 0x34, 0x38, 0x39, 0x30, 0x31, 0x00,
+                                   0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x18, 0x36, 0x37,
+                                   0x38, 0x00, 0x10, 0x20, 0x00, 0x11, 0x20, 0x93, 0x31, 'J', 'U', 'N', 'K'};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.RPCDecodeChannelCodedData(inBinData);
+
+    QCOMPARE( decoder.decodedParams.count() , 1);
+    QCOMPARE( decoder.getErrorCRCHappened() , false);
+    QStringList report=  decoder.getPrintableReport();
+
+
+    QFile inFile("scripts/decodeTest_struct_int_report_mask.txt");
+
+    inFile.open(QIODevice::ReadOnly);
+    QTextStream in_mask(&inFile);   // we will serialize the data into the file
+
+    QString line_mask;
+    QStringList in;
+    do {
+        line_mask = in_mask.readLine();
+        in.append(line_mask);
+
+    } while (!line_mask.isNull());
+
+    QCOMPARE(in.count()-1,report.count());
+    for(int i=0;i<report.count();i++){
+        QCOMPARE(in[i],report[i]);
+    }
+    #endif
+}
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC()
+{
+    #if 1
+const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32, 0x34, 0x34, 0x36, 0x36,
+                                   0x38, 0x1f, 0x38, 0x30, 0x30, 0x32, 0x32, 0x34, 0x34, 0x36, 0x36, 0x34, 0x38, 0x39, 0x30, 0x31, 0x00,
+                                   0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x18, 0x36, 0x37,
+                                   0x38, 0x00, 0x10, 0x20, 0x00, 0x11, 0x20, 0x93, 0x30, 'J', 'U', 'N', 'K'};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.RPCDecodeChannelCodedData(inBinData);
+
+    QCOMPARE( decoder.getErrorCRCHappened() , true);
+#endif
+}
+
 void TestRPCRuntimeInterpreter::playWithChannelEncoding(){
 
  #if 1
-    const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
-                                       0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
-                                       0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
-                                       0x01 ,0x11 ,0x21};
+    const uint8_t inBinData_array[] = {0x1a, 0x01};
     QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
 
     RPCRunTimeProtocolDescription rpcinterpreter;

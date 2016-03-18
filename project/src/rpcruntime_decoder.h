@@ -57,11 +57,24 @@ public:
 
     void setChannelCodecOutput(QByteArray codecOutput);
 
+    void clear();
+    bool getErrorCRCHappened() const;
+    void setErrorCRCHappened(bool value);
+
+    bool getErrorChannelCodecHappened() const;
+    void setErrorChannelCodecHappened(bool value);
+
 private:
     bool reply;
     QByteArray decodeParams(QByteArray inBuffer, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
     QStringList printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList , bool isArrayField);
     QByteArray codecOutput;
+    RPCRuntimeFunction getFunctionByID(uint8_t ID);
+    bool isReplyByID(uint8_t ID, RPCRuntimeFunction fun);
+    RPCRuntimeTransfer getTransfer(RPCRuntimeFunction fun, bool isReply);
+
+    bool errorCRCHappened;
+    bool errorChannelCodecHappened;
 };
 
 #endif // RPCRUNTIMEDECODERESULT_H
