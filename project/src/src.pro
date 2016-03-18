@@ -9,6 +9,8 @@ CONFIG( debug, debug|release ) {
 
 }
 
+DEFINES += CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
+
 QT += xml
 TEMPLATE = lib
 
@@ -31,9 +33,10 @@ HEADERS += rpcruntimeinterpreter.h
 SOURCES += ../libs/rpc_channel_codec/src/channel_codec/channel_codec.c
 SOURCES += ../libs/rpc_channel_codec/src/channel_codec/crc16.c
 
+HEADERS += ../libs/rpc_channel_codec/include/channel_codec/channel_codec.h
+
 INCLUDEPATH += ../libs/rpc_channel_codec/include
 INCLUDEPATH += ../libs/rpc_channel_codec/include/errorlogger_dummy
-INCLUDEPATH += ../libs/rpc_channel_codec/tests/include
 
 
 FORMS    += mainwindow.ui

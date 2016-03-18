@@ -5,6 +5,8 @@
 #include <QDebug>
 
 #include "rpc_transmission/client/generated_general/RPC_TRANSMISSION_types.h"
+#include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h"
+#include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h"
 
 #ifdef __cplusplus
 #define EXTERNC extern "C"
@@ -23,29 +25,36 @@ EXTERNC void RPC_TRANSMISSION_Parser_init(void){
 
 }
 
-EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size){
+EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size, void* sendingClassInstance){
     (void)buffer;
     (void)size;
+    (void)sendingClassInstance;
     RPC_TRANSMISSION_SIZE_RESULT result;
     return result;
 }
 
-EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes){
+EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes, void* sendingClassInstance){
     (void)buffer;
     (void)size_bytes;
+    (void)sendingClassInstance;
     RPC_TRANSMISSION_SIZE_RESULT result;
     return result;
 }
 
-EXTERNC void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size){
+EXTERNC void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size, void* sendingClassInstance){
     (void)buffer;
     (void)size;
+    (void)sendingClassInstance;
+
+    RPCRunTimeProtocolDescription* testClass = (RPCRunTimeProtocolDescription*) sendingClassInstance;
+    (void) testClass;
 
 }
 
-EXTERNC void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_bytes){
+EXTERNC void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_bytes, void* sendingClassInstance){
     (void)buffer;
     (void)size_bytes;
+    (void)sendingClassInstance;
 }
 
 RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription()
