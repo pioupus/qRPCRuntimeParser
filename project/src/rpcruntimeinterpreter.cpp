@@ -4,6 +4,50 @@
 #include <Qfile>
 #include <QDebug>
 
+#include "rpc_transmission/client/generated_general/RPC_TRANSMISSION_types.h"
+
+#ifdef __cplusplus
+#define EXTERNC extern "C"
+#else
+#define EXTERNC
+#endif
+
+EXTERNC RPC_TRANSMISSION_RESULT phyPushDataBuffer(const char *buffer, size_t length){
+    (void)buffer;
+    (void)length;
+    RPC_TRANSMISSION_RESULT result = RPC_TRANSMISSION_COMMAND_UNKNOWN;
+    return result;
+}
+
+EXTERNC void RPC_TRANSMISSION_Parser_init(void){
+
+}
+
+EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size){
+    (void)buffer;
+    (void)size;
+    RPC_TRANSMISSION_SIZE_RESULT result;
+    return result;
+}
+
+EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes){
+    (void)buffer;
+    (void)size_bytes;
+    RPC_TRANSMISSION_SIZE_RESULT result;
+    return result;
+}
+
+EXTERNC void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size){
+    (void)buffer;
+    (void)size;
+
+}
+
+EXTERNC void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_bytes){
+    (void)buffer;
+    (void)size_bytes;
+}
+
 RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription()
 {
 

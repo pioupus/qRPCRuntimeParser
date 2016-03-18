@@ -7,7 +7,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 SRC_DIR = $$PWD
 
 INCLUDEPATH += $$PWD/src
-INCLUDEPATH += $$PWD/src/CommunicationDevices
 
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Werror
