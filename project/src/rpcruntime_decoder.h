@@ -1,8 +1,8 @@
-#ifndef RPCRUNTIMEDECODERESULT_H
-#define RPCRUNTIMEDECODERESULT_H
-#include "rpcruntimedecoderesult.h"
-#include "rpcruntimefunction.h"
-#include "rpcruntimeinterpreter.h"
+#ifndef RPCRUNTIMEDECODER_H
+#define RPCRUNTIMEDECODER_H
+#include "rpcruntime_decoder.h"
+#include "rpcruntime_function.h"
+#include "rpcruntime_protocol_description.h"
 #include <QList>
 
 class RPCRuntimeDecodedParam{

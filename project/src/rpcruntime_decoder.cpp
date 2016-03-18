@@ -1,4 +1,4 @@
-#include "rpcruntimedecoderesult.h"
+#include "rpcruntime_decoder.h"
 
 RPCRuntimeDecoder::RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescription)
 {

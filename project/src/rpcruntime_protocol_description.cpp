@@ -1,4 +1,4 @@
-#include "rpcruntimeinterpreter.h"
+#include "rpcruntime_protocol_description.h"
 
 #include <QtXml>
 #include <Qfile>

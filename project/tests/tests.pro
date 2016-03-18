@@ -7,13 +7,13 @@ QT +=  xml
 
 DEFINES += EXPORT_APPLICATION
 
-HEADERS += autotest.h \
-    testrpcruntimeinterpreter.h
-HEADERS +=  testqstring.h
+HEADERS += autotest.h
+HEADERS += testrpcruntimeinterpreter.h
+HEADERS += testqstring.h
 
-SOURCES +=  main.cpp \
-    testrpcruntimeinterpreter.cpp
-SOURCES +=  testqstring.cpp
+SOURCES += main.cpp
+SOURCES += testrpcruntimeinterpreter.cpp
+SOURCES += testqstring.cpp
 
 #message($$PWD/../)
 INCLUDEPATH += $$PWD/../libs/googletest/googletest/include

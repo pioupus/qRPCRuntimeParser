@@ -17,18 +17,18 @@ TEMPLATE = lib
 DEFINES += EXPORT_LIBRARY
 
 SOURCES += main.cpp
-SOURCES += rpcruntimedecoderesult.cpp
-SOURCES += rpcruntimefunction.cpp
-SOURCES += rpcruntimeinterpreter.cpp
+SOURCES += rpcruntime_decoder.cpp
+SOURCES += rpcruntime_function.cpp
+SOURCES += rpcruntime_protocol_description.cpp
 SOURCES += mainwindow.cpp
 
 
 
 
 HEADERS += mainwindow.h
-HEADERS += rpcruntimedecoderesult.h
-HEADERS += rpcruntimefunction.h
-HEADERS += rpcruntimeinterpreter.h
+HEADERS += rpcruntime_decoder.h
+HEADERS += rpcruntime_function.h
+HEADERS += rpcruntime_protocol_description.h
 
 SOURCES += ../libs/rpc_channel_codec/src/channel_codec/channel_codec.c
 SOURCES += ../libs/rpc_channel_codec/src/channel_codec/crc16.c

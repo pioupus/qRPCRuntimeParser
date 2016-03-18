@@ -4,8 +4,8 @@
 #include <QString>
 
 #include "testrpcruntimeinterpreter.h"
-#include "rpcruntimeinterpreter.h"
-#include "rpcruntimedecoderesult.h"
+#include "rpcruntime_protocol_description.h"
+#include "rpcruntime_decoder.h"
 
 
 

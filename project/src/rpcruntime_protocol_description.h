@@ -1,10 +1,9 @@
-#ifndef RPCRUNTIMEINTERPRETER_H
-#define RPCRUNTIMEINTERPRETER_H
+#ifndef RPCRUNTIMEPROTOCOLDESCRIPTION_H
+#define RPCRUNTIMEPROTOCOLDESCRIPTION_H
 
 #include <QString>
 #include <QStringList>
-#include "rpcruntimefunction.h"
-//#include "rpcruntimedecoderesult.h"
+#include "rpcruntime_function.h"
 
 class RPCRunTimeProtocolDescription
 {
