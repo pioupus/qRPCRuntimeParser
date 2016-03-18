@@ -71,7 +71,7 @@ void RPC_TRANSMISSION_Parser_exit(void);
    other RPC_TRANSMISSION_* function */
 
 
-RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size, void* sendingClassInstance);
+RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size);
 /* Returns the (expected) length of the beginning of a (partial) message.
    If returnvalue.result equals RPC_TRANSMISSION_SUCCESS then returnvalue.size equals the
    expected size in bytes.
@@ -80,7 +80,7 @@ RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buff
    If returnvalue.result equals RPC_TRANSMISSION_COMMAND_INCOMPLETE then returnvalue.size equals
    the minimum number of bytes required to figure out the length of the message. */
 
-void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size, void* sendingClassInstance);
+void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size);
 /* This function parses answer received from the network. {buffer} points to the
    buffer that contains the received data and {size} contains the number of bytes
    that have been received (NOT the size of the buffer!). This function will wake

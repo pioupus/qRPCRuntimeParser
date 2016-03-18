@@ -27,6 +27,8 @@ private slots:
     void loadXMLFile_rpcDecodeTest_int8_t();
     void loadXMLFile_rpcDecodeTest_int16_t();
     void loadXMLFile_rpcDecodeTest_array_char();
+
+    void playWithChannelEncoding();
     void loadXMLFile_rpcDecodeTest_struct_int();
     void loadXMLFile_rpcDecodeTest_enum();
     void loadXMLFile_rpcDecodeTest_enum_report();

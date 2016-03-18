@@ -5,6 +5,12 @@
 #include "rpcruntime_protocol_description.h"
 #include <QList>
 
+class RPCChannelCodec{
+    public:
+    RPCChannelCodec();
+    ~RPCChannelCodec();
+};
+
 class RPCRuntimeDecodedParam{
 public:
     RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription);
@@ -37,17 +43,25 @@ public:
     bool isReply();
     void setIsReply(bool reply);
 
+    int getTransferLength(uint8_t ID);
+
     QList<RPCRuntimeDecodedParam> decodedParams;
 
     RPCRunTimeProtocolDescription protocolDescription;
-    QByteArray decode(QByteArray inBuffer);
+    QByteArray RPCDecodeRPCData(QByteArray inBuffer);
+    void RPCDecodeChannelCodedData(QByteArray inBuffer);
+
+    QByteArray encodeToChannelCodedData(QByteArray inBuffer);
 
     QStringList getPrintableReport();
+
+    void setChannelCodecOutput(QByteArray codecOutput);
 
 private:
     bool reply;
     QByteArray decodeParams(QByteArray inBuffer, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
     QStringList printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList , bool isArrayField);
+    QByteArray codecOutput;
 };
 
 #endif // RPCRUNTIMEDECODERESULT_H

@@ -15,11 +15,11 @@ extern "C" {
    size is the expected number of bytes required to determine the correct size.*/
 
 
-RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes, void* sendingClassInstance);
+RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes);
 
 /* This function parses RPC requests, calls the original function and sends an
    answer. */
-void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_bytes, void* sendingClassInstance);
+void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_bytes);
 
 
 #ifdef __cplusplus

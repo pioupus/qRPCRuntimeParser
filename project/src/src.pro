@@ -35,6 +35,9 @@ SOURCES += ../libs/rpc_channel_codec/src/channel_codec/crc16.c
 
 HEADERS += ../libs/rpc_channel_codec/include/channel_codec/channel_codec.h
 
+HEADERS += rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h
+HEADERS += rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h
+
 INCLUDEPATH += ../libs/rpc_channel_codec/include
 INCLUDEPATH += ../libs/rpc_channel_codec/include/errorlogger_dummy
 

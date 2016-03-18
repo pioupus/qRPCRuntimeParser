@@ -450,7 +450,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t()
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
     QCOMPARE( decoder.transfer.getTotalLength(), 5);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
@@ -471,7 +471,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int8_t()
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].value , -16);
@@ -491,7 +491,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int16_t()
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].value , -16);
@@ -516,7 +516,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_array_char()
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].string , QString("Hello World!"));
@@ -543,7 +543,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
 
     QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
     QCOMPARE(funList[0].reply.paramList.count(), 1);
@@ -600,7 +600,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum()
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].string , QString("TEb"));
@@ -626,7 +626,7 @@ const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
 
@@ -659,6 +659,8 @@ const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6
     #endif
 }
 
+
+
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
 {
     #if 1
@@ -672,7 +674,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
     QCOMPARE(result, true);
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.decode(inBinData);
+    decoder.RPCDecodeRPCData(inBinData);
 
     QStringList report=  decoder.getPrintableReport();
     QFile inFile("scripts/decodeTest_enum_report_mask.txt");
@@ -699,4 +701,36 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
         QCOMPARE(in[i],report[i]);
     }
     #endif
+}
+
+void TestRPCRuntimeInterpreter::playWithChannelEncoding(){
+
+ #if 1
+    const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
+                                       0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
+                                       0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
+                                       0x01 ,0x11 ,0x21};
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+    rpcinterpreter.openProtocolDescription("scripts/decodeTest_enum.xml");
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+
+    QByteArray outBinData = decoder.encodeToChannelCodedData(inBinData);
+
+    QFile outfile("scripts/channelEncodedData.txt");
+    outfile.open(QIODevice::WriteOnly);
+    QTextStream out(&outfile);   // we will serialize the data into the file
+    QString line("{");
+    for(int i= 0;i<outBinData.count()-1;i++){
+        line += QString("0x%1, ").arg((uint8_t)outBinData[i],2,16,QChar('0'));
+        if (line.length() > 100){
+            out << line+"\n";
+            line = "";
+        }
+    }
+    line += QString("0x%1}").arg((uint8_t)outBinData[outBinData.count()-1],2,16,QChar('0'));
+    out << line;
+#endif
 }
