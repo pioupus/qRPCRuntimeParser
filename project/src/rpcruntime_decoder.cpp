@@ -205,6 +205,8 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     uint8_t ID = inBuffer[0];
     clear();
 
+    QString FieldID = protocolDescription.getFileName()+"?"+QString::number(ID)+"?";
+
     RPCRuntimeFunction fun = getFunctionByID(ID);
 
     if (!fun.isNull()){
@@ -217,9 +219,49 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     }
 
     if (!transfer.isNull()){
-        result = decodeParams(result,transfer.paramList,decodedParams);
+        result = decodeParams(result,FieldID,"", transfer.paramList,decodedParams);
     }
     return result;
+}
+
+QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams)
+{
+    for (int i = 0; i<paramDescriptionList.count();i++){
+        RPCRuntimeParamterDescription paramDesc = paramDescriptionList[i];
+        RPCRuntimeDecodedParam decParam(paramDesc);
+        if (paramDesc.subParameters.count()){
+            if (paramDesc.rpcParamType == RPCParamType_t::param_array){
+                for(int element=0;element<paramDesc.elementCount;element++){
+                    inBuffer = decodeParams(inBuffer,FieldID+QString::number(i)+"?",QString::number(element),  paramDesc.subParameters, decParam.subParams);
+                }
+                if ((paramDesc.subParameters.count() == 1)&&(paramDesc.subParameters[0].elementBitLength == 8)&&
+                        ((paramDesc.subParameters[0].rpcParamType == RPCParamType_t::param_character) ||
+                                                    (paramDesc.subParameters[0].rpcParamType == RPCParamType_t::param_int))){
+                    int textLength = decParam.subParams.count();
+                    for(int n=0;n<textLength;n++){
+                        char c = (char)decParam.subParams[n].value;
+                        if (c == '\0'){
+                            break;
+                        }
+                        decParam.string.append(c);
+                    }
+
+                }
+            }else{
+
+                inBuffer = decodeParams(inBuffer, FieldID+QString::number(i)+"?","", paramDesc.subParameters, decParam.subParams);
+            }
+        }else{
+            inBuffer = decParam.decode(inBuffer);
+        }
+        if (OverwriteID == ""){
+            decParam.FieldID = FieldID+QString::number(i);
+        }else{
+            decParam.FieldID = FieldID+OverwriteID;
+        }
+        decodedParams.append(decParam);
+    }
+    return inBuffer;
 }
 
 void RPCRuntimeDecoder::RPCDecodeChannelCodedData(QByteArray inBuffer)
@@ -254,7 +296,8 @@ QByteArray RPCRuntimeDecoder::encodeToChannelCodedData(QByteArray inBuffer)
 QStringList RPCRuntimeDecoder::getPrintableReport()
 {
     QStringList result;
-    QString line;
+
+    QString line ;
     if (isReply()){
         line = "Reply of: "+name;
     }else{
@@ -313,10 +356,12 @@ QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeW
         }else if (paramDesc.rpcParamType == RPCParamType_t::param_array){
             treeItem = new  QTreeWidgetItem(parent,nameValList);
             treeItem->setText(0,strName);
+            treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
             subList.append(getTreeWidgetReport_recursive(treeItem,decodedParam.subParams, true));
         }else if (paramDesc.rpcParamType == RPCParamType_t::param_struct){
             treeItem = new  QTreeWidgetItem(parent,nameValList);
             treeItem->setText(0,strName);
+            treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
             subList.append(getTreeWidgetReport_recursive(treeItem,decodedParam.subParams, false));
         }
         if (standardView){
@@ -326,6 +371,7 @@ QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeW
                 treeItem = new  QTreeWidgetItem(parent,nameValList);
                 treeItem->setText(0,strName);
                 treeItem->setText(1,strVal.trimmed());
+                treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
             }
             result.append(treeItem);
         }
@@ -333,6 +379,7 @@ QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeW
     if (standardView == false){
         treeItem->setText(1,strVal.trimmed());
         result.append(treeItem);
+       // treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
     }
     return result;
 }
@@ -403,40 +450,7 @@ void RPCRuntimeDecoder::setChannelCodecOutput(QByteArray codecOutput)
     this->codecOutput = codecOutput;
 }
 
-QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams)
-{
-    for (int i = 0; i<paramDescriptionList.count();i++){
-        RPCRuntimeParamterDescription paramDesc = paramDescriptionList[i];
-        RPCRuntimeDecodedParam decParam(paramDesc);
-        if (paramDesc.subParameters.count()){
-            if (paramDesc.rpcParamType == RPCParamType_t::param_array){
-                for(int element=0;element<paramDesc.elementCount;element++){
-                    inBuffer = decodeParams(inBuffer, paramDesc.subParameters, decParam.subParams);
-                }
-                if ((paramDesc.subParameters.count() == 1)&&(paramDesc.subParameters[0].elementBitLength == 8)&&
-                        ((paramDesc.subParameters[0].rpcParamType == RPCParamType_t::param_character) ||
-                                                    (paramDesc.subParameters[0].rpcParamType == RPCParamType_t::param_int))){
-                    int textLength = decParam.subParams.count();
-                    for(int n=0;n<textLength;n++){
-                        char c = (char)decParam.subParams[n].value;
-                        if (c == '\0'){
-                            break;
-                        }
-                        decParam.string.append(c);
-                    }
 
-                }
-            }else{
-                inBuffer = decodeParams(inBuffer, paramDesc.subParameters, decParam.subParams);
-            }
-        }else{
-            inBuffer = decParam.decode(inBuffer);
-        }
-
-        decodedParams.append(decParam);
-    }
-    return inBuffer;
-}
 
 
 

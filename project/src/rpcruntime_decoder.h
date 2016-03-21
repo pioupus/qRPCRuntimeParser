@@ -22,6 +22,7 @@ public:
 
     int64_t value;
     QString string;
+    QString FieldID;
 
 private:
     RPCRuntimeParamterDescription paramDescription;
@@ -59,7 +60,7 @@ public:
     RPCRuntimeTransfer transfer;
 private:
 
-    QByteArray decodeParams(QByteArray inBuffer, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
+    QByteArray decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
     QStringList printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList , bool isArrayField);
     QByteArray codecOutput;
     RPCRuntimeFunction getFunctionByID(uint8_t ID);

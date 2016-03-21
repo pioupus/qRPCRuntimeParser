@@ -17,6 +17,7 @@ RPCRunTimeProtocolDescription::~RPCRunTimeProtocolDescription()
 bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
 {
     QDomDocument xmlBOM;
+    this->fileName = filename;
     QFile f(filename);
     if (!f.open(QIODevice::ReadOnly ))
     {
@@ -86,6 +87,11 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
 QList<RPCRuntimeFunction> RPCRunTimeProtocolDescription::getFunctionList()
 {
     return functionList;
+}
+
+QString RPCRunTimeProtocolDescription::getFileName()
+{
+    return fileName;
 }
 
 

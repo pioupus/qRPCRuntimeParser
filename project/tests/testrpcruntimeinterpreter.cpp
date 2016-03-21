@@ -9,11 +9,11 @@
 #include <QTreeWidgetItem>
 
 
-
+#define RUNTEST 1
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest()
 {
-    #if 1
+    #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/rpcInt16EnumTest.xml");
@@ -79,7 +79,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsignedTest()
 {
-#if 1
+#if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/rpcSignedUnsignedTest.xml");
@@ -99,7 +99,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsignedTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt32ReplyTest()
 {
-#if 1
+#if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/rpcInt32ReplyTest.xml");
@@ -134,7 +134,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt32ReplyTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInputTest()
 {
-    #if 1
+    #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/arrayInputTest.xml");
@@ -164,7 +164,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInputTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcMultiArrayInputTest()
 {
-    #if 1
+    #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/multiArrayInputTest.xml");
@@ -213,7 +213,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcMultiArrayInputTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest()
 {
-    #if 1
+    #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/structInputTest.xml");
@@ -274,7 +274,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest()
 {
-    #if 1
+    #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/arrayInStructTest.xml");
@@ -356,7 +356,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcEnumInArrayTest()
 {
-    #if 1
+    #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/enumInArray.xml");
@@ -408,7 +408,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcEnumInArrayTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcNegValueInEnumTest()
 {
-    #if 1
+    #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
 
     bool result = rpcinterpreter.openProtocolDescription("scripts/negValueInEnum.xml");
@@ -445,7 +445,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcNegValueInEnumTest()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[] = { 0x04, 0x05, 0x10, 0x20, 0x30};
     RPCRunTimeProtocolDescription rpcinterpreter;
 
@@ -466,7 +466,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int8_t()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[2] = {0x04, 0xF0};
     RPCRunTimeProtocolDescription rpcinterpreter;
 
@@ -486,7 +486,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int8_t()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int16_t()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[3] = {0x04, 0xF0, 0xFF};
     RPCRunTimeProtocolDescription rpcinterpreter;
 
@@ -507,7 +507,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int16_t()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_array_char()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[42] = {0x06, 0x48 ,0x65 ,0x6c ,0x6c ,0x6f ,0x20 ,0x57 ,0x6f ,0x72
                                        ,0x6c ,0x64 ,0x21 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00
                                        ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00
@@ -532,7 +532,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_array_char()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
                                          0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
                                          0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
@@ -590,11 +590,50 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
 
     #endif
 }
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_testID()
+{
+    #if RUNTEST || 0
+    const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
+                                         0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
+                                         0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
+                                         0x01 ,0x11 ,0x21};
+
+
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.RPCDecodeRPCData(inBinData);
+
+
+
+    QCOMPARE( decoder.decodedParams.count() , 1);
+    QCOMPARE( decoder.decodedParams[0].subParams.count() , 1);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams.count() , 3);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[0].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?0"));
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?1"));
+
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams.count() , 1);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
+
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
+
+
+
+
+    #endif
+}
 
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
                                          0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
                                          0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
@@ -617,6 +656,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 
 
     QCOMPARE( items.count() , 1);
+    QCOMPARE( items[0]->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0"));
     QCOMPARE( items[0]->childCount() , 1);
     QCOMPARE( items[0]->child(0)->childCount() , 3);
     QCOMPARE( items[0]->child(0)->child(0)->childCount() , 0);
@@ -632,14 +672,19 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
     QCOMPARE( items[0]->child(0)->child(2)->text(1).trimmed() , QString("").trimmed());
 
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->childCount() , 2);
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->text(0) , QString("[0]"));
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->text(1).trimmed() , QString("").trimmed());
 
+
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->text(0) , QString("[0]"));
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->text(1).trimmed() , QString("0x00 0x10 0x20").trimmed());
 
+
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->text(0) , QString("[1]"));
     QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->text(1).trimmed() , QString("0x01 0x11 0x21").trimmed());
 
@@ -650,7 +695,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[] = {0x1a, 0x01};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
@@ -673,7 +718,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_report()
 {
-    #if 1
+    #if RUNTEST
 const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
                                      0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
                                      0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
@@ -724,7 +769,7 @@ const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[] = {0x1a, 0x01};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
@@ -768,7 +813,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report()
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report()
 {
-    #if 1
+    #if RUNTEST
     const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x00, 0x1a, 0x01, 0x96, 0xe1, 'J', 'U', 'N', 'K'};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
@@ -803,7 +848,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report()
 {
-    #if 1
+    #if RUNTEST
 const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32, 0x34, 0x34, 0x36, 0x36,
                                    0x38, 0x1f, 0x38, 0x30, 0x30, 0x32, 0x32, 0x34, 0x34, 0x36, 0x36, 0x34, 0x38, 0x39, 0x30, 0x31, 0x00,
                                    0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x18, 0x36, 0x37,
@@ -846,7 +891,7 @@ const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x74, 0
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC()
 {
-    #if 1
+    #if RUNTEST
 const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32, 0x34, 0x34, 0x36, 0x36,
                                    0x38, 0x1f, 0x38, 0x30, 0x30, 0x32, 0x32, 0x34, 0x34, 0x36, 0x36, 0x34, 0x38, 0x39, 0x30, 0x31, 0x00,
                                    0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x18, 0x36, 0x37,
@@ -868,7 +913,7 @@ const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x74, 0
 
 void TestRPCRuntimeInterpreter::playWithChannelEncoding(){
 
- #if 1
+ #if RUNTEST
     const uint8_t inBinData_array[] = {0x1a, 0x01};
     QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
 

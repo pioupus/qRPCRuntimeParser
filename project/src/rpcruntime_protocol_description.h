@@ -19,9 +19,11 @@ public:
     QStringList getReport();
     QList<RPCRuntimeFunction> getFunctionList();
 
+    QString getFileName();
 
 private:
     QList<RPCRuntimeFunction> functionList;
+    QString fileName;
 };
 
 #endif // RPCRUNTIMEINTERPRETER_H
