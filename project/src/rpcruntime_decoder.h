@@ -15,6 +15,7 @@ class RPCChannelCodec{
 class RPCRuntimeDecodedParam{
 public:
     RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription);
+    RPCRuntimeDecodedParam();
     ~RPCRuntimeDecodedParam();
     QByteArray decode(QByteArray inBuffer);
     QList<RPCRuntimeDecodedParam> subParams;
@@ -23,8 +24,11 @@ public:
     int64_t value;
     QString string;
     QString FieldID;
+    bool isNull();
+
 
 private:
+    bool null;
     RPCRuntimeParamterDescription paramDescription;
 };
 
@@ -58,6 +62,9 @@ public:
     QString declaration;
     QList<RPCRuntimeDecodedParam> decodedParams;
     RPCRuntimeTransfer transfer;
+
+    bool fieldExists(QString FieldID);
+    RPCRuntimeDecodedParam getDecodedParamByFieldID(QString FieldID);
 private:
 
     QByteArray decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);

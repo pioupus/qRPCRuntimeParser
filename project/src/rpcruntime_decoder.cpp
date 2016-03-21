@@ -150,6 +150,44 @@ void RPCRuntimeDecoder::setErrorChannelCodecHappened(bool value)
     errorChannelCodecHappened = value;
 }
 
+bool RPCRuntimeDecoder::fieldExists(QString FieldID)
+{
+    return !getDecodedParamByFieldID(FieldID).isNull();
+}
+
+RPCRuntimeDecodedParam RPCRuntimeDecoder::getDecodedParamByFieldID(QString FieldID){
+    RPCRuntimeDecodedParam result;
+    RPCRuntimeDecodedParam result_none;
+    QStringList IDToken = FieldID.split("?");
+    if (IDToken.count() < 3){
+        return result_none;
+    }
+    if (IDToken[0] != protocolDescription.getFileName()){
+        return result_none;
+    }
+    if(IDToken[1].toInt() != transfer.ID){
+        return result_none;
+    }
+    QList<RPCRuntimeDecodedParam> subParams=decodedParams;
+    for(int i=2;i<IDToken.count();i++){
+        bool ok;
+        int FieldID_token = IDToken[i].toInt(&ok);
+        if (!ok){
+            return result_none;
+        }
+        if (FieldID_token >= subParams.count()){
+            return result_none;
+        }
+        if (i == IDToken.count()-1){
+            return subParams[FieldID_token];
+        }else{
+            subParams = subParams[FieldID_token].subParams;
+        }
+
+    }
+    return result;
+}
+
 bool RPCRuntimeDecoder::getErrorCRCHappened() const
 {
     return errorCRCHappened;
@@ -458,6 +496,14 @@ RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(RPCRuntimeParamterDescription par
 {
     this->paramDescription = paramDescription;
     value = 0;
+    null = false;
+}
+
+RPCRuntimeDecodedParam::RPCRuntimeDecodedParam()
+{
+    value = 0;
+   // paramDescription = NULL;
+    null = true;
 }
 
 RPCRuntimeDecodedParam::~RPCRuntimeDecodedParam()
@@ -522,6 +568,11 @@ QByteArray RPCRuntimeDecodedParam::decode(QByteArray inBuffer)
 RPCRuntimeParamterDescription RPCRuntimeDecodedParam::getParamDescription() const
 {
     return paramDescription;
+}
+
+bool RPCRuntimeDecodedParam::isNull()
+{
+    return null;
 }
 
 

@@ -590,15 +590,14 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
 
     #endif
 }
+
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_testID()
 {
-    #if RUNTEST || 0
+    #if RUNTEST || 1
     const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
                                          0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
                                          0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
                                          0x01 ,0x11 ,0x21};
-
-
 
     RPCRunTimeProtocolDescription rpcinterpreter;
 
@@ -609,26 +608,98 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_testID()
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
     decoder.RPCDecodeRPCData(inBinData);
-
-
-
     QCOMPARE( decoder.decodedParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].subParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams.count() , 3);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[0].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?0"));
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?1"));
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?2"));
+    //qDebug() << decoder.decodedParams[0].subParams[0].subParams[2].getParamDescription().typeName;
+    //qDebug() << decoder.decodedParams[0].subParams[0].subParams[2].getParamDescription().name;
 
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
 
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
-
-
-
+    qDebug() << decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].getParamDescription().typeName;
+    qDebug() << decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].getParamDescription().name;
 
     #endif
 }
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_TestByID()
+{
+    #if RUNTEST || 1
+    const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
+                                         0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
+                                         0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
+                                         0x01 ,0x11 ,0x21};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.RPCDecodeRPCData(inBinData);
+    QCOMPARE( decoder.fieldExists("scripts/fail.xml?25?0?0?2?0?1") , false);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?25?0?0?2?0?1") , false);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1") , true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?2") , false);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0") , true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0?0") , false);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?0"), true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?1"), true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2"), true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?3"), false);
+
+    #endif
+}
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_AccessByID()
+{
+    #if RUNTEST || 0
+    const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
+                                         0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
+                                         0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
+                                         0x01 ,0x11 ,0x21};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.RPCDecodeRPCData(inBinData);
+    RPCRuntimeDecodedParam decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1");
+    QCOMPARE( decParam.isNull() , false);
+    QCOMPARE( decParam.getParamDescription().name , QString(""));
+    QCOMPARE( decParam.getParamDescription().typeName , QString("uint8_t [3]"));
+    QCOMPARE( decParam.string , QString(""));
+
+    decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?2?0?2");
+    QCOMPARE( decParam.isNull() , true);
+    QCOMPARE( decParam.getParamDescription().name , QString(""));
+    QCOMPARE( decParam.getParamDescription().typeName , QString(""));
+    QCOMPARE( decParam.string , QString(""));
+
+
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?2") , false);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0") , true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0?0") , false);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?0"), true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?1"), true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2"), true);
+    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?3"), false);
+
+    #endif
+}
+
 
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport()

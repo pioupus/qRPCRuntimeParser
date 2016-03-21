@@ -41,6 +41,8 @@ private slots:
 
 
     void loadXMLFile_rpcDecodeTest_struct_int_testID();
+    void loadXMLFile_rpcDecodeTest_struct_int_AccessByID();
+    void loadXMLFile_rpcDecodeTest_struct_int_TestByID();
 };
 DECLARE_TEST(TestRPCRuntimeInterpreter)
 
