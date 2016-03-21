@@ -6,6 +6,7 @@
 #include "testrpcruntimeinterpreter.h"
 #include "rpcruntime_protocol_description.h"
 #include "rpcruntime_decoder.h"
+#include <QTreeWidgetItem>
 
 
 
@@ -586,6 +587,62 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[0].value , 0x01);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[1].value , 0x11);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[2].value , 0x21);
+
+    #endif
+}
+
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport()
+{
+    #if 1
+    const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
+                                         0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
+                                         0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
+                                         0x01 ,0x11 ,0x21};
+
+
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.RPCDecodeRPCData(inBinData);
+
+
+    QList<QTreeWidgetItem *> items = decoder.getTreeWidgetReport(NULL);
+
+
+    QCOMPARE( items.count() , 1);
+    QCOMPARE( items[0]->childCount() , 1);
+    QCOMPARE( items[0]->child(0)->childCount() , 3);
+    QCOMPARE( items[0]->child(0)->child(0)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(0)->text(0) , QString("n(uint16_t)"));
+    QCOMPARE( items[0]->child(0)->child(0)->text(1) , QString("43"));
+
+    QCOMPARE( items[0]->child(0)->child(0)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(1)->text(0) , QString("ia(uint8_t [42])"));
+    QCOMPARE( items[0]->child(0)->child(1)->text(1).trimmed() , QString("0x48 0x61 0x6C 0x6C 0x6F 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38").trimmed());
+
+    QCOMPARE( items[0]->child(0)->child(2)->childCount() , 1);
+    QCOMPARE( items[0]->child(0)->child(2)->text(0) , QString("iaa(uint8_t [1][2][3])"));
+    QCOMPARE( items[0]->child(0)->child(2)->text(1).trimmed() , QString("").trimmed());
+
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->childCount() , 2);
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->text(0) , QString("[0]"));
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->text(1).trimmed() , QString("").trimmed());
+
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->text(0) , QString("[0]"));
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->text(1).trimmed() , QString("0x00 0x10 0x20").trimmed());
+
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->text(0) , QString("[1]"));
+    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->text(1).trimmed() , QString("0x01 0x11 0x21").trimmed());
+
 
     #endif
 }

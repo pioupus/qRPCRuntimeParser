@@ -4,6 +4,7 @@
 #include "rpcruntime_function.h"
 #include "rpcruntime_protocol_description.h"
 #include <QList>
+#include <QTreeWidgetItem>
 
 class RPCChannelCodec{
     public:
@@ -41,6 +42,7 @@ public:
     QByteArray encodeToChannelCodedData(QByteArray inBuffer);
 
     QStringList getPrintableReport();
+    QList<QTreeWidgetItem *> getTreeWidgetReport(QTreeWidgetItem *parent);
 
     void setChannelCodecOutput(QByteArray codecOutput);
 
@@ -67,6 +69,7 @@ private:
     bool reply;
     bool errorCRCHappened;
     bool errorChannelCodecHappened;
+    QList<QTreeWidgetItem *> getTreeWidgetReport_recursive(QTreeWidgetItem *parent, QList<RPCRuntimeDecodedParam> decodedParamList, bool isArrayField);
 };
 
 #endif // RPCRUNTIMEDECODERESULT_H

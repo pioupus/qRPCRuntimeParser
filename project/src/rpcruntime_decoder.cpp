@@ -249,6 +249,104 @@ QByteArray RPCRuntimeDecoder::encodeToChannelCodedData(QByteArray inBuffer)
     return codecOutput;
 }
 
+
+
+QStringList RPCRuntimeDecoder::getPrintableReport()
+{
+    QStringList result;
+    QString line;
+    if (isReply()){
+        line = "Reply of: "+name;
+    }else{
+        line = "Request: "+name;
+    }
+    result.append(line);
+    result.append("Function: "+declaration);
+    result.append("");
+    result.append(printsubType(0, decodedParams, false));
+    return result;
+}
+
+QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeWidgetItem * parent,QList<RPCRuntimeDecodedParam> decodedParamList, bool isArrayField)
+{
+    QString strName;
+    QString strVal;
+    bool standardView = true;//when array and element
+    if ((isArrayField) && (decodedParamList.count() > 0)){
+        if (decodedParamList[0].subParams.count() == 0){
+            standardView = false;
+        }
+    }
+
+
+    QStringList nameValList;
+    nameValList.append("");
+    nameValList.append("");
+
+    QTreeWidgetItem* treeItem = parent;
+    QList<QTreeWidgetItem *> result;
+
+    for (int i=0;i<decodedParamList.count();i++){
+
+
+        RPCRuntimeDecodedParam decodedParam = decodedParamList[i];
+        RPCRuntimeParamterDescription paramDesc = decodedParam.getParamDescription();
+
+        QList<QTreeWidgetItem *> subList;
+
+
+        if (standardView){
+            strName = "";
+            strVal = "";
+        }
+        if (isArrayField && standardView){
+            strName += "["+QString::number(i)+"]";
+        }
+        if (!isArrayField){
+            strName += paramDesc.name+"("+paramDesc.typeName+")";
+        }
+
+        if ((paramDesc.rpcParamType == RPCParamType_t::param_int) || (paramDesc.rpcParamType == RPCParamType_t::param_enum)){
+            strVal += decodedParam.string+" ";
+        }else if (paramDesc.rpcParamType == RPCParamType_t::param_character){
+            strVal += decodedParam.string;
+        }else if (paramDesc.rpcParamType == RPCParamType_t::param_array){
+            treeItem = new  QTreeWidgetItem(parent,nameValList);
+            treeItem->setText(0,strName);
+            subList.append(getTreeWidgetReport_recursive(treeItem,decodedParam.subParams, true));
+        }else if (paramDesc.rpcParamType == RPCParamType_t::param_struct){
+            treeItem = new  QTreeWidgetItem(parent,nameValList);
+            treeItem->setText(0,strName);
+            subList.append(getTreeWidgetReport_recursive(treeItem,decodedParam.subParams, false));
+        }
+        if (standardView){
+            if (subList.count()){
+                treeItem->addChildren(subList);
+            }else{
+                treeItem = new  QTreeWidgetItem(parent,nameValList);
+                treeItem->setText(0,strName);
+                treeItem->setText(1,strVal.trimmed());
+            }
+            result.append(treeItem);
+        }
+    }
+    if (standardView == false){
+        treeItem->setText(1,strVal.trimmed());
+        result.append(treeItem);
+    }
+    return result;
+}
+
+QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport(QTreeWidgetItem * parent=0)
+{
+    if (parent){
+      //  parent->();
+    }
+    return getTreeWidgetReport_recursive(parent,decodedParams, false);
+}
+
+
+
 QStringList RPCRuntimeDecoder::printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList, bool isArrayField ){
     QString line;
     QStringList result;
@@ -299,21 +397,6 @@ QStringList RPCRuntimeDecoder::printsubType(int tabDepth, QList<RPCRuntimeDecode
     return result;
 }
 
-QStringList RPCRuntimeDecoder::getPrintableReport()
-{
-    QStringList result;
-    QString line;
-    if (isReply()){
-        line = "Reply of: "+name;
-    }else{
-        line = "Request: "+name;
-    }
-    result.append(line);
-    result.append("Function: "+declaration);
-    result.append("");
-    result.append(printsubType(0, decodedParams, false));
-    return result;
-}
 
 void RPCRuntimeDecoder::setChannelCodecOutput(QByteArray codecOutput)
 {
