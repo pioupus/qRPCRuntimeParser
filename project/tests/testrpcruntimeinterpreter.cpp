@@ -745,9 +745,10 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint(
 
     QPair<int,int> testPlotIndex (0,1);
     QDateTime timeStamp = QDateTime(QDateTime::currentDateTime());
-    rpcinterpreter.addWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0", "humanReadableName", testPlotIndex,
-            std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,std::placeholders::_2,std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
+
     RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.addWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0", "humanReadableName", testPlotIndex,
+            std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,std::placeholders::_2,std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
     decoder.setTimeStamp(timeStamp);
     initTestCase();
     decoder.RPCDecodeRPCData(inBinData);
@@ -760,12 +761,12 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint(
     QCOMPARE( callBack_timestamp , timeStamp);
     QCOMPARE( callBack_value , 43);
 
-    rpcinterpreter.removeWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0");
+    decoder.removeWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0");
     initTestCase();
     decoder.RPCDecodeRPCData(inBinData);
     QCOMPARE( callBack_value , 0);
 
-    rpcinterpreter.addWatchPoint("scripts/decodeTest_struct_int.xml?24?30?0?0", "humanReadableName", testPlotIndex,
+    decoder.addWatchPoint("scripts/decodeTest_struct_int.xml?24?30?0?0", "humanReadableName", testPlotIndex,
             std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,std::placeholders::_2,std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
     initTestCase();

@@ -5,6 +5,27 @@
 #include "rpcruntime_protocol_description.h"
 #include <QList>
 #include <QTreeWidgetItem>
+#include <functional>
+
+typedef std::function<void(QString, QString, QPair<int,int>, QDateTime, int64_t)> watchCallBack_t;
+
+class RPCWatchPoint{
+public:
+    RPCWatchPoint();
+    RPCWatchPoint(QString FieldID,QString humanReadableName,QPair<int,int> plotIndex, watchCallBack_t callback);
+    ~RPCWatchPoint();
+
+    QString FieldID;
+    QString humanReadableName;
+    QPair<int,int> plotIndex;
+    watchCallBack_t callback;
+
+    void call(QDateTime timeStamp, int64_t val);
+
+
+private:
+    bool valid;
+};
 
 class RPCChannelCodec{
     public:
@@ -41,7 +62,7 @@ public:
     bool isReply();
     void setIsReply(bool reply);
     int getTransferLength(uint8_t ID);
-    RPCRunTimeProtocolDescription* protocolDescription;
+    RPCRunTimeProtocolDescription protocolDescription;
     void setTimeStamp(QDateTime timeStamp);
     QByteArray RPCDecodeRPCData(QByteArray inBuffer);
     void RPCDecodeChannelCodedData(QByteArray inBuffer);
@@ -67,6 +88,13 @@ public:
     bool fieldExists(QString FieldID);
     RPCRuntimeDecodedParam getDecodedParamByFieldID(QString FieldID);
     RPCRuntimeTransfer getDecodedTransferByFieldID(QString FieldID);
+
+    void addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, watchCallBack_t callback);
+    void removeWatchPoint(QString FieldID);
+    void clearWatchPoint();
+
+    QList<RPCWatchPoint> getWatchPointList();
+
 private:
 
     QByteArray decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
@@ -81,6 +109,9 @@ private:
     bool errorChannelCodecHappened;
     QDateTime timeStamp;
     QList<QTreeWidgetItem *> getTreeWidgetReport_recursive(QTreeWidgetItem *parent, QList<RPCRuntimeDecodedParam> decodedParamList, bool isArrayField);
+
+    QList<RPCWatchPoint> watchpointList;
+
 };
 
 #endif // RPCRUNTIMEDECODERESULT_H

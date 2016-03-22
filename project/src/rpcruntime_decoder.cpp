@@ -98,7 +98,7 @@ EXTERNC void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_byte
 
 RPCRuntimeDecoder::RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescription)
 {
-    this->protocolDescription = &protocolDescription;
+    this->protocolDescription = protocolDescription;
     clear();
 }
 
@@ -166,7 +166,7 @@ RPCRuntimeTransfer RPCRuntimeDecoder::getDecodedTransferByFieldID(QString FieldI
     if (IDToken.count() < 2){
         return result;
     }
-    if (IDToken[0] != protocolDescription->getFileName()){
+    if (IDToken[0] != protocolDescription.getFileName()){
         return result;
     }
     if(IDToken[1].toInt() != transfer.ID){
@@ -182,7 +182,7 @@ RPCRuntimeDecodedParam RPCRuntimeDecoder::getDecodedParamByFieldID(QString Field
     if (IDToken.count() < 3){
         return result_none;
     }
-    if (IDToken[0] != protocolDescription->getFileName()){
+    if (IDToken[0] != protocolDescription.getFileName()){
         return result_none;
     }
     if(IDToken[1].toInt() != transfer.ID){
@@ -229,7 +229,7 @@ bool RPCRuntimeDecoder::isReplyByID(uint8_t ID, RPCRuntimeFunction fun ){
 }
 
 RPCRuntimeFunction RPCRuntimeDecoder::getFunctionByID(uint8_t ID ){
-    QList<RPCRuntimeFunction> functionList = protocolDescription->getFunctionList();
+    QList<RPCRuntimeFunction> functionList = protocolDescription.getFunctionList();
     RPCRuntimeFunction fun;
     for(int i=0; i < functionList.count();i++){
         fun = functionList[i];
@@ -262,7 +262,7 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     uint8_t ID = inBuffer[0];
     clear();
 
-    QString FieldID = protocolDescription->getFileName()+"?"+QString::number(ID)+"?";
+    QString FieldID = protocolDescription.getFileName()+"?"+QString::number(ID)+"?";
 
     RPCRuntimeFunction fun = getFunctionByID(ID);
 
@@ -278,7 +278,7 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     if (!transfer.isNull()){
         result = decodeParams(result,FieldID,"", transfer.paramList,decodedParams);
     }
-    QList<RPCWatchPoint> watchPointList = protocolDescription->getWatchPointList();
+    QList<RPCWatchPoint> watchPointList = getWatchPointList();
     for(auto wp : watchPointList){
         auto dp = getDecodedParamByFieldID(wp.FieldID);
         if(!dp.isNull()){
@@ -547,8 +547,65 @@ void RPCRuntimeDecoder::setChannelCodecOutput(QByteArray codecOutput)
 
 
 
+void RPCRuntimeDecoder::addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, watchCallBack_t callback)
+{
+
+    RPCWatchPoint wp(FieldID,humanReadableName,plotIndex,callback);
+    watchpointList.append(wp);
+}
+
+void RPCRuntimeDecoder::removeWatchPoint(QString FieldID)
+{
+    int i = 0;
+    while(i < watchpointList.count()){
+        auto wp = watchpointList[i];
+        if (wp.FieldID == FieldID){
+
+            watchpointList.removeAt(i);
+        }else{
+            i++;
+        }
+    }
+}
+
+void RPCRuntimeDecoder::clearWatchPoint()
+{
+    watchpointList.clear();
+}
+
+QList<RPCWatchPoint> RPCRuntimeDecoder::getWatchPointList()
+{
+    return watchpointList;
+}
 
 
+
+
+RPCWatchPoint::RPCWatchPoint()
+{
+    valid = false;
+    this->callback = NULL;
+}
+
+RPCWatchPoint::RPCWatchPoint(QString FieldID, QString humanReadableName, QPair<int, int> plotIndex, watchCallBack_t callback)
+{
+    this->callback = callback;
+    this->plotIndex = plotIndex;
+    this->humanReadableName = humanReadableName;
+    this->FieldID = FieldID;
+    valid = true;
+}
+
+
+RPCWatchPoint::~RPCWatchPoint()
+{
+
+}
+
+void RPCWatchPoint::call(QDateTime timeStamp, int64_t val)
+{
+    callback(FieldID,humanReadableName,plotIndex,timeStamp,val);
+}
 RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription)
 {
     this->paramDescription = paramDescription;
