@@ -3,6 +3,8 @@
 #include <QtXml>
 #include <Qfile>
 #include <QDebug>
+#include <QString>
+#include <functional>
 
 RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription()
 {
@@ -66,8 +68,12 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
 
             runtimefunction.declaration = declaration.text();
             runtimefunction.request.setIsNull(request.isNull());
+            runtimefunction.request.setReply(false);
+            runtimefunction.request.setName(runtimefunction.name);
             runtimefunction.reply.setIsNull(reply.isNull());
             runtimefunction.reply.ID = reply.attribute("ID","").toInt(&ok);
+            runtimefunction.reply.setReply(true);
+            runtimefunction.reply.setName(runtimefunction.name);
 
             if (!runtimefunction.request.loadParamListFromXML(request.firstChild().toElement())){
                 return false;
@@ -94,4 +100,64 @@ QString RPCRunTimeProtocolDescription::getFileName()
     return fileName;
 }
 
+void RPCRunTimeProtocolDescription::addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, watchCallBack_t callback)
+{
 
+    RPCWatchPoint wp(FieldID,humanReadableName,plotIndex,callback);
+    watchpointList.append(wp);
+}
+
+void RPCRunTimeProtocolDescription::removeWatchPoint(QString FieldID)
+{
+    int i = 0;
+    while(i < watchpointList.count()){
+        auto wp = watchpointList[i];
+        if (wp.FieldID == FieldID){
+
+            watchpointList.removeAt(i);
+        }else{
+            i++;
+        }
+    }
+    qDebug()<< "WPl count" << watchpointList.count() <<  this;
+
+}
+
+void RPCRunTimeProtocolDescription::clearWatchPoint()
+{
+    watchpointList.clear();
+}
+
+QList<RPCWatchPoint> RPCRunTimeProtocolDescription::getWatchPointList()
+{
+    qDebug()<< "WPl dsfsdf count" << watchpointList.count() << this;
+    return watchpointList;
+}
+
+
+
+
+RPCWatchPoint::RPCWatchPoint()
+{
+    valid = false;
+    this->callback = NULL;
+}
+
+RPCWatchPoint::RPCWatchPoint(QString FieldID, QString humanReadableName, QPair<int, int> plotIndex, watchCallBack_t callback)
+{
+    this->callback = callback;
+    this->plotIndex = plotIndex;
+    this->humanReadableName = humanReadableName;
+    this->FieldID = FieldID;
+    valid = true;
+}
+
+RPCWatchPoint::~RPCWatchPoint()
+{
+
+}
+
+void RPCWatchPoint::call(QDateTime timeStamp, int64_t val)
+{
+    callback(FieldID,humanReadableName,plotIndex,timeStamp,val);
+}

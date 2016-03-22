@@ -2,7 +2,7 @@
 #include <QByteArray>
 #include <QPair>
 #include <QString>
-
+#include <functional>
 #include "testrpcruntimeinterpreter.h"
 #include "rpcruntime_protocol_description.h"
 #include "rpcruntime_decoder.h"
@@ -10,6 +10,14 @@
 
 
 #define RUNTEST 1
+
+void TestRPCRuntimeInterpreter::initTestCase(){
+    callBack_FieldID = "";
+    callBack_humanReadableName = "";
+    callBack_plotIndex =  QPair<int,int>(0,0);
+    callBack_timestamp = QDateTime();
+    callBack_value = 0;
+}
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest()
 {
@@ -575,7 +583,8 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].subParams.count() , 42);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].subParams[0].value , 0x48);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].getParamDescription().rpcParamType , RPCParamType_t::param_array);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].string , QString("Hallo3456789012345674890123456789012345678"));
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].string , QString("0x48 0x61 0x6c 0x6c 0x6f 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38"));
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].subParams[0].getParamDescription().rpcParamType , RPCParamType_t::param_int);
 
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams.count() , 2);
@@ -680,22 +689,88 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_AccessByID(
     QCOMPARE( decParam.isNull() , false);
     QCOMPARE( decParam.getParamDescription().name , QString(""));
     QCOMPARE( decParam.getParamDescription().typeName , QString("uint8_t [3]"));
-    QCOMPARE( decParam.string , QString(""));
+    QCOMPARE( decParam.string , QString("0x01 0x11 0x21"));
+
+    decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0");
+    QCOMPARE( decParam.isNull() , false);
+    QCOMPARE( decParam.getParamDescription().name , QString(""));
+    QCOMPARE( decParam.getParamDescription().typeName , QString("uint8_t [3]"));
+    QCOMPARE( decParam.string , QString("0x00 0x10 0x20"));
 
     decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?2?0?2");
     QCOMPARE( decParam.isNull() , true);
-    QCOMPARE( decParam.getParamDescription().name , QString(""));
-    QCOMPARE( decParam.getParamDescription().typeName , QString(""));
+
+    decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0");
+    QCOMPARE( decParam.isNull() , false);
+    QCOMPARE( decParam.getParamDescription().name , QString("s_inout"));
+    QCOMPARE( decParam.getParamDescription().typeName , QString("TypedefTestStruct [1]"));
     QCOMPARE( decParam.string , QString(""));
+    QCOMPARE( decParam.subParams.count() , 1);
+    QCOMPARE( decParam.subParams[0].subParams.count() , 3);
+
+    RPCRuntimeTransfer decTransfer = decoder.getDecodedTransferByFieldID("scripts/decodeTest_struct_int.xml?24");
+    QCOMPARE( decTransfer.isNull() , false);
+    QCOMPARE( decTransfer.isReply()  , false);
+    QCOMPARE( decTransfer.getName()  , QString("typedefStructTest"));
 
 
-    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?2") , false);
-    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0") , true);
-    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0?0") , false);
-    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?0"), true);
-    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?1"), true);
-    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2"), true);
-    QCOMPARE( decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?3"), false);
+    #endif
+}
+
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, QDateTime timestamp, int64_t value){
+    callBack_FieldID = FieldID;
+    callBack_humanReadableName = humanReadableName;
+    callBack_plotIndex = plotIndex;
+    callBack_timestamp = timestamp;
+    callBack_value = value;
+}
+
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint()
+
+{
+    #if RUNTEST || 0
+    const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
+                                         0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
+                                         0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
+                                         0x01 ,0x11 ,0x21};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    QByteArray inBinData = QByteArray((char*)inBinData_array, sizeof(inBinData_array));
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    QPair<int,int> testPlotIndex (0,1);
+    QDateTime timeStamp = QDateTime(QDateTime::currentDateTime());
+    rpcinterpreter.addWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0", "humanReadableName", testPlotIndex,
+            std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,std::placeholders::_2,std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    decoder.setTimeStamp(timeStamp);
+    initTestCase();
+    decoder.RPCDecodeRPCData(inBinData);
+
+
+
+    QCOMPARE( callBack_FieldID , QString("scripts/decodeTest_struct_int.xml?24?0?0?0"));
+    QCOMPARE( callBack_humanReadableName , QString("humanReadableName"));
+    QCOMPARE( callBack_plotIndex , testPlotIndex);
+    QCOMPARE( callBack_timestamp , timeStamp);
+    QCOMPARE( callBack_value , 43);
+
+    rpcinterpreter.removeWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0");
+    initTestCase();
+    decoder.RPCDecodeRPCData(inBinData);
+    QCOMPARE( callBack_value , 0);
+
+    rpcinterpreter.addWatchPoint("scripts/decodeTest_struct_int.xml?24?30?0?0", "humanReadableName", testPlotIndex,
+            std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,std::placeholders::_2,std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
+
+    initTestCase();
+    decoder.RPCDecodeRPCData(inBinData);
+    QCOMPARE( callBack_value , 0);
 
     #endif
 }
@@ -704,7 +779,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_AccessByID(
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport()
 {
-    #if RUNTEST
+    #if RUNTEST || 1
     const uint8_t inBinData_array[] = {0x18 ,0x2b ,0x00 ,0x48 ,0x61 ,0x6c ,0x6c ,0x6f ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x39 ,0x30,
                                          0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x34 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35,
                                          0x36 ,0x37 ,0x38 ,0x39 ,0x30 ,0x31 ,0x32 ,0x33 ,0x34 ,0x35 ,0x36 ,0x37 ,0x38 ,0x00 ,0x10 ,0x20,
@@ -727,37 +802,45 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 
 
     QCOMPARE( items.count() , 1);
-    QCOMPARE( items[0]->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0"));
-    QCOMPARE( items[0]->childCount() , 1);
-    QCOMPARE( items[0]->child(0)->childCount() , 3);
-    QCOMPARE( items[0]->child(0)->child(0)->childCount() , 0);
-    QCOMPARE( items[0]->child(0)->child(0)->text(0) , QString("n(uint16_t)"));
-    QCOMPARE( items[0]->child(0)->child(0)->text(1) , QString("43"));
+    QCOMPARE( items[0]->text(0),QString("typedefStructTest"));
+    QCOMPARE( items[0]->text(1),QString("RPC_UART_RESULT typedefStructTest(TypedefTestStruct s_inout[1]);"));
 
-    QCOMPARE( items[0]->child(0)->child(0)->childCount() , 0);
-    QCOMPARE( items[0]->child(0)->child(1)->text(0) , QString("ia(uint8_t [42])"));
-    QCOMPARE( items[0]->child(0)->child(1)->text(1).trimmed() , QString("0x48 0x61 0x6C 0x6C 0x6F 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38").trimmed());
+    QCOMPARE( items[0]->child(0)->childCount() , 1);
+    QCOMPARE( items[0]->child(0)->text(0),QString("Request"));
+    QCOMPARE( items[0]->child(0)->text(1),QString(""));
 
-    QCOMPARE( items[0]->child(0)->child(2)->childCount() , 1);
-    QCOMPARE( items[0]->child(0)->child(2)->text(0) , QString("iaa(uint8_t [1][2][3])"));
-    QCOMPARE( items[0]->child(0)->child(2)->text(1).trimmed() , QString("").trimmed());
+    QCOMPARE( items[0]->child(0)->child(0)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0"));
+    QCOMPARE( items[0]->child(0)->child(0)->childCount() , 1);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->childCount() , 3);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(0)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(0)->text(0) , QString("n(uint16_t)"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(0)->text(1) , QString("43"));
+    qDebug() << items[0]->child(0)->child(0)->child(0)->child(0)->data(0,Qt::UserRole).toString();
 
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->childCount() , 2);
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->text(0) , QString("[0]"));
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->text(1).trimmed() , QString("").trimmed());
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(0)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(1)->text(0) , QString("ia(uint8_t [42])"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(1)->text(1).trimmed() , QString("0x48 0x61 0x6C 0x6C 0x6F 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38").trimmed());
+
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->childCount() , 1);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->text(0) , QString("iaa(uint8_t [1][2][3])"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->text(1).trimmed() , QString("").trimmed());
+
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->childCount() , 2);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->text(0) , QString("[0]"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->text(1).trimmed() , QString("").trimmed());
 
 
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->childCount() , 0);
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->text(0) , QString("[0]"));
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(0)->text(1).trimmed() , QString("0x00 0x10 0x20").trimmed());
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(0)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(0)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(0)->text(0) , QString("[0]"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(0)->text(1).trimmed() , QString("0x00 0x10 0x20").trimmed());
 
 
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->childCount() , 0);
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->text(0) , QString("[1]"));
-    QCOMPARE( items[0]->child(0)->child(2)->child(0)->child(1)->text(1).trimmed() , QString("0x01 0x11 0x21").trimmed());
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(1)->childCount() , 0);
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(1)->data(0,Qt::UserRole).toString() , QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(1)->text(0) , QString("[1]"));
+    QCOMPARE( items[0]->child(0)->child(0)->child(0)->child(2)->child(0)->child(1)->text(1).trimmed() , QString("0x01 0x11 0x21").trimmed());
 
 
     #endif

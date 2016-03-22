@@ -37,6 +37,7 @@ RPCRuntimeTransfer::RPCRuntimeTransfer(){
     empty = true;
     isPackageLenghCalced = false;
     ID = 0;
+    reply = false;
 }
 
 RPCRuntimeTransfer::~RPCRuntimeTransfer(){
@@ -62,6 +63,26 @@ int RPCRuntimeTransfer::getTotalLength()
         result += (item.elementBitLength/8);
     }
     return result;
+}
+
+bool RPCRuntimeTransfer::isReply()
+{
+    return reply;
+}
+
+void RPCRuntimeTransfer::setReply(bool r)
+{
+    reply = r;
+}
+
+QString RPCRuntimeTransfer::getName()
+{
+    return name;
+}
+
+void RPCRuntimeTransfer::setName(QString n)
+{
+    name = n;
 }
 
 

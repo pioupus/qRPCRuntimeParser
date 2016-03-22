@@ -53,10 +53,15 @@ public:
     void setIsNull(bool value);
 
     int getTotalLength(void);
-
+    bool isReply();
+    void setReply(bool r);
+    QString getName();
+    void setName(QString n);
 private:
     bool isPackageLenghCalced; //inited false
     bool empty;
+    bool reply;
+    QString name;
 };
 
 class RPCRuntimeFunction

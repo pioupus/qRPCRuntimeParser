@@ -41,7 +41,8 @@ public:
     bool isReply();
     void setIsReply(bool reply);
     int getTransferLength(uint8_t ID);
-    RPCRunTimeProtocolDescription protocolDescription;
+    RPCRunTimeProtocolDescription* protocolDescription;
+    void setTimeStamp(QDateTime timeStamp);
     QByteArray RPCDecodeRPCData(QByteArray inBuffer);
     void RPCDecodeChannelCodedData(QByteArray inBuffer);
     QByteArray encodeToChannelCodedData(QByteArray inBuffer);
@@ -65,6 +66,7 @@ public:
 
     bool fieldExists(QString FieldID);
     RPCRuntimeDecodedParam getDecodedParamByFieldID(QString FieldID);
+    RPCRuntimeTransfer getDecodedTransferByFieldID(QString FieldID);
 private:
 
     QByteArray decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
@@ -77,6 +79,7 @@ private:
     bool reply;
     bool errorCRCHappened;
     bool errorChannelCodecHappened;
+    QDateTime timeStamp;
     QList<QTreeWidgetItem *> getTreeWidgetReport_recursive(QTreeWidgetItem *parent, QList<RPCRuntimeDecodedParam> decodedParamList, bool isArrayField);
 };
 

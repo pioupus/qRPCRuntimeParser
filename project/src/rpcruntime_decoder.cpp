@@ -98,7 +98,7 @@ EXTERNC void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_byte
 
 RPCRuntimeDecoder::RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescription)
 {
-    this->protocolDescription = protocolDescription;
+    this->protocolDescription = &protocolDescription;
     clear();
 }
 
@@ -133,6 +133,11 @@ int RPCRuntimeDecoder::getTransferLength(uint8_t ID)
     }
 }
 
+void RPCRuntimeDecoder::setTimeStamp(QDateTime timeStamp)
+{
+    this->timeStamp = timeStamp;
+}
+
 RPCRuntimeTransfer RPCRuntimeDecoder::getTransfer(RPCRuntimeFunction fun, bool isReply){
     if (isReply){
         return fun.reply;
@@ -155,6 +160,21 @@ bool RPCRuntimeDecoder::fieldExists(QString FieldID)
     return !getDecodedParamByFieldID(FieldID).isNull();
 }
 
+RPCRuntimeTransfer RPCRuntimeDecoder::getDecodedTransferByFieldID(QString FieldID){
+    RPCRuntimeTransfer result;
+        QStringList IDToken = FieldID.split("?");
+    if (IDToken.count() < 2){
+        return result;
+    }
+    if (IDToken[0] != protocolDescription->getFileName()){
+        return result;
+    }
+    if(IDToken[1].toInt() != transfer.ID){
+        return result;
+    }
+    return transfer;
+}
+
 RPCRuntimeDecodedParam RPCRuntimeDecoder::getDecodedParamByFieldID(QString FieldID){
     RPCRuntimeDecodedParam result;
     RPCRuntimeDecodedParam result_none;
@@ -162,12 +182,13 @@ RPCRuntimeDecodedParam RPCRuntimeDecoder::getDecodedParamByFieldID(QString Field
     if (IDToken.count() < 3){
         return result_none;
     }
-    if (IDToken[0] != protocolDescription.getFileName()){
+    if (IDToken[0] != protocolDescription->getFileName()){
         return result_none;
     }
     if(IDToken[1].toInt() != transfer.ID){
         return result_none;
     }
+
     QList<RPCRuntimeDecodedParam> subParams=decodedParams;
     for(int i=2;i<IDToken.count();i++){
         bool ok;
@@ -201,16 +222,14 @@ void RPCRuntimeDecoder::setErrorCRCHappened(bool value)
 
 bool RPCRuntimeDecoder::isReplyByID(uint8_t ID, RPCRuntimeFunction fun ){
     if (fun.reply.ID==ID){
-        //qDebug() << "Reply is Null:" << fun.reply.isNull();
         return true;
     }else {
-        //qDebug() << "Request is Null:" << fun.request.isNull();
         return false;
     }
 }
 
 RPCRuntimeFunction RPCRuntimeDecoder::getFunctionByID(uint8_t ID ){
-    QList<RPCRuntimeFunction> functionList = protocolDescription.getFunctionList();
+    QList<RPCRuntimeFunction> functionList = protocolDescription->getFunctionList();
     RPCRuntimeFunction fun;
     for(int i=0; i < functionList.count();i++){
         fun = functionList[i];
@@ -243,7 +262,7 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     uint8_t ID = inBuffer[0];
     clear();
 
-    QString FieldID = protocolDescription.getFileName()+"?"+QString::number(ID)+"?";
+    QString FieldID = protocolDescription->getFileName()+"?"+QString::number(ID)+"?";
 
     RPCRuntimeFunction fun = getFunctionByID(ID);
 
@@ -259,6 +278,19 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     if (!transfer.isNull()){
         result = decodeParams(result,FieldID,"", transfer.paramList,decodedParams);
     }
+    QList<RPCWatchPoint> watchPointList = protocolDescription->getWatchPointList();
+    for(auto wp : watchPointList){
+        auto dp = getDecodedParamByFieldID(wp.FieldID);
+        if(!dp.isNull()){
+            wp.call(timeStamp,dp.value);
+        }else{
+            auto tr = getDecodedTransferByFieldID(wp.FieldID);
+            if(!tr.isNull()){
+                wp.call(timeStamp,0);
+            }
+        }
+    }
+
     return result;
 }
 
@@ -278,12 +310,17 @@ QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QString FieldID,
                     int textLength = decParam.subParams.count();
                     for(int n=0;n<textLength;n++){
                         char c = (char)decParam.subParams[n].value;
-                        if (c == '\0'){
-                            break;
+                        if (paramDesc.subParameters[0].rpcParamType == RPCParamType_t::param_character){
+                            if (c == '\0'){
+                                break;
+                            }
+                            decParam.string.append(c);
+                        }else{
+                            decParam.string.append("0x"+QString("%1 ").arg(c, 2, 16, QChar('0')));
                         }
-                        decParam.string.append(c);
                     }
 
+                    decParam.string = decParam.string.trimmed();
                 }
             }else{
 
@@ -393,11 +430,13 @@ QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeW
             strVal += decodedParam.string;
         }else if (paramDesc.rpcParamType == RPCParamType_t::param_array){
             treeItem = new  QTreeWidgetItem(parent,nameValList);
+            //treeItem = new  QTreeWidgetItem((QTreeWidgetItem*)NULL,nameValList);
             treeItem->setText(0,strName);
             treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
             subList.append(getTreeWidgetReport_recursive(treeItem,decodedParam.subParams, true));
         }else if (paramDesc.rpcParamType == RPCParamType_t::param_struct){
             treeItem = new  QTreeWidgetItem(parent,nameValList);
+            //treeItem = new  QTreeWidgetItem((QTreeWidgetItem*)NULL,nameValList);
             treeItem->setText(0,strName);
             treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
             subList.append(getTreeWidgetReport_recursive(treeItem,decodedParam.subParams, false));
@@ -407,6 +446,7 @@ QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeW
                 treeItem->addChildren(subList);
             }else{
                 treeItem = new  QTreeWidgetItem(parent,nameValList);
+                //treeItem = new  QTreeWidgetItem((QTreeWidgetItem*)NULL,nameValList);
                 treeItem->setText(0,strName);
                 treeItem->setText(1,strVal.trimmed());
                 treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
@@ -417,17 +457,34 @@ QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeW
     if (standardView == false){
         treeItem->setText(1,strVal.trimmed());
         result.append(treeItem);
-       // treeItem->setData(0,Qt::UserRole,decodedParam.FieldID);
     }
     return result;
 }
 
 QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport(QTreeWidgetItem * parent=0)
 {
-    if (parent){
-      //  parent->();
+    QList<QTreeWidgetItem *> items;
+    QStringList nameValList;
+    nameValList.append("");
+    nameValList.append("");
+    QTreeWidgetItem *treeItem1 = new  QTreeWidgetItem(parent,nameValList);
+
+    treeItem1->setText(0,name);
+    treeItem1->setText(1,declaration);
+
+    QTreeWidgetItem *treeItem2 = new  QTreeWidgetItem(treeItem1,nameValList);
+
+    if (isReply()){
+        treeItem2->setText(0,"Reply");
+    }else{
+        treeItem2->setText(0,"Request");
     }
-    return getTreeWidgetReport_recursive(parent,decodedParams, false);
+
+
+    getTreeWidgetReport_recursive(treeItem2,decodedParams, false);
+    items.append(treeItem1);
+    treeItem1->setExpanded(true);
+    return items;
 }
 
 
