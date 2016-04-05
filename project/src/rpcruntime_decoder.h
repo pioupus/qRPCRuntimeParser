@@ -57,6 +57,7 @@ class RPCRuntimeDecoder
 {
 public:
     RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescription);
+    RPCRuntimeDecoder();
     ~RPCRuntimeDecoder();
     bool isNull();
     bool isReply();
@@ -87,7 +88,10 @@ public:
 
     bool fieldExists(QString FieldID);
     RPCRuntimeDecodedParam getDecodedParamByFieldID(QString FieldID);
+
     RPCRuntimeTransfer getDecodedTransferByFieldID(QString FieldID);
+
+    RPCRuntimeParamterDescription getParamDescriptionByFieldID(QString FieldID);
 
     void addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, watchCallBack_t callback);
     void removeWatchPoint(QString FieldID);

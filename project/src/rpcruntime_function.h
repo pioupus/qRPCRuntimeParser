@@ -8,7 +8,7 @@
 #include <QPair>
 
 
-enum class RPCParamType_t {param_none,param_int,param_enum,param_character,param_array,param_struct};
+enum class  RPCParamType_t {param_none,param_int,param_enum,param_character,param_array,param_struct};
 
 class RPCRuntimeParamterDescription
 {
@@ -23,6 +23,8 @@ public:
     QString typeName;
     QList<QPair<int,QString>> enumValues;
     QList<RPCRuntimeParamterDescription> subParameters;
+
+    RPCRuntimeParamterDescription getParameterDescriptionByFieldIDToken(QStringList &IDToken, int index);
 
     int elementBitLength;
     int elementCount;

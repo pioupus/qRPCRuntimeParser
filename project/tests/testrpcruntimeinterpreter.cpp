@@ -466,8 +466,8 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t()
     decoder.RPCDecodeRPCData(inBinData);
     QCOMPARE( decoder.transfer.getTotalLength(), 5);
 
-    QCOMPARE( decoder.decodedParams.count() , 1);
-    QCOMPARE( decoder.decodedParams[0].value , 0x30201005);
+    QCOMPARE( decoder.decodedParams.count() , (int)1);
+    QCOMPARE( decoder.decodedParams[0].value , (int64_t)0x30201005);
 
     #endif
 }
@@ -487,7 +487,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int8_t()
     decoder.RPCDecodeRPCData(inBinData);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
-    QCOMPARE( decoder.decodedParams[0].value , -16);
+    QCOMPARE( decoder.decodedParams[0].value , (int64_t)-16);
 
     #endif
 }
@@ -507,7 +507,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int16_t()
     decoder.RPCDecodeRPCData(inBinData);
 
     QCOMPARE( decoder.decodedParams.count() , 1);
-    QCOMPARE( decoder.decodedParams[0].value , -16);
+    QCOMPARE( decoder.decodedParams[0].value , (int64_t)-16);
 
     #endif
 }
@@ -578,10 +578,10 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
     QCOMPARE( decoder.decodedParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].subParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams.count() , 3);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[0].value , 43);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[0].value , (int64_t)43);
 
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].subParams.count() , 42);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].subParams[0].value , 0x48);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].subParams[0].value , (int64_t)0x48);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].getParamDescription().rpcParamType , RPCParamType_t::param_array);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].string , QString("0x48 0x61 0x6c 0x6c 0x6f 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38"));
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[1].subParams[0].getParamDescription().rpcParamType , RPCParamType_t::param_int);
@@ -589,13 +589,13 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int()
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams.count() , 2);
     QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].subParams.count() , 3);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].subParams[0].value , 0x00);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].subParams[1].value , 0x10);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].subParams[2].value , 0x20);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].subParams[0].value ,(int64_t) 0x00);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].subParams[1].value , (int64_t)0x10);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[0].subParams[2].value ,(int64_t) 0x20);
 
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[0].value , 0x01);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[1].value , 0x11);
-    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[2].value , 0x21);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[0].value ,(int64_t)0x01);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[1].value ,(int64_t) 0x11);
+    QCOMPARE( decoder.decodedParams[0].subParams[0].subParams[2].subParams[0].subParams[1].subParams[2].value ,(int64_t) 0x21);
 
     #endif
 }
@@ -759,19 +759,19 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint(
     QCOMPARE( callBack_humanReadableName , QString("humanReadableName"));
     QCOMPARE( callBack_plotIndex , testPlotIndex);
     QCOMPARE( callBack_timestamp , timeStamp);
-    QCOMPARE( callBack_value , 43);
+    QCOMPARE( callBack_value , (int64_t)43);
 
     decoder.removeWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0");
     initTestCase();
     decoder.RPCDecodeRPCData(inBinData);
-    QCOMPARE( callBack_value , 0);
+    QCOMPARE( callBack_value ,(int64_t) 0);
 
     decoder.addWatchPoint("scripts/decodeTest_struct_int.xml?24?30?0?0", "humanReadableName", testPlotIndex,
             std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,std::placeholders::_2,std::placeholders::_3, std::placeholders::_4, std::placeholders::_5) );
 
     initTestCase();
     decoder.RPCDecodeRPCData(inBinData);
-    QCOMPARE( callBack_value , 0);
+    QCOMPARE( callBack_value , (int64_t)0);
 
     #endif
 }
@@ -865,7 +865,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum()
 
     QCOMPARE( decoder.decodedParams.count() , 1);
     QCOMPARE( decoder.decodedParams[0].string , QString("TEb"));
-    QCOMPARE( decoder.decodedParams[0].value , 1);
+    QCOMPARE( decoder.decodedParams[0].value ,(int64_t)1);
 
     #endif
 }
@@ -1041,6 +1041,38 @@ const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x74, 0
     for(int i=0;i<report.count();i++){
         QCOMPARE(in[i],report[i]);
     }
+    #endif
+}
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report()
+{
+    #if RUNTEST
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+
+
+    bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
+    QCOMPARE(result, true);
+
+    RPCRuntimeParamterDescription paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?0");
+
+    QCOMPARE(paramDesc.rpcParamType,RPCParamType_t::param_int);
+
+    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?25");
+
+    QCOMPARE(paramDesc.rpcParamType,RPCParamType_t::param_none);
+
+    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?1?0?0");
+
+    QCOMPARE(paramDesc.rpcParamType,RPCParamType_t::param_none);
+
+    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?1?0");
+
+    QCOMPARE(paramDesc.rpcParamType,RPCParamType_t::param_none);
+
+    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?1");
+
+    QCOMPARE(paramDesc.rpcParamType,RPCParamType_t::param_array);
     #endif
 }
 

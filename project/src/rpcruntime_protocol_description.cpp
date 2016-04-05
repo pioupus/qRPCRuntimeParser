@@ -1,7 +1,7 @@
 #include "rpcruntime_protocol_description.h"
 
 #include <QtXml>
-#include <Qfile>
+#include <QFile>
 #include <QDebug>
 #include <QString>
 #include <functional>
@@ -93,6 +93,82 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
 QList<RPCRuntimeFunction> RPCRunTimeProtocolDescription::getFunctionList()
 {
     return functionList;
+}
+
+RPCRuntimeTransfer RPCRunTimeProtocolDescription::getTransferByID(int ID)
+{
+    RPCRuntimeTransfer result_none;
+    for ( RPCRuntimeFunction func:functionList){
+        if(func.reply.ID == ID){
+            return func.reply;
+        }else if(func.request.ID == ID){
+            return func.request;
+        }
+    }
+    return  result_none;
+}
+
+RPCRuntimeParamterDescription RPCRunTimeProtocolDescription::getParameterDescriptionByFieldIDToken(QList<RPCRuntimeParamterDescription> &paramList, QStringList &IDToken, int index, bool isArray, int arrayElementCount)
+{
+    RPCRuntimeParamterDescription result_none;
+    bool ok;
+    int FieldID_token = IDToken[index].toInt(&ok);
+    if (ok){
+        if (paramList.count() > FieldID_token){
+            return paramList.at(FieldID_token);
+        }else if (isArray){
+            if (FieldID_token < arrayElementCount){
+                return paramList.at(0);
+            }else{
+                return result_none;
+            }
+        }
+    }
+    return result_none;
+}
+
+RPCRuntimeParamterDescription RPCRunTimeProtocolDescription::getParamDescriptionByFieldID(QString FieldID)
+{
+    RPCRuntimeParamterDescription result;
+    RPCRuntimeParamterDescription result_none;
+
+
+    QStringList IDToken = FieldID.split("?");
+    if (IDToken.count() < 3){
+        return result_none;
+    }
+    if (IDToken[0] != getFileName()){
+        return result_none;
+    }
+    RPCRuntimeTransfer transfer = getTransferByID(IDToken[1].toInt());
+
+    if (!transfer.isNull()){
+
+
+
+        int tokenIndex=2;
+        bool wasArray = false;
+        int arrayElementCount = 0;
+        QList<RPCRuntimeParamterDescription>  paramList =  transfer.paramList;
+        while (tokenIndex < IDToken.count()){
+
+            result = getParameterDescriptionByFieldIDToken(paramList,IDToken,tokenIndex,wasArray, arrayElementCount);
+            if (result.rpcParamType == RPCParamType_t::param_array){
+                wasArray = true;
+            }else{
+                wasArray = false;
+            }
+
+            if (result.rpcParamType == RPCParamType_t::param_none){
+                return result_none;
+            }
+            arrayElementCount = result.elementCount;
+            paramList = result.subParameters;
+            tokenIndex++;
+        }
+    }
+    return result;
+
 }
 
 QString RPCRunTimeProtocolDescription::getFileName()
