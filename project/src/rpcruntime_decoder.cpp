@@ -102,6 +102,11 @@ RPCRuntimeDecoder::RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescr
     clear();
 }
 
+RPCRuntimeDecoder::RPCRuntimeDecoder()
+{
+    clear();
+}
+
 RPCRuntimeDecoder::~RPCRuntimeDecoder()
 {
 
@@ -173,6 +178,11 @@ RPCRuntimeTransfer RPCRuntimeDecoder::getDecodedTransferByFieldID(QString FieldI
         return result;
     }
     return transfer;
+}
+
+RPCRuntimeParamterDescription RPCRuntimeDecoder::getParamDescriptionByFieldID(QString FieldID)
+{
+    return protocolDescription.getParamDescriptionByFieldID(FieldID);
 }
 
 RPCRuntimeDecodedParam RPCRuntimeDecoder::getDecodedParamByFieldID(QString FieldID){
@@ -551,7 +561,9 @@ void RPCRuntimeDecoder::addWatchPoint(QString FieldID, QString humanReadableName
 {
 
     RPCWatchPoint wp(FieldID,humanReadableName,plotIndex,callback);
-    watchpointList.append(wp);
+    if (getParamDescriptionByFieldID(FieldID).rpcParamType == RPCParamType_t::param_int){
+        watchpointList.append(wp);
+    }
 }
 
 void RPCRuntimeDecoder::removeWatchPoint(QString FieldID)
