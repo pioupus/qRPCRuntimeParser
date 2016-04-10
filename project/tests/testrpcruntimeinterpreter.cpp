@@ -1000,7 +1000,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
     }
     #endif
 }
-
+//FF FF FF 04 02 52 00 9A 00 50 00 3C 00 E3 4D 0A
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report()
 {
     #if RUNTEST
