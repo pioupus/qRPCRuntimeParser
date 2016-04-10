@@ -642,6 +642,8 @@ QByteArray RPCRuntimeDecodedParam::decode(QByteArray inBuffer)
     value = 0;
     uint64_t val=0;
     int lengthInByte = paramDescription.elementBitLength/8;
+    uint64_t signBitPosition = paramDescription.elementBitLength-1;
+    signBitPosition = 1 << signBitPosition;
 
     if (paramDescription.rpcParamType == RPCParamType_t::param_struct){
         lengthInByte = 0;
@@ -664,8 +666,10 @@ QByteArray RPCRuntimeDecodedParam::decode(QByteArray inBuffer)
                 value = val;
             }else{
                 uint64_t v = 0;
-                for(size_t i=(size_t)lengthInByte;i<sizeof(uint64_t); i++){
-                    v += ((uint64_t)0xFF * ((uint64_t)1 << 8*i));
+                if(val & signBitPosition){
+                    for(size_t i=(size_t)lengthInByte;i<sizeof(uint64_t); i++){
+                        v += ((uint64_t)0xFF * ((uint64_t)1 << 8*i));
+                    }
                 }
                 val += v;
                 value = (int64_t)val;
