@@ -20,10 +20,12 @@ extern "C" {
 
 
 typedef enum {
-    errlog_W_CHCODEC_RX_CRC_fail,
     errlog_E_CHCODEC_RPC_parse_answer_request_Fail,
     errlog_E_CHCODEC_exceeding_RPC_TX_Buffer,
-    errlog_W_CHCODEC_exceeding_RPC_RX_buffer,
+	errlog_E_MUTEX_mutex_could_not_be_locked_within_timeout,
+	errlog_W_CHCODEC_RX_CRC_fail,
+    errlog_W_CHCODEC_exceeding_RPC_RX_buffer
+
 } channelCodecErrorNum_t;
 
 void ChannelCodec_errorHandler(channelCodecErrorNum_t ErrNum);
