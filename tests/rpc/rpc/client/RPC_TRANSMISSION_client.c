@@ -47,7 +47,7 @@ RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buff
 
 
 
-void RPC_TRANSMISSION_Parser_init(){
+void RPC_TRANSMISSION_Parser_init(void){
 
 }
 
