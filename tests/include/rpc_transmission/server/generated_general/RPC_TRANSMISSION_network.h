@@ -29,7 +29,7 @@ void RPC_TRANSMISSION_message_push_byte(unsigned char byte);
    out of buffer space you can send multiple partial messages as long as the
    other side puts them back together. */
 
-RPC_TRANSMISSION_RESULT RPC_TRANSMISSION_message_commit(void);
+RPC_RESULT RPC_TRANSMISSION_message_commit(void);
 /* This function is called when a complete message has been pushed using
    RPC_TRANSMISSION_message_push_byte. Now is a good time to send the buffer over the network,
    even if the buffer is not full yet. You may also want to free the buffer that
@@ -70,7 +70,7 @@ void RPC_TRANSMISSION_Parser_exit(void);
 /* Frees various states required for the RPC. Must be called after any
    other RPC_TRANSMISSION_* function */
 
-RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size);
+RPC_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size);
 /* Returns the (expected) length of the beginning of a (partial) message.
    If returnvalue.result equals RPC_TRANSMISSION_SUCCESS then returnvalue.size equals the
    expected size in bytes.

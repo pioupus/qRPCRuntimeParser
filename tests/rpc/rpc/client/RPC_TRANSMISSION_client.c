@@ -19,12 +19,12 @@ extern "C" {
 #endif /* __cplusplus */
 
     /* Get (expected) size of (partial) answer. */
-RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size_bytes){
+RPC_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size_bytes){
 	const unsigned char *current = (const unsigned char *)buffer;
-	RPC_TRANSMISSION_SIZE_RESULT returnvalue;
+	RPC_SIZE_RESULT returnvalue;
 
 	if (size_bytes == 0){
-		returnvalue.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
+		returnvalue.result = RPC_COMMAND_INCOMPLETE;
 		returnvalue.size = 1;
 		return returnvalue;
 	}
@@ -37,11 +37,11 @@ RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buff
 		}
 	}else{
 		returnvalue.size = 0;
-		returnvalue.result = RPC_TRANSMISSION_COMMAND_UNKNOWN;
+		returnvalue.result = RPC_COMMAND_UNKNOWN;
 		return returnvalue;
 	}
 
-	returnvalue.result = returnvalue.size > size_bytes ? RPC_TRANSMISSION_COMMAND_INCOMPLETE : RPC_TRANSMISSION_SUCCESS;
+	returnvalue.result = returnvalue.size > size_bytes ? RPC_COMMAND_INCOMPLETE : RPC_SUCCESS;
 	return returnvalue;
 }
 

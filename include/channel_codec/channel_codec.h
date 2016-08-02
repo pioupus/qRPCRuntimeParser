@@ -19,8 +19,8 @@ extern "C" {
 
 typedef void (*RPC_parse_request_t)(const void *buffer, size_t size);
 typedef void (*RPC_parse_answer_t)(const void *buffer, size_t size);
-typedef RPC_TRANSMISSION_SIZE_RESULT (*RPC_get_request_size_t)(const void *buffer, size_t size_bytes);
-typedef RPC_TRANSMISSION_SIZE_RESULT (*RPC_get_answer_length_t)(const void *buffer, size_t size_bytes);
+typedef RPC_SIZE_RESULT (*RPC_get_request_size_t)(const void *buffer, size_t size_bytes);
+typedef RPC_SIZE_RESULT (*RPC_get_answer_length_t)(const void *buffer, size_t size_bytes);
 typedef void (*RPC_Parser_init_t)(void);
 
 
@@ -34,7 +34,7 @@ void channel_init_instance(channel_codec_instance_index_t instance_index,
 
 void channel_start_message_from_RPC(channel_codec_instance_index_t instance_index, size_t size);
 void channel_push_byte_from_RPC(channel_codec_instance_index_t instance_index, unsigned char byte);
-RPC_TRANSMISSION_RESULT channel_commit_from_RPC(channel_codec_instance_index_t instance_index );
+RPC_RESULT channel_commit_from_RPC(channel_codec_instance_index_t instance_index );
 
 void channel_push_byte_to_RPC(channel_codec_instance_index_t instance_index, unsigned char byte);
 

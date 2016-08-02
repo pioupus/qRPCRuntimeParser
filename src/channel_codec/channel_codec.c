@@ -44,7 +44,7 @@ typedef struct{
 	uint8_t bitmask;
 	uint16_t writePointer;
 	uint8_t preambleBuffer[PREAMBLE_LENGTH];
-	RPC_TRANSMISSION_SIZE_RESULT messageResult;
+	RPC_SIZE_RESULT messageResult;
 }rxState_t;
 
 typedef struct{
@@ -67,8 +67,8 @@ static void channel_encode(channel_codec_instance_index_t instance_index,unsigne
 
 
 static uint8_t searchForPreamble(channel_codec_instance_index_t instance_index, uint8_t byte);
-static bool isRPCAnswer(channel_codec_instance_index_t instance_index, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult);
-static bool isRPCRequest(channel_codec_instance_index_t instance_index, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult);
+static bool isRPCAnswer(channel_codec_instance_index_t instance_index, const size_t size_bytes, RPC_SIZE_RESULT *sizeResult);
+static bool isRPCRequest(channel_codec_instance_index_t instance_index, const size_t size_bytes, RPC_SIZE_RESULT *sizeResult);
 
 static void reset_rx(channel_codec_instance_index_t instance_index){
 	if (instance_index >= channel_codec_instance_COUNT){
@@ -77,7 +77,7 @@ static void reset_rx(channel_codec_instance_index_t instance_index){
 	instances[instance_index].rxState.writePointer=0;
 	instances[instance_index].rxState.bitmask=0;
 	instances[instance_index].rxState.indexInBlock=0;
-	instances[instance_index].rxState.messageResult.result = RPC_TRANSMISSION_COMMAND_UNKNOWN;
+	instances[instance_index].rxState.messageResult.result = RPC_COMMAND_UNKNOWN;
 	instances[instance_index].ccChannelState = csNone;
 }
 
@@ -254,12 +254,12 @@ void channel_push_byte_from_RPC(channel_codec_instance_index_t instance_index, u
 	channel_encode(instance_index,byte);
 }
 
-RPC_TRANSMISSION_RESULT channel_commit_from_RPC(channel_codec_instance_index_t instance_index){
+RPC_RESULT channel_commit_from_RPC(channel_codec_instance_index_t instance_index){
 	appendByteToTXBuffer(instance_index,instances[instance_index].txState.crc16);
 	appendByteToTXBuffer(instance_index,instances[instance_index].txState.crc16 >> 8) ;
 	/*printf("%X\n",crc16val);*/
 	//printf("commit %d\n",txState.buffer[4]);
-	RPC_TRANSMISSION_RESULT result = phyPushDataBuffer(instance_index, instances[instance_index].txState.buffer,instances[instance_index].txState.writePointer);
+	RPC_RESULT result = phyPushDataBuffer(instance_index, instances[instance_index].txState.buffer,instances[instance_index].txState.writePointer);
 	reset_tx(instance_index);
 	return result;
 }
@@ -288,52 +288,52 @@ static uint8_t searchForPreamble(channel_codec_instance_index_t instance_index, 
 	return 0;
 }
 
-bool isRPCAnswer(channel_codec_instance_index_t instance_index, const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult){
+bool isRPCAnswer(channel_codec_instance_index_t instance_index, const size_t size_bytes, RPC_SIZE_RESULT *sizeResult){
 	if (instance_index >= channel_codec_instance_COUNT){
 		GEN_ASSERT(0,errlog_E_CHCODEC_instance_index_beyond_max, "CC instance index beyond max\n");
 	}
 	bool result=false;
 	(void)instance_index;
-	RPC_TRANSMISSION_SIZE_RESULT testResult;
+	RPC_SIZE_RESULT testResult;
 	if(size_bytes == 0){
-		testResult.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
+		testResult.result = RPC_COMMAND_INCOMPLETE;
 		testResult.size = 1;
 	}else{
 		if(channelTestIfInitialized(instance_index)){
 			testResult = instances[instance_index].RPC_get_answer_length(instances[instance_index].rxState.buffer, size_bytes);
 		}
 	}
-	if (testResult.result == RPC_TRANSMISSION_SUCCESS){
+	if (testResult.result == RPC_SUCCESS){
 		result = true;
 		*sizeResult = testResult;
-	}else if (testResult.result == RPC_TRANSMISSION_COMMAND_INCOMPLETE){
+	}else if (testResult.result == RPC_COMMAND_INCOMPLETE){
 		*sizeResult = testResult;
-    }else{//RPC_TRANSMISSION_FAILURE or RPC_TRANSMISSION_COMMAND_UNKNOWN
+    }else{//RPC_TRANSMISSION_FAILURE or RPC_COMMAND_UNKNOWN
 	}
 	return result;
 }
 
-bool isRPCRequest(channel_codec_instance_index_t instance_index,  const size_t size_bytes, RPC_TRANSMISSION_SIZE_RESULT *sizeResult){
+bool isRPCRequest(channel_codec_instance_index_t instance_index,  const size_t size_bytes, RPC_SIZE_RESULT *sizeResult){
 	if (instance_index >= channel_codec_instance_COUNT){
 		GEN_ASSERT(0,errlog_E_CHCODEC_instance_index_beyond_max, "CC instance index beyond max\n");
 	}
 	bool result=false;
-	RPC_TRANSMISSION_SIZE_RESULT testResult;
+	RPC_SIZE_RESULT testResult;
 	(void)instance_index;
 	if(size_bytes == 0){
-		testResult.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
+		testResult.result = RPC_COMMAND_INCOMPLETE;
 		testResult.size = 1;
 	}else{
 		if(channelTestIfInitialized(instance_index)){
 			testResult = instances[instance_index].RPC_get_request_size(instances[instance_index].rxState.buffer, size_bytes);
 		}
 	}
-	if (testResult.result == RPC_TRANSMISSION_SUCCESS){
+	if (testResult.result == RPC_SUCCESS){
 		result = true;
 		*sizeResult = testResult;
-	}else if (testResult.result == RPC_TRANSMISSION_COMMAND_INCOMPLETE){
+	}else if (testResult.result == RPC_COMMAND_INCOMPLETE){
 		*sizeResult = testResult;
-	}else{//RPC_TRANSMISSION_FAILURE or RPC_TRANSMISSION_COMMAND_UNKNOWN
+	}else{//RPC_TRANSMISSION_FAILURE or RPC_COMMAND_UNKNOWN
 
 
 	}
@@ -368,7 +368,7 @@ void channel_push_byte_to_RPC(channel_codec_instance_index_t instance_index, uns
 		#if 0
 		printf("payload[%d] %02X\n",channel_rx_write_pointer-1, byte);
 		#endif
-		if (instances[instance_index].rxState.messageResult.result != RPC_TRANSMISSION_SUCCESS){
+		if (instances[instance_index].rxState.messageResult.result != RPC_SUCCESS){
 
             if (isRPCAnswer(instance_index,instances[instance_index].rxState.writePointer,&instances[instance_index].rxState.messageResult) ) {
 
@@ -380,7 +380,7 @@ void channel_push_byte_to_RPC(channel_codec_instance_index_t instance_index, uns
 			printf("%d, %d %d\n",channel_rx_message_size.size,channel_rx_message_size.result, channel_rx_write_pointer);
 			#endif
 		}
-		if ((instances[instance_index].rxState.messageResult.result==RPC_TRANSMISSION_SUCCESS) && (instances[instance_index].rxState.messageResult.size == instances[instance_index].rxState.writePointer)){
+		if ((instances[instance_index].rxState.messageResult.result==RPC_SUCCESS) && (instances[instance_index].rxState.messageResult.size == instances[instance_index].rxState.writePointer)){
 			instances[instance_index].ccChannelState = csPayloadComplete;
 		}
 		break;
@@ -414,17 +414,17 @@ void channel_push_byte_to_RPC(channel_codec_instance_index_t instance_index, uns
 	#endif
 			if ((crc_16_msb == (unsigned char)instances[instance_index].rxState.buffer[instances[instance_index].rxState.writePointer-CRC_LENGTH+1])
 					&& (crc_16_lsb == (unsigned char)instances[instance_index].rxState.buffer[instances[instance_index].rxState.writePointer-CRC_LENGTH])){
-				RPC_TRANSMISSION_SIZE_RESULT rpcTRANSMISSIONSize;
-				rpcTRANSMISSIONSize.result = RPC_TRANSMISSION_COMMAND_UNKNOWN;
+				RPC_SIZE_RESULT rpcTRANSMISSIONSize;
+				rpcTRANSMISSIONSize.result = RPC_COMMAND_UNKNOWN;
                 if (isRPCAnswer(instance_index, instances[instance_index].rxState.writePointer-CRC_LENGTH, &rpcTRANSMISSIONSize) ) {
-					if (rpcTRANSMISSIONSize.result == RPC_TRANSMISSION_SUCCESS){
+					if (rpcTRANSMISSIONSize.result == RPC_SUCCESS){
 
 						if(channelTestIfInitialized(instance_index)){
 							instances[instance_index].RPC_parse_answer(instances[instance_index].rxState.buffer, instances[instance_index].rxState.writePointer-CRC_LENGTH);
 						}
 					}
                 }else if (isRPCRequest(instance_index, instances[instance_index].rxState.writePointer-CRC_LENGTH, &rpcTRANSMISSIONSize)){
-					if (rpcTRANSMISSIONSize.result == RPC_TRANSMISSION_SUCCESS){
+					if (rpcTRANSMISSIONSize.result == RPC_SUCCESS){
 
 						if(channelTestIfInitialized(instance_index)){
 							instances[instance_index].RPC_parse_request(instances[instance_index].rxState.buffer, instances[instance_index].rxState.writePointer-CRC_LENGTH);

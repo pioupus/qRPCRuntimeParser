@@ -14,19 +14,19 @@ extern "C" {
    size that the message is supposed to have. If result equals RPC_TRANSMISSION_COMMAND_INCOMPLETE
    then more bytes are required to determine the size of the message. In this case
    size is the expected number of bytes required to determine the correct size.*/
-RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes){
+RPC_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes){
 	const unsigned char *current = (const unsigned char *)buffer;
-	RPC_TRANSMISSION_SIZE_RESULT returnvalue;
+	RPC_SIZE_RESULT returnvalue;
 
 	if (size_bytes == 0){
-		returnvalue.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
+		returnvalue.result = RPC_COMMAND_INCOMPLETE;
 		returnvalue.size = 1;
 		return returnvalue;
 	}
 
 	if((*current) & 1){
 		returnvalue.size = 0;
-		returnvalue.result = RPC_TRANSMISSION_COMMAND_UNKNOWN;
+		returnvalue.result = RPC_COMMAND_UNKNOWN;
 		return returnvalue;
 	}else{
 
@@ -34,7 +34,7 @@ RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffe
 
 	}
 
-	returnvalue.result = returnvalue.size > size_bytes ? RPC_TRANSMISSION_COMMAND_INCOMPLETE : RPC_TRANSMISSION_SUCCESS;
+	returnvalue.result = returnvalue.size > size_bytes ? RPC_COMMAND_INCOMPLETE : RPC_SUCCESS;
 	return returnvalue;
 }
 

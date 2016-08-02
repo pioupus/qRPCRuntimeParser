@@ -17,7 +17,7 @@ extern "C" {
 #define CRC_LENGTH 2
 #include "channel_codec/channel_codec_config.h"
 
-RPC_TRANSMISSION_RESULT eunistonePushDataBuffer(const char *buffer, size_t length);
+RPC_RESULT eunistonePushDataBuffer(const char *buffer, size_t length);
 typedef struct{
 	char buffer[CHANNEL_CODEC_TX_BUFFER_SIZE];
 	uint16_t indexInBlock;
@@ -32,12 +32,11 @@ typedef struct{
 	uint8_t bitmask;
 	uint16_t writePointer;
 	uint8_t preambleBuffer[PREAMBLE_LENGTH];
-	RPC_TRANSMISSION_SIZE_RESULT messageResult;
+	RPC_SIZE_RESULT messageResult;
 }rxState_t;
 
 typedef enum{csNone,csFoundPreamble,csLoadingPayload,csPayloadComplete,csCRCAndPackageComplete} cc_channel_state_t;
-//extern txState_t txState;
-//extern rxState_t rxState;
+
 typedef struct{
 	txState_t txState;
 	rxState_t rxState;

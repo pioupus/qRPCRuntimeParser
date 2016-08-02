@@ -8,16 +8,16 @@
 #include <stddef.h>
 
 typedef enum{
-        RPC_TRANSMISSION_SUCCESS,
-        RPC_TRANSMISSION_FAILURE,
-        RPC_TRANSMISSION_COMMAND_UNKNOWN,
-        RPC_TRANSMISSION_COMMAND_INCOMPLETE
-    } RPC_TRANSMISSION_RESULT;
+        RPC_SUCCESS,
+        RPC_FAILURE,
+        RPC_COMMAND_UNKNOWN,
+        RPC_COMMAND_INCOMPLETE
+    } RPC_RESULT;
     
 typedef struct {
-	RPC_TRANSMISSION_RESULT result;
+	RPC_RESULT result;
 	size_t size;
-} RPC_TRANSMISSION_SIZE_RESULT;
+} RPC_SIZE_RESULT;
 
 typedef enum {
     RPC_TRANSMISSION_mutex_parsing_complete,

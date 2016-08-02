@@ -39,7 +39,7 @@ extern "C"
 		(void)errNum;
 	}
 
-	RPC_TRANSMISSION_RESULT phyPushDataBuffer(channel_codec_instance_index_t instance_index, const char *buffer, size_t length){
+	RPC_RESULT phyPushDataBuffer(channel_codec_instance_index_t instance_index, const char *buffer, size_t length){
 		/*printf("eunistonePushDataBuffer\n");*/
 #if 0
 		printf("\n");
@@ -52,7 +52,7 @@ extern "C"
 		mock_c()->actualCall("eunistonePushDataBuffer")
 						->withIntParameters("length", length);
 		TXDataLength = length;
-		return RPC_TRANSMISSION_SUCCESS;
+		return RPC_SUCCESS;
 	}
 
 	void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size){
@@ -69,7 +69,7 @@ extern "C"
 						->withIntParameters("firstByte", (unsigned char)buf[0])
 						->withIntParameters("length", size);
 
-		//RPC_TRANSMISSION_RESULT result = RPC_TRANSMISSION_SUCCESS;
+		//RPC_RESULT result = RPC_SUCCESS;
 		//return result;
 	}
 
@@ -87,7 +87,7 @@ extern "C"
 						->withIntParameters("firstByte", (unsigned char)buf[0])
 						->withIntParameters("length", size);
 
-		//RPC_TRANSMISSION_RESULT result = RPC_TRANSMISSION_SUCCESS;
+		//RPC_RESULT result = RPC_SUCCESS;
 		//return result;
 	}
 #if 0
@@ -95,17 +95,17 @@ extern "C"
 		RPC_TRANSMISSION_SIZE_RESULT result;
 		uint8_t *buf = (uint8_t*)buffer;
 
-		result.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
+		result.result = RPC_COMMAND_INCOMPLETE;
 		result.size = 0;
 		if(buf[0] == 0){
 			if (size < 5){
-				result.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
+				result.result = RPC_COMMAND_INCOMPLETE;
 			}else{
-				result.result = RPC_TRANSMISSION_SUCCESS;
+				result.result = RPC_SUCCESS;
 				result.size = 10;
 			}
 		}else if (buf[0]==1){
-			result.result = RPC_TRANSMISSION_SUCCESS;
+			result.result = RPC_SUCCESS;
 			result.size = 50;
 		}
 		return result;
@@ -287,7 +287,7 @@ TEST(channel_codec, channel_push_byte_from_RPC)
 TEST(channel_codec, channel_commit_from_RPC)
 {
 	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
-	RPC_TRANSMISSION_RESULT result;
+	RPC_RESULT result;
 
 	uint8_t sendbuffer[16] = {0x10,0x18,0x81,0x82, 0x81,0x82,0x81,0x81,   0x81,0x82,0x81,0x82, 0x81,0x82,0x81,0x81};
 	uint16_t msglengh=getMsgLength(16, CHANNEL_BLOCKLENGTH);
@@ -379,14 +379,14 @@ TEST(channel_codec, channel_push_to_RPC_bufsize)
 	channel_push_byte_to_RPC(ii,0x0E);
 	channel_push_byte_to_RPC(ii,0x0A);
 	//printf("%d %d\n",rxState.messageResult.result, rxState.messageResult.size);
-	CHECK_EQUAL(RPC_TRANSMISSION_COMMAND_INCOMPLETE,instances[ii].rxState.messageResult.result);
+	CHECK_EQUAL(RPC_COMMAND_INCOMPLETE,instances[ii].rxState.messageResult.result);
 	channel_push_byte_to_RPC(ii,0x00);
 	channel_push_byte_to_RPC(ii,0x00);
 	channel_push_byte_to_RPC(ii,0x00);
 	channel_push_byte_to_RPC(ii,0x00);
 	channel_push_byte_to_RPC(ii,0x00);
 	channel_push_byte_to_RPC(ii,0x00);
-	CHECK_EQUAL(RPC_TRANSMISSION_COMMAND_INCOMPLETE,instances[ii].rxState.messageResult.result);
+	CHECK_EQUAL(RPC_COMMAND_INCOMPLETE,instances[ii].rxState.messageResult.result);
 	CHECK_EQUAL(10,instances[ii].rxState.messageResult.size);
 #if CHANNEL_BLOCKLENGTH == 8
 	channel_push_byte_to_RPC(0x0E);
@@ -403,7 +403,7 @@ TEST(channel_codec, channel_push_to_RPC_bufsize)
 	channel_push_byte_to_RPC(ii,0x3f);
 	channel_push_byte_to_RPC(ii,0x01);
 #endif
-	CHECK_EQUAL(RPC_TRANSMISSION_COMMAND_UNKNOWN,instances[ii].rxState.messageResult.result);
+	CHECK_EQUAL(RPC_COMMAND_UNKNOWN,instances[ii].rxState.messageResult.result);
 	CHECK_EQUAL(10,instances[ii].rxState.messageResult.size);
 	mock().checkExpectations();
 }
