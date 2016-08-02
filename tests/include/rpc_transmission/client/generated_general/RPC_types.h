@@ -20,12 +20,12 @@ typedef struct {
 } RPC_SIZE_RESULT;
 
 typedef enum {
-    RPC_TRANSMISSION_mutex_parsing_complete,
-    RPC_TRANSMISSION_mutex_caller,
-    RPC_TRANSMISSION_mutex_in_caller,
-    RPC_TRANSMISSION_mutex_answer,
-    RPC_TRANSMISSION_MUTEX_COUNT
-} RPC_TRANSMISSION_mutex_id;
-#define RPC_TRANSMISSION_number_of_mutexes 4
+    RPC_mutex_parsing_complete,
+    RPC_mutex_caller,
+    RPC_mutex_in_caller,
+    RPC_mutex_answer,
+    RPC_MUTEX_COUNT
+} RPC_mutex_id;
+#define RPC_number_of_mutexes 4
 
 #endif /* RPC_TRANSMISSION_TYPES_H */

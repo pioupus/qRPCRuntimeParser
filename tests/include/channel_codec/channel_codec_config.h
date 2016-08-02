@@ -10,7 +10,7 @@
 
 #include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h"
 #include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h"
-#include "rpc_transmission/client/generated_general/RPC_TRANSMISSION_types.h"
+#include "rpc_transmission/client/generated_general/RPC_types.h"
 
 typedef enum{
 	channel_codec_instance_uart,

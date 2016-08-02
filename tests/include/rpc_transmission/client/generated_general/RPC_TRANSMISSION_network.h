@@ -11,7 +11,7 @@
 #ifndef RPC_TRANSMISSION_NETWORK_H
 #define RPC_TRANSMISSION_NETWORK_H
 
-#include "RPC_TRANSMISSION_types.h"
+#include "RPC_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,13 +45,13 @@ RPC_RESULT RPC_TRANSMISSION_message_commit(void);
 void RPC_TRANSMISSION_mutex_init(void);
 /* Initializes all rpc mutexes. */
 
-void RPC_TRANSMISSION_mutex_lock(RPC_TRANSMISSION_mutex_id mutex_id);
+void RPC_TRANSMISSION_mutex_lock(RPC_mutex_id mutex_id);
 /* Locks the mutex. If it is already locked it yields until it can lock the mutex. */
 
-void RPC_TRANSMISSION_mutex_unlock(RPC_TRANSMISSION_mutex_id mutex_id);
+void RPC_TRANSMISSION_mutex_unlock(RPC_mutex_id mutex_id);
 /* Unlocks the mutex. The mutex is locked when the function is called. */
 
-char RPC_TRANSMISSION_mutex_lock_timeout(RPC_TRANSMISSION_mutex_id mutex_id);
+char RPC_TRANSMISSION_mutex_lock_timeout(RPC_mutex_id mutex_id);
 /* Tries to lock a mutex. Returns 1 if the mutex was locked and 0 if a timeout
    occured. The timeout length should be the time you want to wait for an answer
    before giving up. If the time is infinite a lost answer will get the calling

@@ -2,7 +2,7 @@
    https://github.com/Crystal-Photonics/RPC-Generator
    You should not modify this file manually. */
 
-#include "RPC_TRANSMISSION_types.h"
+#include "RPC_types.h"
 
 #ifdef __cplusplus
 extern "C" {

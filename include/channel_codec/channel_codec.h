@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#include "rpc_transmission/client/generated_general/RPC_TRANSMISSION_types.h"
+#include "rpc_transmission/client/generated_general/RPC_types.h"
 #include "channel_codec/channel_codec_config.h"
 #define CHANNEL_BLOCKLENGTH 16
 
