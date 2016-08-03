@@ -2,8 +2,8 @@
    https://github.com/Crystal-Photonics/RPC-Generator
    You should not modify this file manually. */
 
-#ifndef RPC_TRANSMISSION_TYPES_H
-#define RPC_TRANSMISSION_TYPES_H
+#ifndef RPC_TYPES_H
+#define RPC_TYPES_H
 
 #include <stddef.h>
 
@@ -28,4 +28,4 @@ typedef enum {
 } RPC_mutex_id;
 #define RPC_number_of_mutexes 4
 
-#endif /* RPC_TRANSMISSION_TYPES_H */
+#endif /* RPC_TYPES_H */
