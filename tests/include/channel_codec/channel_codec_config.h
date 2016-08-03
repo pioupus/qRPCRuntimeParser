@@ -13,11 +13,15 @@
 #include "rpc_transmission/client/generated_general/RPC_types.h"
 
 typedef enum{
-	channel_codec_instance_uart,
-	channel_codec_instance_COUNT
-} channel_codec_instance_index_t;
+	channel_codec_comport_uart,
+	channel_codec_comport_COUNT
+} channel_codec_conf_comport_t;
 
-#define CHANNEL_CODEC_TX_BUFFER_SIZE 64
-#define CHANNEL_CODEC_RX_BUFFER_SIZE 64
+typedef struct{
+	channel_codec_conf_comport_t port;
+}channel_codec_conf_auxdata_t;
+
+
+
 
 #endif /* TESTS_INCLUDE_CHANNEL_CODEC_CHANNEL_CODEC_CONFIG_H_ */

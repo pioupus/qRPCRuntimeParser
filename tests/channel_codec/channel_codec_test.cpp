@@ -35,11 +35,18 @@ extern "C"
 	#include "CppUTestExt/MockSupport_c.h"
 	#include "channel_codec/phylayer.h"
 
+	#define CHANNEL_CODEC_TX_BUFFER_SIZE 128
+	#define CHANNEL_CODEC_RX_BUFFER_SIZE 64
+
+	static channel_codec_instance_t instances[channel_codec_comport_COUNT];
+	static char rxBuffers[channel_codec_comport_COUNT][CHANNEL_CODEC_RX_BUFFER_SIZE];
+	static char txBuffers[channel_codec_comport_COUNT][CHANNEL_CODEC_TX_BUFFER_SIZE];
+
 	void ChannelCodec_errorHandler(channelCodecErrorNum_t errNum){
 		(void)errNum;
 	}
 
-	RPC_RESULT phyPushDataBuffer(channel_codec_instance_index_t instance_index, const char *buffer, size_t length){
+	RPC_RESULT phyPushDataBuffer(channel_codec_instance_t *instance, const char *buffer, size_t length){
 		/*printf("eunistonePushDataBuffer\n");*/
 #if 0
 		printf("\n");
@@ -54,6 +61,33 @@ extern "C"
 		TXDataLength = length;
 		return RPC_SUCCESS;
 	}
+
+	RPC_SIZE_RESULT RPC_CHANNEL_CODEC_get_request_size(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes){
+		(void)instance;
+		return RPC_TRANSMISSION_get_request_size(buffer, size_bytes);
+	}
+
+	RPC_SIZE_RESULT RPC_CHANNEL_CODEC_get_answer_length(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes){
+		(void)instance;
+		return RPC_TRANSMISSION_get_answer_length(buffer, size_bytes);
+	}
+
+	void RPC_CHANNEL_CODEC_parser_init(channel_codec_instance_t *instance){
+		(void)instance;
+		RPC_TRANSMISSION_Parser_init();
+	}
+
+	void RPC_CHANNEL_CODEC_parse_request(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes){
+		(void)instance;
+		RPC_TRANSMISSION_parse_request(buffer, size_bytes);
+	}
+
+	void RPC_CHANNEL_CODEC_parse_answer(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes){
+		(void)instance;
+		RPC_TRANSMISSION_parse_answer(buffer, size_bytes);
+	}
+
+
 
 	void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size){
 		(void)buffer;
@@ -162,13 +196,10 @@ TEST_GROUP(channel_codec)
 {
 	void setup()
 	{
-		channel_init();
-		channel_init_instance(channel_codec_instance_uart,
-				&RPC_TRANSMISSION_parse_request,
-				&RPC_TRANSMISSION_parse_answer,
-				&RPC_TRANSMISSION_get_request_size,
-				&RPC_TRANSMISSION_get_answer_length,
-				&RPC_TRANSMISSION_Parser_init);
+		channel_init_instance(&instances[channel_codec_comport_uart],
+										 rxBuffers[channel_codec_comport_uart],CHANNEL_CODEC_RX_BUFFER_SIZE,
+										 txBuffers[channel_codec_comport_uart],CHANNEL_CODEC_TX_BUFFER_SIZE);
+		instances[channel_codec_comport_uart].aux.port = channel_codec_comport_uart;
 	}
 
 	void teardown()
@@ -178,99 +209,115 @@ TEST_GROUP(channel_codec)
 
 	}
 
-	void checkPreambel(channel_codec_instance_index_t instance_index){
-		CHECK_EQUAL(0xFF,(unsigned char)instances[instance_index].txState.buffer[0]);
-		CHECK_EQUAL(0xFF,(unsigned char)instances[instance_index].txState.buffer[1]);
-		CHECK_EQUAL(0xFF,(unsigned char)instances[instance_index].txState.buffer[2]);
+	void checkPreambel(channel_codec_instance_t *instance){
+		CHECK_EQUAL(0xFF,(unsigned char)instance->i.txState.buffer[0]);
+		CHECK_EQUAL(0xFF,(unsigned char)instance->i.txState.buffer[1]);
+		CHECK_EQUAL(0xFF,(unsigned char)instance->i.txState.buffer[2]);
 	}
 
 };
 #if 1 && DISABLE_TESTS
 TEST(channel_codec, Initialization)
 {
-	channel_init();
-	for (uint8_t i = 0; i<channel_codec_instance_COUNT;i++){
-		CHECK_EQUAL(0,instances[i].txState.writePointer);
-		CHECK_EQUAL(0,instances[i].txState.bitMaskPositionInBuffer);
-		CHECK_EQUAL(0,instances[i].txState.indexInBlock);
-	}
+	memset(instances,0xFF,sizeof(instances));
 
+	channel_init_instance(&instances[channel_codec_comport_uart],
+			rxBuffers[channel_codec_comport_uart],CHANNEL_CODEC_RX_BUFFER_SIZE,
+			txBuffers[channel_codec_comport_uart],CHANNEL_CODEC_TX_BUFFER_SIZE);
+
+	instances[channel_codec_comport_uart].aux.port = channel_codec_comport_uart;
+
+	CHECK_EQUAL(1,channel_is_initialized(&instances[channel_codec_comport_uart]));
+
+	for (uint8_t i = 0; i<channel_codec_comport_COUNT;i++){
+		CHECK_EQUAL(0,instances[i].i.txState.writePointer);
+		CHECK_EQUAL(0,instances[i].i.txState.bitMaskPositionInBuffer);
+		CHECK_EQUAL(0,instances[i].i.txState.indexInBlock);
+		CHECK_EQUAL(CHANNEL_CODEC_TX_BUFFER_SIZE,instances[i].i.txState.bufferLength);
+
+		CHECK_EQUAL(0,instances[i].i.rxState.writePointer);
+		CHECK_EQUAL(0,instances[i].i.rxState.bitmask);
+		CHECK_EQUAL(0,instances[i].i.rxState.indexInBlock);
+		CHECK_EQUAL(CHANNEL_CODEC_RX_BUFFER_SIZE,instances[i].i.rxState.bufferLength);
+	}
+	channel_uninit_instance(&instances[channel_codec_comport_uart]);
+	CHECK_EQUAL(0,channel_is_initialized(&instances[channel_codec_comport_uart]));
 }
 #endif
 
 #if 1 && DISABLE_TESTS
 TEST(channel_codec, channel_start_message_from_RPC)
 {
-	channel_start_message_from_RPC(channel_codec_instance_uart,10);
-	checkPreambel(channel_codec_instance_uart);
-	CHECK_EQUAL(3,instances[channel_codec_instance_uart].txState.writePointer);
+	channel_start_message_from_RPC(&instances[channel_codec_comport_uart],10);
+	checkPreambel(&instances[channel_codec_comport_uart]);
+	CHECK_EQUAL(3,instances[channel_codec_comport_uart].i.txState.writePointer);
 }
 #endif
 
 #if 1 && DISABLE_TESTS
 TEST(channel_codec, channel_push_byte_from_RPC)
 {
-	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
+	const channel_codec_conf_comport_t cp = channel_codec_comport_uart;
 
-	channel_start_message_from_RPC(ii,10);
-	CHECK_EQUAL(3,instances[ii].txState.writePointer);
+	channel_start_message_from_RPC(&instances[cp],10);
+	CHECK_EQUAL(3,instances[cp].i.txState.writePointer);
 
-	channel_push_byte_from_RPC(ii,0x81);
-	CHECK_EQUAL(1,instances[ii].txState.indexInBlock);
-	CHECK_EQUAL(3,instances[ii].txState.bitMaskPositionInBuffer);
-	channel_push_byte_from_RPC(ii,0x82);
-	channel_push_byte_from_RPC(ii,0x81);
-	channel_push_byte_from_RPC(ii,0x82);
-	channel_push_byte_from_RPC(ii,0x81);
-	channel_push_byte_from_RPC(ii,0x82);
-	channel_push_byte_from_RPC(ii,0x81);
-	checkPreambel(ii);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
+	CHECK_EQUAL(1,instances[cp].i.txState.indexInBlock);
+	CHECK_EQUAL(3,instances[cp].i.txState.bitMaskPositionInBuffer);
+	channel_push_byte_from_RPC(&instances[cp],0x82);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
+	channel_push_byte_from_RPC(&instances[cp],0x82);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
+	channel_push_byte_from_RPC(&instances[cp],0x82);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
+	checkPreambel(&instances[cp]);
 #if CHANNEL_BLOCKLENGTH == 8
-	CHECK_EQUAL(0,instances[ii].txState.indexInBlock);
-	CHECK_EQUAL(0,instances[ii].txState.bitMaskPositionInBuffer);
-	CHECK_EQUAL(0x55,(unsigned char)instances[ii].txState.buffer[3]);
+	CHECK_EQUAL(0,instances[cp].txState.indexInBlock);
+	CHECK_EQUAL(0,instances[cp].txState.bitMaskPositionInBuffer);
+	CHECK_EQUAL(0x55,(unsigned char)instances[cp].txState.buffer[3]);
 #endif
 
 
 
 
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[4]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[5]);
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[6]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[7]);
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[8]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[9]);
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[10]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].i.txState.buffer[4]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.txState.buffer[5]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].i.txState.buffer[6]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.txState.buffer[7]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].i.txState.buffer[8]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.txState.buffer[9]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].i.txState.buffer[10]);
 
-	channel_push_byte_from_RPC(ii,0x81);
-	channel_push_byte_from_RPC(ii,0x82);
-	channel_push_byte_from_RPC(ii,0x81);
-	channel_push_byte_from_RPC(ii,0x82);
-	channel_push_byte_from_RPC(ii,0x81);
-	channel_push_byte_from_RPC(ii,0x82);
-	channel_push_byte_from_RPC(ii,0x81);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
+	channel_push_byte_from_RPC(&instances[cp],0x82);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
+	channel_push_byte_from_RPC(&instances[cp],0x82);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
+	channel_push_byte_from_RPC(&instances[cp],0x82);
+	channel_push_byte_from_RPC(&instances[cp],0x81);
 #if CHANNEL_BLOCKLENGTH == 16
-	CHECK_EQUAL(0,instances[ii].txState.indexInBlock);
-	CHECK_EQUAL(0,instances[ii].txState.bitMaskPositionInBuffer);
-	CHECK_EQUAL(15,(unsigned char)instances[ii].txState.buffer[3]);
-	CHECK_EQUAL(0x81,(unsigned char)instances[ii].txState.buffer[11]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[12]);
-	CHECK_EQUAL(0x81,(unsigned char)instances[ii].txState.buffer[13]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[14]);
-	CHECK_EQUAL(0x81,(unsigned char)instances[ii].txState.buffer[15]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[16]);
-	CHECK_EQUAL(0x81,(unsigned char)instances[ii].txState.buffer[17]);
-	CHECK_EQUAL(18,instances[ii].txState.writePointer);
+	CHECK_EQUAL(0,instances[cp].i.txState.indexInBlock);
+	CHECK_EQUAL(0,instances[cp].i.txState.bitMaskPositionInBuffer);
+	CHECK_EQUAL(15,(unsigned char)instances[cp].i.txState.buffer[3]);
+	CHECK_EQUAL(0x81,(unsigned char)instances[cp].i.txState.buffer[11]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.txState.buffer[12]);
+	CHECK_EQUAL(0x81,(unsigned char)instances[cp].i.txState.buffer[13]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.txState.buffer[14]);
+	CHECK_EQUAL(0x81,(unsigned char)instances[cp].i.txState.buffer[15]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.txState.buffer[16]);
+	CHECK_EQUAL(0x81,(unsigned char)instances[cp].i.txState.buffer[17]);
+	CHECK_EQUAL(18,instances[cp].i.txState.writePointer);
 #else
-	CHECK_EQUAL(0x55,(unsigned char)instances[ii].txState.buffer[11]);
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[12]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[13]);
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[14]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[15]);
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[16]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].txState.buffer[17]);
-	CHECK_EQUAL(0x80,(unsigned char)instances[ii].txState.buffer[18]);
-	CHECK_EQUAL(19,instances[ii].txState.writePointer);
+	CHECK_EQUAL(0x55,(unsigned char)instances[cp].txState.buffer[11]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].txState.buffer[12]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].txState.buffer[13]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].txState.buffer[14]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].txState.buffer[15]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].txState.buffer[16]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].txState.buffer[17]);
+	CHECK_EQUAL(0x80,(unsigned char)instances[cp].txState.buffer[18]);
+	CHECK_EQUAL(19,instances[cp].txState.writePointer);
 #endif
 
 
@@ -286,7 +333,7 @@ TEST(channel_codec, channel_push_byte_from_RPC)
 #if 1 && DISABLE_TESTS
 TEST(channel_codec, channel_commit_from_RPC)
 {
-	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
+	const channel_codec_conf_comport_t cp = channel_codec_comport_uart;
 	RPC_RESULT result;
 
 	uint8_t sendbuffer[16] = {0x10,0x18,0x81,0x82, 0x81,0x82,0x81,0x81,   0x81,0x82,0x81,0x82, 0x81,0x82,0x81,0x81};
@@ -294,12 +341,12 @@ TEST(channel_codec, channel_commit_from_RPC)
 
 	mock().expectOneCall("eunistonePushDataBuffer").withParameter("length", msglengh);
 
-	channel_start_message_from_RPC(ii,16);
-	CHECK_EQUAL(3,instances[ii].txState.writePointer);
+	channel_start_message_from_RPC(&instances[cp],16);
+	CHECK_EQUAL(3,instances[cp].i.txState.writePointer);
 
 
 	for (int i=0;i<16;i++){
-		channel_push_byte_from_RPC(ii,sendbuffer[i]);
+		channel_push_byte_from_RPC(&instances[cp],sendbuffer[i]);
 #if 0
 		printf("%02X ",(unsigned char)sendbuffer[i]);
 #endif
@@ -312,13 +359,13 @@ TEST(channel_codec, channel_commit_from_RPC)
 	}
 	printf("\n");
 #endif
-	result = channel_commit_from_RPC(ii);
+	result = channel_commit_from_RPC(&instances[cp]);
 #if CHANNEL_BLOCKLENGTH==8
-	CHECK_EQUAL(0xB6,(unsigned char)instances[ii].txState.buffer[22]);
-	CHECK_EQUAL(0xBD,(unsigned char)instances[ii].txState.buffer[23]);
+	CHECK_EQUAL(0xB6,(unsigned char)instances[cp].i.txState.buffer[22]);
+	CHECK_EQUAL(0xBD,(unsigned char)instances[cp].i.txState.buffer[23]);
 #elif CHANNEL_BLOCKLENGTH==16
-	CHECK_EQUAL(0xB6,(unsigned char)instances[ii].txState.buffer[21]);
-	CHECK_EQUAL(0xBD,(unsigned char)instances[ii].txState.buffer[22]);
+	CHECK_EQUAL(0xB6,(unsigned char)instances[cp].i.txState.buffer[21]);
+	CHECK_EQUAL(0xBD,(unsigned char)instances[cp].i.txState.buffer[22]);
 #endif
 	mock().checkExpectations();
 
@@ -328,28 +375,28 @@ TEST(channel_codec, channel_commit_from_RPC)
 #if 1 && DISABLE_TESTS
 TEST(channel_codec, channel_push_to_RPC_find_preamble)
 {
-	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
-	channel_push_byte_to_RPC(ii,0x81);
-	channel_push_byte_to_RPC(ii,0x81);
-	CHECK_EQUAL(0,instances[ii].rxState.writePointer);
-	channel_push_byte_to_RPC(ii,0xFF);
-	channel_push_byte_to_RPC(ii,0xFF);
-	channel_push_byte_to_RPC(ii,0xFF);
-	CHECK_EQUAL(0,instances[ii].rxState.writePointer);
-	channel_push_byte_to_RPC(ii,0x03);
-	channel_push_byte_to_RPC(ii,0x80);
-	channel_push_byte_to_RPC(ii,0x82);
-	channel_push_byte_to_RPC(ii,0x82);
+	const channel_codec_conf_comport_t cp = channel_codec_comport_uart;
+	channel_push_byte_to_RPC(&instances[cp],0x81);
+	channel_push_byte_to_RPC(&instances[cp],0x81);
+	CHECK_EQUAL(0,instances[cp].i.rxState.writePointer);
+	channel_push_byte_to_RPC(&instances[cp],0xFF);
+	channel_push_byte_to_RPC(&instances[cp],0xFF);
+	channel_push_byte_to_RPC(&instances[cp],0xFF);
+	CHECK_EQUAL(0,instances[cp].i.rxState.writePointer);
+	channel_push_byte_to_RPC(&instances[cp],0x03);
+	channel_push_byte_to_RPC(&instances[cp],0x80);
+	channel_push_byte_to_RPC(&instances[cp],0x82);
+	channel_push_byte_to_RPC(&instances[cp],0x82);
 
-	CHECK_EQUAL(0x81,(unsigned char)instances[ii].rxState.buffer[0]);
+	CHECK_EQUAL(0x81,(unsigned char)instances[cp].i.rxState.buffer[0]);
 #if CHANNEL_BLOCKLENGTH == 8
-	CHECK_EQUAL(0x83,(unsigned char)instances[ii].rxState.buffer[1]);
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].rxState.buffer[2]);
+	CHECK_EQUAL(0x83,(unsigned char)instances[cp].i.rxState.buffer[1]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.rxState.buffer[2]);
 #elif CHANNEL_BLOCKLENGTH == 16
-	CHECK_EQUAL(0x82,(unsigned char)instances[ii].rxState.buffer[1]);
-	CHECK_EQUAL(0x83,(unsigned char)instances[ii].rxState.buffer[2]);
+	CHECK_EQUAL(0x82,(unsigned char)instances[cp].i.rxState.buffer[1]);
+	CHECK_EQUAL(0x83,(unsigned char)instances[cp].i.rxState.buffer[2]);
 #endif
-	CHECK_EQUAL(3,instances[ii].rxState.writePointer);
+	CHECK_EQUAL(3,instances[cp].i.rxState.writePointer);
 	mock().checkExpectations();
 
 }
@@ -358,11 +405,11 @@ TEST(channel_codec, channel_push_to_RPC_find_preamble)
 #if 1 && DISABLE_TESTS
 TEST(channel_codec, channel_push_to_RPC_many_bytes_withour_crashing)
 {
-	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
+	const channel_codec_conf_comport_t cp = channel_codec_comport_uart;
 	for(int i=0;i<256;i++) {
-		channel_push_byte_to_RPC(ii,0x81);
+		channel_push_byte_to_RPC(&instances[cp],0x81);
 	}
-	CHECK_EQUAL(0,(unsigned char)instances[ii].rxState.writePointer);
+	CHECK_EQUAL(0,(unsigned char)instances[cp].i.rxState.writePointer);
 
 }
 #endif
@@ -370,41 +417,41 @@ TEST(channel_codec, channel_push_to_RPC_many_bytes_withour_crashing)
 #if 1 && DISABLE_TESTS
 TEST(channel_codec, channel_push_to_RPC_bufsize)
 {
-	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
+	const channel_codec_conf_comport_t cp = channel_codec_comport_uart;
 	mock().expectOneCall("RPC_parse_request").withParameter("firstByte", 10).withParameter("length", 10);
-	channel_push_byte_to_RPC(ii,0xFF);
-	channel_push_byte_to_RPC(ii,0xFF);
-	channel_push_byte_to_RPC(ii,0xFF);
+	channel_push_byte_to_RPC(&instances[cp],0xFF);
+	channel_push_byte_to_RPC(&instances[cp],0xFF);
+	channel_push_byte_to_RPC(&instances[cp],0xFF);
 
-	channel_push_byte_to_RPC(ii,0x0E);
-	channel_push_byte_to_RPC(ii,0x0A);
+	channel_push_byte_to_RPC(&instances[cp],0x0E);
+	channel_push_byte_to_RPC(&instances[cp],0x0A);
 	//printf("%d %d\n",rxState.messageResult.result, rxState.messageResult.size);
-	CHECK_EQUAL(RPC_COMMAND_INCOMPLETE,instances[ii].rxState.messageResult.result);
-	channel_push_byte_to_RPC(ii,0x00);
-	channel_push_byte_to_RPC(ii,0x00);
-	channel_push_byte_to_RPC(ii,0x00);
-	channel_push_byte_to_RPC(ii,0x00);
-	channel_push_byte_to_RPC(ii,0x00);
-	channel_push_byte_to_RPC(ii,0x00);
-	CHECK_EQUAL(RPC_COMMAND_INCOMPLETE,instances[ii].rxState.messageResult.result);
-	CHECK_EQUAL(10,instances[ii].rxState.messageResult.size);
+	CHECK_EQUAL(RPC_COMMAND_INCOMPLETE,instances[cp].i.rxState.messageResult.result);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	CHECK_EQUAL(RPC_COMMAND_INCOMPLETE,instances[cp].i.rxState.messageResult.result);
+	CHECK_EQUAL(10,instances[cp].i.rxState.messageResult.size);
 #if CHANNEL_BLOCKLENGTH == 8
 	channel_push_byte_to_RPC(0x0E);
 #endif
-	channel_push_byte_to_RPC(ii,0x00);
-	channel_push_byte_to_RPC(ii,0x00);
-	channel_push_byte_to_RPC(ii,0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
+	channel_push_byte_to_RPC(&instances[cp],0x00);
 
 #if CHANNEL_BLOCKLENGTH == 8
 	channel_push_byte_to_RPC(0x79);
 	channel_push_byte_to_RPC(0x42);
 #elif CHANNEL_BLOCKLENGTH==16
 	//16ByteBlock:
-	channel_push_byte_to_RPC(ii,0x3f);
-	channel_push_byte_to_RPC(ii,0x01);
+	channel_push_byte_to_RPC(&instances[cp],0x3f);
+	channel_push_byte_to_RPC(&instances[cp],0x01);
 #endif
-	CHECK_EQUAL(RPC_COMMAND_UNKNOWN,instances[ii].rxState.messageResult.result);
-	CHECK_EQUAL(10,instances[ii].rxState.messageResult.size);
+	CHECK_EQUAL(RPC_COMMAND_UNKNOWN,instances[cp].i.rxState.messageResult.result);
+	CHECK_EQUAL(10,instances[cp].i.rxState.messageResult.size);
 	mock().checkExpectations();
 }
 #endif
@@ -414,7 +461,7 @@ TEST(channel_codec, channel_push_to_RPC_PingPong_10)
 {
 	#define RPC_IS_ANSWER 1
 	#define RPC_IS_REQUEST 0
-	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
+	const channel_codec_conf_comport_t cp = channel_codec_comport_uart;
 	const uint8_t length = 10  | RPC_IS_REQUEST;
 	uint8_t buf_loc[length+20];
 	uint8_t msgLength = getMsgLength(length,CHANNEL_BLOCKLENGTH);
@@ -423,22 +470,22 @@ TEST(channel_codec, channel_push_to_RPC_PingPong_10)
 #endif
 	mock().expectOneCall("eunistonePushDataBuffer").withParameter("length", msgLength);
 	mock().expectOneCall("RPC_parse_request").withParameter("firstByte", length).withParameter("length", length);
-	channel_start_message_from_RPC(ii,length);
+	channel_start_message_from_RPC(&instances[cp],length);
 	for (uint8_t i=0;i<length;i++){
 		uint8_t byte;
 		byte = getByteSequence(0,i);
 		if (i==0){
 			byte = length;
 		}
-		channel_push_byte_from_RPC(ii,byte);
+		channel_push_byte_from_RPC(&instances[cp],byte);
 	}
-	channel_commit_from_RPC(ii);
+	channel_commit_from_RPC(&instances[cp]);
 #if 0
 	printf("TXDataLength %d\n",TXDataLength);
 #endif
-	memcpy(buf_loc,instances[ii].txState.buffer,TXDataLength);
+	memcpy(buf_loc,instances[cp].i.txState.buffer,TXDataLength);
 	for (uint8_t i=0;i<TXDataLength;i++){
-		channel_push_byte_to_RPC(ii,buf_loc[i]);
+		channel_push_byte_to_RPC(&instances[cp],buf_loc[i]);
 	}
 	for(int i = 0; i<length;i++){
 		uint8_t byte;
@@ -446,7 +493,7 @@ TEST(channel_codec, channel_push_to_RPC_PingPong_10)
 		if (i==0){
 			byte = length;
 		}
-		CHECK_EQUAL(byte,(unsigned char)instances[ii].rxState.buffer[i]);
+		CHECK_EQUAL(byte,(unsigned char)instances[cp].i.rxState.buffer[i]);
 	}
 	mock().checkExpectations();
 }
@@ -459,7 +506,7 @@ TEST(channel_codec, channel_push_to_RPC_PingPong_50)
 	#define RPC_IS_ANSWER 1
 	#define RPC_IS_REQUEST 0
 	const uint8_t length = 50 | RPC_IS_ANSWER;
-	const channel_codec_instance_index_t ii = channel_codec_instance_uart;
+	const channel_codec_conf_comport_t cp = channel_codec_comport_uart;
 	uint8_t buf_loc[length+30];
 	uint8_t msgLength = getMsgLength(length,CHANNEL_BLOCKLENGTH);
 #if 0
@@ -467,22 +514,22 @@ TEST(channel_codec, channel_push_to_RPC_PingPong_50)
 #endif
 	mock().expectOneCall("eunistonePushDataBuffer").withParameter("length", msgLength);
 	mock().expectOneCall("RPC_parse_answer").withParameter("firstByte", 0xFF).withParameter("length", length);
-	channel_start_message_from_RPC(ii,length);
+	channel_start_message_from_RPC(&instances[cp],length);
 	for (uint8_t i=0;i<length;i++){
 		uint8_t byte;
 		byte = getByteSequence(1,i);
 		if (i<20){ //tests if a payload consisting of only ones triggers a preamble
 			byte = 0xFF;
 		}
-		channel_push_byte_from_RPC(ii,byte);
+		channel_push_byte_from_RPC(&instances[cp],byte);
 	}
-	channel_commit_from_RPC(ii);
+	channel_commit_from_RPC(&instances[cp]);
 #if 0
 	printf("TXDataLength %d\n",TXDataLength);
 #endif
-	memcpy(buf_loc,instances[ii].txState.buffer,TXDataLength);
+	memcpy(buf_loc,instances[cp].i.txState.buffer,TXDataLength);
 	for (uint8_t i=0;i<TXDataLength;i++){
-		channel_push_byte_to_RPC(ii,buf_loc[i]);
+		channel_push_byte_to_RPC(&instances[cp],buf_loc[i]);
 	}
 	for(int i = 0; i<length;i++){
 		uint8_t byte;
@@ -493,7 +540,7 @@ TEST(channel_codec, channel_push_to_RPC_PingPong_50)
 #if 0
 		printf("%d\n",i);
 #endif
-		CHECK_EQUAL(byte,(unsigned char)instances[ii].rxState.buffer[i]);
+		CHECK_EQUAL(byte,(unsigned char)instances[cp].i.rxState.buffer[i]);
 	}
 	mock().checkExpectations();
 }

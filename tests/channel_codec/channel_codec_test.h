@@ -18,13 +18,15 @@ extern "C" {
 #include "channel_codec/channel_codec_config.h"
 
 RPC_RESULT eunistonePushDataBuffer(const char *buffer, size_t length);
+#if 0
+
 typedef struct{
 	char buffer[CHANNEL_CODEC_TX_BUFFER_SIZE];
 	uint16_t indexInBlock;
 	uint16_t bitMaskPositionInBuffer;
 	uint16_t writePointer;
 	uint16_t crc16;
-}txState_t;
+}channel_codec_txState_t;
 
 typedef struct{
 	char buffer[CHANNEL_CODEC_RX_BUFFER_SIZE];
@@ -33,19 +35,18 @@ typedef struct{
 	uint16_t writePointer;
 	uint8_t preambleBuffer[PREAMBLE_LENGTH];
 	RPC_SIZE_RESULT messageResult;
-}rxState_t;
+}channel_codec_rxState_t;
 
-typedef enum{csNone,csFoundPreamble,csLoadingPayload,csPayloadComplete,csCRCAndPackageComplete} cc_channel_state_t;
 
 typedef struct{
-	txState_t txState;
-	rxState_t rxState;
-	cc_channel_state_t ccChannelState;
+	channel_codec_txState_t txState;
+	channel_codec_rxState_t rxState;
+	channel_codec_channel_state_t ccChannelState;
 }instances_t;
+#endif
 
 
-
-extern instances_t instances[channel_codec_instance_COUNT];
+//extern instances_t instances[channel_codec_instance_COUNT];
 
 #if 0
 extern uint16_t channel_tx_bitMaskBitPointer;
