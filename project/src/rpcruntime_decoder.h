@@ -6,6 +6,10 @@
 #include <QList>
 #include <QTreeWidgetItem>
 #include <functional>
+#include "channel_codec/channel_codec_types.h"
+
+#define CHANNEL_CODEC_TX_BUFFER_SIZE 64
+#define CHANNEL_CODEC_RX_BUFFER_SIZE 64
 
 typedef std::function<void(QString, QString, QPair<int,int>, QDateTime, int64_t)> watchCallBack_t;
 
@@ -53,7 +57,7 @@ private:
     RPCRuntimeParamterDescription paramDescription;
 };
 
-class RPCRuntimeDecoder
+struct RPCRuntimeDecoder
 {
 public:
     RPCRuntimeDecoder(RPCRunTimeProtocolDescription protocolDescription);
@@ -115,6 +119,11 @@ private:
     QList<QTreeWidgetItem *> getTreeWidgetReport_recursive(QTreeWidgetItem *parent, QList<RPCRuntimeDecodedParam> decodedParamList, bool isArrayField);
 
     QList<RPCWatchPoint> watchpointList;
+
+    char channel_codec_rxbuffer[channel_codec_comport_COUNT][CHANNEL_CODEC_RX_BUFFER_SIZE];
+    char channel_codec_txbuffer[channel_codec_comport_COUNT][CHANNEL_CODEC_TX_BUFFER_SIZE];
+
+    channel_codec_instance_t channel_codec_instance[channel_codec_comport_COUNT];
 
 };
 

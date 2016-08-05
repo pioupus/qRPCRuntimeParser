@@ -14,6 +14,9 @@ QMAKE_CXXFLAGS += -Werror
 CONFIG += warn
 CONFIG += c++11
 
+INCLUDEPATH += $$PWD/libs/include/
+INCLUDEPATH += $$PWD/libs/RPC-ChannelCodec/include
+
 
 #exists( $$PWD/libs/PythonQt3.0/src/PythonQt.h ) {
     #message(found python windows)

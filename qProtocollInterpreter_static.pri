@@ -24,6 +24,6 @@ HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpc_transmission/server/generated_ge
 
 INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include
 INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include/errorlogger_dummy
-INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/tests/include
+#INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/tests/include
 
 

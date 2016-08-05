@@ -11,7 +11,7 @@
 #ifndef RPC_TRANSMISSION_NETWORK_H
 #define RPC_TRANSMISSION_NETWORK_H
 
-#include "RPC_TRANSMISSION_types.h"
+#include "RPC_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,7 +29,7 @@ void RPC_TRANSMISSION_message_push_byte(unsigned char byte);
    out of buffer space you can send multiple partial messages as long as the
    other side puts them back together. */
 
-RPC_TRANSMISSION_RESULT RPC_TRANSMISSION_message_commit(void);
+RPC_RESULT RPC_TRANSMISSION_message_commit(void);
 /* This function is called when a complete message has been pushed using
    RPC_TRANSMISSION_message_push_byte. Now is a good time to send the buffer over the network,
    even if the buffer is not full yet. You may also want to free the buffer that
@@ -39,19 +39,19 @@ RPC_TRANSMISSION_RESULT RPC_TRANSMISSION_message_commit(void);
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
    You need to define 4 mutexes to implement the RPC_TRANSMISSION_mutex_* functions below.
-   See RPC_TRANSMISSION_types.h for a definition of RPC_TRANSMISSION_mutex_id.
+   See RPC_types.h for a definition of RPC_TRANSMISSION_mutex_id.
    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
    
 void RPC_TRANSMISSION_mutex_init(void);
 /* Initializes all rpc mutexes. */
 
-void RPC_TRANSMISSION_mutex_lock(RPC_TRANSMISSION_mutex_id mutex_id);
+void RPC_TRANSMISSION_mutex_lock(RPC_mutex_id mutex_id);
 /* Locks the mutex. If it is already locked it yields until it can lock the mutex. */
 
-void RPC_TRANSMISSION_mutex_unlock(RPC_TRANSMISSION_mutex_id mutex_id);
+void RPC_TRANSMISSION_mutex_unlock(RPC_mutex_id mutex_id);
 /* Unlocks the mutex. The mutex is locked when the function is called. */
 
-char RPC_TRANSMISSION_mutex_lock_timeout(RPC_TRANSMISSION_mutex_id mutex_id);
+char RPC_TRANSMISSION_mutex_lock_timeout(RPC_mutex_id mutex_id);
 /* Tries to lock a mutex. Returns 1 if the mutex was locked and 0 if a timeout
    occured. The timeout length should be the time you want to wait for an answer
    before giving up. If the time is infinite a lost answer will get the calling
@@ -70,7 +70,7 @@ void RPC_TRANSMISSION_Parser_exit(void);
 /* Frees various states required for the RPC. Must be called after any
    other RPC_TRANSMISSION_* function */
 
-RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size);
+RPC_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size);
 /* Returns the (expected) length of the beginning of a (partial) message.
    If returnvalue.result equals RPC_TRANSMISSION_SUCCESS then returnvalue.size equals the
    expected size in bytes.

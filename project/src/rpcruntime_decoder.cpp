@@ -1,8 +1,9 @@
 #include "rpcruntime_decoder.h"
 #include "channel_codec/channel_codec.h"
+#include "channel_codec/channel_codec_config.h"
 
 #include <assert.h>
-#include "rpc_transmission/client/generated_general/RPC_TRANSMISSION_types.h"
+#include "rpc_transmission/client/generated_general/RPC_types.h"
 #include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h"
 #include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h"
 #include "errorlogger/generic_eeprom_errorlogger.h"
@@ -13,19 +14,19 @@
 #define EXTERNC
 #endif
 
-RPCRuntimeDecoder* sendingClassInstance = NULL;
+//RPCRuntimeDecoder* sendingClassInstance = NULL;
 
-static RPC_TRANSMISSION_SIZE_RESULT get_transmission_size(const void *buffer, size_t size_bytes){
+static RPC_SIZE_RESULT get_transmission_size(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes){
     int transferSize=0;
 
-    assert(sendingClassInstance);
-    RPCRuntimeDecoder* sendingClass = sendingClassInstance;
+    assert(instance->aux.RPCRuntimeDecoderInstance);
+    RPCRuntimeDecoder* sendingClass = instance->aux.RPCRuntimeDecoderInstance;
 
     const unsigned char *current = (const unsigned char *)buffer;
-    RPC_TRANSMISSION_SIZE_RESULT returnvalue;
+    RPC_SIZE_RESULT returnvalue;
 
     if (size_bytes == 0){
-        returnvalue.result = RPC_TRANSMISSION_COMMAND_INCOMPLETE;
+        returnvalue.result = RPC_COMMAND_INCOMPLETE;
         returnvalue.size = 1;
         return returnvalue;
     }
@@ -36,63 +37,66 @@ static RPC_TRANSMISSION_SIZE_RESULT get_transmission_size(const void *buffer, si
         returnvalue.size = transferSize;
     }else{
         returnvalue.size = 0;
-        returnvalue.result = RPC_TRANSMISSION_COMMAND_UNKNOWN;
+        returnvalue.result = RPC_COMMAND_UNKNOWN;
         return returnvalue;
     }
 
-    returnvalue.result = returnvalue.size > size_bytes ? RPC_TRANSMISSION_COMMAND_INCOMPLETE : RPC_TRANSMISSION_SUCCESS;
+    returnvalue.result = returnvalue.size > size_bytes ? RPC_COMMAND_INCOMPLETE : RPC_SUCCESS;
 
     return returnvalue;
 }
 
-static void parse_transmission(const void *buffer, size_t size_bytes){
+static void parse_transmission(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes){
 
-    assert(sendingClassInstance);
-    RPCRuntimeDecoder* sendingClass = sendingClassInstance;
+    assert(instance->aux.RPCRuntimeDecoderInstance);
+    RPCRuntimeDecoder* sendingClass = instance->aux.RPCRuntimeDecoderInstance;
 
     QByteArray inBuffer = QByteArray((char*)buffer,(int)size_bytes);
     sendingClass->RPCDecodeRPCData(inBuffer);
 }
 
-void ChannelCodec_errorHandler(channelCodecErrorNum_t errNum){
-    assert(sendingClassInstance);
+void ChannelCodec_errorHandler(channel_codec_instance_t *instance, channelCodecErrorNum_t errNum){
+    //assert(sendingClassInstance);
+    assert(instance->aux.RPCRuntimeDecoderInstance);
+    RPCRuntimeDecoder* sendingClass = instance->aux.RPCRuntimeDecoderInstance;
     if (errNum == errlog_W_CHCODEC_RX_CRC_fail){
-        sendingClassInstance->setErrorCRCHappened(true);
+        sendingClass->setErrorCRCHappened(true);
     }else{
-        sendingClassInstance->setErrorChannelCodecHappened(true);
+        sendingClass->setErrorChannelCodecHappened(true);
     }
 }
 
-EXTERNC RPC_TRANSMISSION_RESULT phyPushDataBuffer(const char *buffer, size_t length){
-    assert(sendingClassInstance);
+EXTERNC RPC_RESULT phyPushDataBuffer(channel_codec_instance_t *instance, const char *buffer, size_t length){
+    assert(instance->aux.RPCRuntimeDecoderInstance);
 
     QByteArray codecOutput = QByteArray(buffer,(int)length);
 
-    sendingClassInstance->setChannelCodecOutput(codecOutput);
-    RPC_TRANSMISSION_RESULT result = RPC_TRANSMISSION_SUCCESS;
+    instance->aux.RPCRuntimeDecoderInstance->setChannelCodecOutput(codecOutput);
+    RPC_RESULT result = RPC_SUCCESS;
 
     return result;
 }
 
-EXTERNC void RPC_TRANSMISSION_Parser_init(void){
+EXTERNC void RPC_CHANNEL_CODEC_parser_init(channel_codec_instance_t *instance){
+    (void)instance;
 
 }
 
-EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_answer_length(const void *buffer, size_t size){
-    return  get_transmission_size(buffer,  size);
+EXTERNC RPC_SIZE_RESULT RPC_CHANNEL_CODEC_get_answer_length(channel_codec_instance_t *instance, const void *buffer, size_t size){
+    return  get_transmission_size(instance,buffer,  size);
 }
 
 
-EXTERNC RPC_TRANSMISSION_SIZE_RESULT RPC_TRANSMISSION_get_request_size(const void *buffer, size_t size_bytes){
-    return  get_transmission_size(buffer,  size_bytes);
+EXTERNC RPC_SIZE_RESULT RPC_CHANNEL_CODEC_get_request_size(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes){
+    return  get_transmission_size(instance,buffer,  size_bytes);
 }
 
-EXTERNC void RPC_TRANSMISSION_parse_answer(const void *buffer, size_t size){
-    parse_transmission(buffer,size);
+EXTERNC void RPC_CHANNEL_CODEC_parse_answer(channel_codec_instance_t *instance, const void *buffer, size_t size){
+    parse_transmission(instance,buffer,size);
 }
 
-EXTERNC void RPC_TRANSMISSION_parse_request(const void *buffer, size_t size_bytes ){
-    parse_transmission(buffer,size_bytes);
+EXTERNC void RPC_CHANNEL_CODEC_parse_request(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes ){
+    parse_transmission(instance,buffer,size_bytes);
 }
 
 
@@ -351,28 +355,41 @@ QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QString FieldID,
 
 void RPCRuntimeDecoder::RPCDecodeChannelCodedData(QByteArray inBuffer)
 {
-    sendingClassInstance = this;
-    channel_init();
+    //sendingClassInstance = this;
+
+    channel_codec_instance[channel_codec_comport_uart].aux.portindex = channel_codec_comport_uart;
+    channel_codec_instance[channel_codec_comport_uart].aux.RPCRuntimeDecoderInstance = this;
+
+    channel_init_instance(&channel_codec_instance[channel_codec_comport_uart],
+                                     channel_codec_rxbuffer[channel_codec_comport_uart],CHANNEL_CODEC_RX_BUFFER_SIZE,
+                                     channel_codec_txbuffer[channel_codec_comport_uart],CHANNEL_CODEC_TX_BUFFER_SIZE);
+
     for(int i=0;i<inBuffer.count();i++){
-        channel_push_byte_to_RPC(inBuffer[i]);
+        channel_push_byte_to_RPC(&channel_codec_instance[channel_codec_comport_uart],inBuffer[i]);
     }
 
-    sendingClassInstance = NULL;
+   // sendingClassInstance = NULL;
 
 }
 
 QByteArray RPCRuntimeDecoder::encodeToChannelCodedData(QByteArray inBuffer)
 {
-    sendingClassInstance = this;
-    channel_init();
-    channel_start_message_from_RPC(inBuffer.length());
+   // sendingClassInstance = this;
+    channel_codec_instance[channel_codec_comport_uart].aux.portindex = channel_codec_comport_uart;
+    channel_codec_instance[channel_codec_comport_uart].aux.RPCRuntimeDecoderInstance = this;
+
+    channel_init_instance(&channel_codec_instance[channel_codec_comport_uart],
+                                     channel_codec_rxbuffer[channel_codec_comport_uart],CHANNEL_CODEC_RX_BUFFER_SIZE,
+                                     channel_codec_txbuffer[channel_codec_comport_uart],CHANNEL_CODEC_TX_BUFFER_SIZE);
+
+    channel_start_message_from_RPC(&channel_codec_instance[channel_codec_comport_uart],inBuffer.length());
     for(int i = 0; i< inBuffer.count();i++){
-        channel_push_byte_from_RPC(inBuffer[i]);
+        channel_push_byte_from_RPC(&channel_codec_instance[channel_codec_comport_uart],inBuffer[i]);
     }
-    channel_commit_from_RPC();
+    channel_commit_from_RPC(&channel_codec_instance[channel_codec_comport_uart]);
 
 
-    sendingClassInstance = NULL;
+    //sendingClassInstance = NULL;
     return codecOutput;
 }
 

@@ -20,7 +20,7 @@ DEFINES += EXPORT_LIBRARY
 SOURCES += main.cpp
 SOURCES += mainwindow.cpp
 
-
+HEADERS += ../libs/include/channel_codec/channel_codec_config.h
 
 
 HEADERS += mainwindow.h
