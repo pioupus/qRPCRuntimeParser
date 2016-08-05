@@ -8,7 +8,9 @@
 #ifndef TESTS_INCLUDE_CHANNEL_CODEC_CHANNEL_CODEC_CONFIG_H_
 #define TESTS_INCLUDE_CHANNEL_CODEC_CHANNEL_CODEC_CONFIG_H_
 
-
+#include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h"
+#include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h"
+#include "rpc_transmission/client/generated_general/RPC_types.h"
 
 
 struct RPCRuntimeDecoder;
