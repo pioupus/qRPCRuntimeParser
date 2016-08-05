@@ -26,3 +26,4 @@ INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include
 INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include/errorlogger_dummy
 INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/tests/include
 
+

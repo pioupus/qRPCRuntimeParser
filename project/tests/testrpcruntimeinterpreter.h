@@ -48,6 +48,7 @@ private slots:
     void loadXMLFile_rpcDecodeTest_struct_int_watchpoint();
 
     void loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report();
+    void loadXMLFile_rpcSignedUnsingedBug();
 private:
     QString callBack_FieldID;
     QString callBack_humanReadableName;
