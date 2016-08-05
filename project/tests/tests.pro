@@ -15,6 +15,9 @@ SOURCES += main.cpp
 SOURCES += testrpcruntimeinterpreter.cpp
 SOURCES += testqstring.cpp
 
+QPROTOCOL_INTERPRETER_PATH = ../..
+include($$QPROTOCOL_INTERPRETER_PATH/qProtocollInterpreter_static.pri)
+
 #message($$PWD/../)
 INCLUDEPATH += $$PWD/../libs/googletest/googletest/include
 INCLUDEPATH += $$PWD/../libs/googletest/googlemock/include
