@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-
+#include "channel_codec/channel_codec_types.h"
 
 typedef enum {
     errlog_E_CHCODEC_RPC_parse_answer_request_Fail,
@@ -30,14 +30,15 @@ typedef enum {
 
 } channelCodecErrorNum_t;
 
-void ChannelCodec_errorHandler(channelCodecErrorNum_t ErrNum);
+
+void ChannelCodec_errorHandler(channel_codec_instance_t *instance, channelCodecErrorNum_t ErrNum);
 
 #define GEN_ASSERT(EX, ERRNUMBER, ...); {TRACE_ERROR(__VA_ARGS__); assert(EX);}
 #define GEN_ASSERT_NO_LOGGING(EX, ERRNUMBER, ...); {TRACE_ERROR(__VA_ARGS__); assert(EX);}
 #ifdef __ASSERT_FUNC
-#define GEN_WARNING(ERRNUMBER, ...); {TRACE_WARNING(__VA_ARGS__); ChannelCodec_errorHandler(ERRNUMBER); printf("\nwarning at file: %s line: %d and function: %s\n",__FILE__, __LINE__,__ASSERT_FUNC);}
+#define GEN_WARNING_CC(INSTANCE, ERRNUMBER, ...); {TRACE_WARNING(__VA_ARGS__); ChannelCodec_errorHandler(INSTANCE, ERRNUMBER); printf("\nwarning at file: %s line: %d and function: %s\n",__FILE__, __LINE__,__ASSERT_FUNC);}
 #else
-#define GEN_WARNING(ERRNUMBER, ...); {TRACE_WARNING(__VA_ARGS__); ChannelCodec_errorHandler(ERRNUMBER); printf("\nwarning at file: %s line: %d\n",__FILE__, __LINE__);}
+#define GEN_WARNING_CC(INSTANCE, ERRNUMBER, ...); {TRACE_WARNING(__VA_ARGS__); ChannelCodec_errorHandler(INSTANCE, ERRNUMBER); printf("\nwarning at file: %s line: %d\n",__FILE__, __LINE__);}
 #endif
 
 
