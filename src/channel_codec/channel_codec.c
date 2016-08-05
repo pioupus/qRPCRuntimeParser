@@ -122,7 +122,7 @@ static void appendByteToRXBuffer(channel_codec_instance_t *instance, char byte){
 		instance->i.rxState.writePointer++;
 	}else{
 		reset_rx(instance);
-		GEN_WARNING(errlog_W_CHCODEC_exceeding_RPC_RX_buffer,"CC Exceeding RPC RX Buffer %d. Buffer reset\n",instance->i.rxState.writePointer);
+        GEN_WARNING_CC(instance, errlog_W_CHCODEC_exceeding_RPC_RX_buffer,"CC Exceeding RPC RX Buffer %d. Buffer reset\n",instance->i.rxState.writePointer);
 	}
 }
 
@@ -367,7 +367,7 @@ void channel_push_byte_to_RPC(channel_codec_instance_t *instance, unsigned char 
 					GEN_ASSERT(0,errlog_E_CHCODEC_RPC_parse_answer_request_Fail,"CC RPC_parse_answer/request Fail");
 				}
 			}else{
-				GEN_WARNING(errlog_W_CHCODEC_RX_CRC_fail,"CC RX CRC Fail");
+                GEN_WARNING_CC(instance, errlog_W_CHCODEC_RX_CRC_fail,"CC RX CRC Fail");
 			}
 			reset_rx(instance);
 			instance->i.ccChannelState = csNone;
