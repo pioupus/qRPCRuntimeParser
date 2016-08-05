@@ -18,6 +18,7 @@ SOURCES += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/src/channel_codec/
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/src/channel_codec/crc16.c
 
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include/channel_codec/channel_codec.h
+HEADERS += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include/channel_codec/channel_codec_types.h
 
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h
@@ -26,6 +27,4 @@ HEADERS += $$QPROTOCOL_INTERPRETER_PATH/libs/include/channel_codec/channel_codec
 INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include
 INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/include/
 INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/include/errorlogger_dummy
-#INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/tests/include
-
-
+INCLUDEPATH += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/tests/include
