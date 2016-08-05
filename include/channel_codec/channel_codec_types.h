@@ -11,9 +11,7 @@
 #define CHANNEL_CODEC_PREAMBLE_LENGTH 3
 
 #include "channel_codec/channel_codec_config.h"
-#include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_network.h"
-#include "rpc_transmission/server/generated_general/RPC_TRANSMISSION_parser.h"
-#include "rpc_transmission/client/generated_general/RPC_types.h"
+
 
 typedef enum{csNone,
 	csFoundPreamble,
