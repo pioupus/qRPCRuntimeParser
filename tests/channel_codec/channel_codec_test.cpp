@@ -42,8 +42,9 @@ extern "C"
 	static char rxBuffers[channel_codec_comport_COUNT][CHANNEL_CODEC_RX_BUFFER_SIZE];
 	static char txBuffers[channel_codec_comport_COUNT][CHANNEL_CODEC_TX_BUFFER_SIZE];
 
-	void ChannelCodec_errorHandler(channelCodecErrorNum_t errNum){
+	void ChannelCodec_errorHandler(channel_codec_instance_t *instance, channelCodecErrorNum_t errNum){
 		(void)errNum;
+		(void)instance;
 	}
 
 	RPC_RESULT phyPushDataBuffer(channel_codec_instance_t *instance, const char *buffer, size_t length){
