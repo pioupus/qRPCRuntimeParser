@@ -34,3 +34,5 @@ Makefile*
 *.qmlproject.user.*
 
 builds/*
+/project/libs/build/build
+/project/libs/build/googletest
