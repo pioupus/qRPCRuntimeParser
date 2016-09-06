@@ -1,35 +1,17 @@
 #ifndef RPCRUNTIMEDECODER_H
 #define RPCRUNTIMEDECODER_H
+
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_function.h"
 #include "rpcruntime_protocol_description.h"
 #include "rpc_watch_point.h"
+#include "rpcruntime_decoded_param.h"
 #include <QList>
 #include <QTreeWidgetItem>
-#include <functional>
 #include "channel_codec/channel_codec_types.h"
 
 #define CHANNEL_CODEC_TX_BUFFER_SIZE 64
 #define CHANNEL_CODEC_RX_BUFFER_SIZE 64
-
-class RPCRuntimeDecodedParam{
-public:
-    RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription);
-    RPCRuntimeDecodedParam();
-    QByteArray decode(QByteArray inBuffer);
-    QList<RPCRuntimeDecodedParam> subParams;
-    RPCRuntimeParamterDescription getParamDescription() const;
-
-    int64_t value;
-    QString string;
-    QString FieldID;
-    bool isNull();
-
-
-private:
-    bool null;
-    RPCRuntimeParamterDescription paramDescription;
-};
 
 struct RPCRuntimeDecoder
 {

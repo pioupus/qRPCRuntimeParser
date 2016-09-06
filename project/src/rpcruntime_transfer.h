@@ -1,3 +1,6 @@
+#ifndef RPCRUNTIMETRANSFER_H
+#define RPCRUNTIMETRANSFER_H
+
 #include <rpcruntime_paramter_description.h>
 
 #include <QList>
@@ -28,3 +31,5 @@ private:
 	bool reply;
 	QString name;
 };
+
+#endif //RPCRUNTIMETRANSFER_H

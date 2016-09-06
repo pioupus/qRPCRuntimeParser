@@ -1,3 +1,6 @@
+#ifndef RPCWATCHPOINT_H
+#define RPCWATCHPOINT_H
+
 #include <QString>
 #include <QPair>
 #include <QDateTime>
@@ -18,3 +21,5 @@ public:
 private:
 	bool valid = false;
 };
+
+#endif //RPCWATCHPOINT_H
