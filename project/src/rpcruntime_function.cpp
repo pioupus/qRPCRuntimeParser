@@ -28,22 +28,12 @@ RPCRuntimeParamterDescription::RPCRuntimeParamterDescription()
 
 }
 
-RPCRuntimeParamterDescription::~RPCRuntimeParamterDescription()
-{
-
-}
-
 RPCRuntimeTransfer::RPCRuntimeTransfer(){
     empty = true;
     isPackageLenghCalced = false;
     ID = 0;
     reply = false;
 }
-
-RPCRuntimeTransfer::~RPCRuntimeTransfer(){
-
-}
-
 
 bool RPCRuntimeTransfer::isNull() const
 {

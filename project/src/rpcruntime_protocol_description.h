@@ -6,32 +6,20 @@
 #include "rpcruntime_function.h"
 #include <functional>   // std::bind
 
-
-
 class RPCRunTimeProtocolDescription
 {
 public:
-    RPCRunTimeProtocolDescription();
-    ~RPCRunTimeProtocolDescription();
+	bool openProtocolDescription(QString filename);
 
-    bool openProtocolDescription(QString filename);
+	uint32_t getRequestLength(uint8_t requestID) const;
 
-    uint32_t getRequestLength(uint8_t requestID);
+	QList<RPCRuntimeFunction> getFunctionList() const;
 
-    QStringList getReport();
-    QList<RPCRuntimeFunction> getFunctionList();
-
-    RPCRuntimeTransfer getTransferByID(int ID);
-
+	RPCRuntimeTransfer getTransferByID(int ID) const;
 
     RPCRuntimeParamterDescription getParamDescriptionByFieldID(QString FieldID);
 
-    QString getFileName();
-
-
-
-
-
+	QString getFileName() const;
 
 private:
     QList<RPCRuntimeFunction> functionList;
