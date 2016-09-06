@@ -4,14 +4,18 @@
 #include <QString>
 #include <QStringList>
 #include "rpcruntime_function.h"
-#include <functional>   // std::bind
+
+/*
+ * A RPCRunTimeProtocolDescription can load an XML file created by the RPC-Generator
+ * TODO: What does it do?
+*/
 
 class RPCRunTimeProtocolDescription
 {
 public:
 	bool openProtocolDescription(QString filename);
 
-	uint32_t getRequestLength(uint8_t requestID) const;
+	uint32_t getRequestLength(uint8_t requestID) const; //TODO: what if we have variable length data?
 
 	QList<RPCRuntimeFunction> getFunctionList() const;
 

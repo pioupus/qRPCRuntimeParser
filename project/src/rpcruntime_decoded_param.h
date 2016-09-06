@@ -4,6 +4,10 @@
 #include <QByteArray>
 #include "rpcruntime_paramter_description.h"
 
+/*
+ * TODO: What is a RPCRuntimeDecodedParam?
+ */
+
 class RPCRuntimeDecodedParam{
 public:
 	RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription);

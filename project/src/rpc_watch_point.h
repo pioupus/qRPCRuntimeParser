@@ -6,6 +6,8 @@
 #include <QDateTime>
 #include <functional>
 
+//TODO: What is a watchpoint, what does it do?
+
 class RPCWatchPoint{
 public:
 	using WatchCallBack = std::function<void(QString, QString, QPair<int,int>, QDateTime, int64_t)>;

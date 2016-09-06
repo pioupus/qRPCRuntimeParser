@@ -13,6 +13,10 @@
 #define CHANNEL_CODEC_TX_BUFFER_SIZE 64
 #define CHANNEL_CODEC_RX_BUFFER_SIZE 64
 
+/*
+ * TODO: What does a RPCRuntimeDecoder do?
+ */
+
 struct RPCRuntimeDecoder
 {
 public:
@@ -20,7 +24,7 @@ public:
     RPCRuntimeDecoder();
     ~RPCRuntimeDecoder();
     bool isNull();
-    bool isReply();
+	bool isReply(); //how can a RPCRuntimeDecoder be a repy?
     void setIsReply(bool reply);
     int getTransferLength(uint8_t ID);
     RPCRunTimeProtocolDescription protocolDescription;

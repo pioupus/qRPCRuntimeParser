@@ -6,6 +6,8 @@
 #include <QList>
 #include <QString>
 
+//TODO: What is a RPCRuntimeTransfer?
+
 class RPCRuntimeTransfer
 {
 public:
