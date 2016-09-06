@@ -3,6 +3,7 @@
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_function.h"
 #include "rpcruntime_protocol_description.h"
+#include "rpc_watch_point.h"
 #include <QList>
 #include <QTreeWidgetItem>
 #include <functional>
@@ -11,37 +12,10 @@
 #define CHANNEL_CODEC_TX_BUFFER_SIZE 64
 #define CHANNEL_CODEC_RX_BUFFER_SIZE 64
 
-typedef std::function<void(QString, QString, QPair<int,int>, QDateTime, int64_t)> watchCallBack_t;
-
-class RPCWatchPoint{
-public:
-    RPCWatchPoint();
-    RPCWatchPoint(QString FieldID,QString humanReadableName,QPair<int,int> plotIndex, watchCallBack_t callback);
-    ~RPCWatchPoint();
-
-    QString FieldID;
-    QString humanReadableName;
-    QPair<int,int> plotIndex;
-    watchCallBack_t callback;
-
-    void call(QDateTime timeStamp, int64_t val);
-
-
-private:
-    bool valid;
-};
-
-class RPCChannelCodec{
-    public:
-    RPCChannelCodec();
-    ~RPCChannelCodec();
-};
-
 class RPCRuntimeDecodedParam{
 public:
     RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription);
     RPCRuntimeDecodedParam();
-    ~RPCRuntimeDecodedParam();
     QByteArray decode(QByteArray inBuffer);
     QList<RPCRuntimeDecodedParam> subParams;
     RPCRuntimeParamterDescription getParamDescription() const;
@@ -97,7 +71,7 @@ public:
 
     RPCRuntimeParamterDescription getParamDescriptionByFieldID(QString FieldID);
 
-    void addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, watchCallBack_t callback);
+	void addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, RPCWatchPoint::WatchCallBack callback);
     void removeWatchPoint(QString FieldID);
     void clearWatchPoint();
 

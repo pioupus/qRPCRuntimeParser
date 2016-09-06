@@ -574,7 +574,7 @@ void RPCRuntimeDecoder::setChannelCodecOutput(QByteArray codecOutput)
 
 
 
-void RPCRuntimeDecoder::addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, watchCallBack_t callback)
+void RPCRuntimeDecoder::addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, RPCWatchPoint::WatchCallBack callback)
 {
 
     RPCWatchPoint wp(FieldID,humanReadableName,plotIndex,callback);
@@ -607,34 +607,6 @@ QList<RPCWatchPoint> RPCRuntimeDecoder::getWatchPointList()
     return watchpointList;
 }
 
-
-
-
-RPCWatchPoint::RPCWatchPoint()
-{
-    valid = false;
-    this->callback = NULL;
-}
-
-RPCWatchPoint::RPCWatchPoint(QString FieldID, QString humanReadableName, QPair<int, int> plotIndex, watchCallBack_t callback)
-{
-    this->callback = callback;
-    this->plotIndex = plotIndex;
-    this->humanReadableName = humanReadableName;
-    this->FieldID = FieldID;
-    valid = true;
-}
-
-
-RPCWatchPoint::~RPCWatchPoint()
-{
-
-}
-
-void RPCWatchPoint::call(QDateTime timeStamp, int64_t val)
-{
-    callback(FieldID,humanReadableName,plotIndex,timeStamp,val);
-}
 RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription)
 {
     this->paramDescription = paramDescription;
@@ -647,11 +619,6 @@ RPCRuntimeDecodedParam::RPCRuntimeDecodedParam()
     value = 0;
    // paramDescription = NULL;
     null = true;
-}
-
-RPCRuntimeDecodedParam::~RPCRuntimeDecodedParam()
-{
-
 }
 
 QByteArray RPCRuntimeDecodedParam::decode(QByteArray inBuffer)
@@ -720,18 +687,4 @@ RPCRuntimeParamterDescription RPCRuntimeDecodedParam::getParamDescription() cons
 bool RPCRuntimeDecodedParam::isNull()
 {
     return null;
-}
-
-
-
-
-
-RPCChannelCodec::RPCChannelCodec()
-{
-
-}
-
-RPCChannelCodec::~RPCChannelCodec()
-{
-
 }
