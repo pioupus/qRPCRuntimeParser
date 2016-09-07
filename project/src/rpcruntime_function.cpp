@@ -7,7 +7,7 @@ bool RPCRuntimeFunction::isNull()
 	return request.isNull() && reply.isNull();
 }
 
-RPCRuntimeParamterDescription::RPCRuntimeParamterDescription()
+RPCRuntimeParameterDescription::RPCRuntimeParameterDescription()
 {
 	elementBitLength = 0;
 	elementCount = 1;
@@ -16,7 +16,7 @@ RPCRuntimeParamterDescription::RPCRuntimeParamterDescription()
 	isSigned = true;
 }
 
-bool RPCRuntimeParamterDescription::loadFromXML(QDomElement xmlParams){
+bool RPCRuntimeParameterDescription::loadFromXML(QDomElement xmlParams){
 	bool ok = true;
 	bool ok_gesamt = true;
 	bool isArrayType = false;
@@ -46,7 +46,7 @@ bool RPCRuntimeParamterDescription::loadFromXML(QDomElement xmlParams){
 	if (rpcParamType == RPCParamType_t::param_array){
 		QDomElement xmlSubParams=xmlParams.firstChild().toElement();
 		while(!xmlSubParams.isNull()){
-			RPCRuntimeParamterDescription subparam;
+			RPCRuntimeParameterDescription subparam;
 			if (!subparam.loadFromXML(xmlSubParams)){
 				return false;
 			}
@@ -62,7 +62,7 @@ bool RPCRuntimeParamterDescription::loadFromXML(QDomElement xmlParams){
 		elementBitLength = 0;
 		QDomElement xmlSubParams=xmlParams.firstChild().toElement();
 		while(!xmlSubParams.isNull()){
-			RPCRuntimeParamterDescription subparam;
+			RPCRuntimeParameterDescription subparam;
 			if (!subparam.loadFromXML(xmlSubParams)){
 				return false;
 			}
@@ -120,7 +120,7 @@ bool RPCRuntimeParamterDescription::loadFromXML(QDomElement xmlParams){
 	return true;
 }
 
-bool RPCRuntimeParamterDescription::setTypeByString(QString typeName)
+bool RPCRuntimeParameterDescription::setTypeByString(QString typeName)
 {
 	if (typeName == "integer"){
 		rpcParamType = RPCParamType_t::param_int;

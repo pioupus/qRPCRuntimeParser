@@ -98,10 +98,10 @@ RPCRuntimeTransfer RPCRunTimeProtocolDescription::getTransferByID(int ID) const
 	return  result_none;
 }
 
-RPCRuntimeParamterDescription RPCRunTimeProtocolDescription::getParamDescriptionByFieldID(QString FieldID)
+RPCRuntimeParameterDescription RPCRunTimeProtocolDescription::getParamDescriptionByFieldID(QString FieldID)
 {
-	RPCRuntimeParamterDescription result;
-	RPCRuntimeParamterDescription result_none;
+	RPCRuntimeParameterDescription result;
+	RPCRuntimeParameterDescription result_none;
 
 
 	QStringList IDToken = FieldID.split("?");
@@ -117,7 +117,7 @@ RPCRuntimeParamterDescription RPCRunTimeProtocolDescription::getParamDescription
 		int tokenIndex=2;
 		bool wasArray = false;
 		int arrayElementCount = 0;
-		QList<RPCRuntimeParamterDescription>  paramList =  transfer.paramList;
+		QList<RPCRuntimeParameterDescription>  paramList =  transfer.paramList;
 		while (tokenIndex < IDToken.count()){
 
 			result = getParameterDescriptionByFieldIDToken(paramList,IDToken,tokenIndex,wasArray, arrayElementCount);
@@ -144,9 +144,9 @@ QString RPCRunTimeProtocolDescription::getFileName() const
 	return fileName;
 }
 
-RPCRuntimeParamterDescription RPCRunTimeProtocolDescription::getParameterDescriptionByFieldIDToken(QList<RPCRuntimeParamterDescription> &paramList, QStringList &IDToken, int index, bool isArray, int arrayElementCount)
+RPCRuntimeParameterDescription RPCRunTimeProtocolDescription::getParameterDescriptionByFieldIDToken(QList<RPCRuntimeParameterDescription> &paramList, QStringList &IDToken, int index, bool isArray, int arrayElementCount)
 {
-	RPCRuntimeParamterDescription result_none;
+	RPCRuntimeParameterDescription result_none;
 	bool ok;
 	int FieldID_token = IDToken[index].toInt(&ok);
 	if (ok){

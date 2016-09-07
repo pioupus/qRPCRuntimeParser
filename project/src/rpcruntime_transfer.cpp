@@ -21,7 +21,7 @@ int RPCRuntimeTransfer::getTotalLength()
 {
 	int result = 1;
 	for(int i=0;i<paramList.count();i++){
-		RPCRuntimeParamterDescription item = paramList[i];
+		RPCRuntimeParameterDescription item = paramList[i];
 		result += (item.elementBitLength/8);
 	}
 	return result;
@@ -55,7 +55,7 @@ bool RPCRuntimeTransfer::loadParamListFromXML(QDomElement xmlParams)
 	while (!xmlParams.isNull()){
 
 		if (xmlParams.tagName()=="parameter"){
-			RPCRuntimeParamterDescription param;
+			RPCRuntimeParameterDescription param;
 			if (!param.loadFromXML(xmlParams)){
 				return false;
 			}

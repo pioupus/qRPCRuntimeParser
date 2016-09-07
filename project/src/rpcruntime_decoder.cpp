@@ -184,7 +184,7 @@ RPCRuntimeTransfer RPCRuntimeDecoder::getDecodedTransferByFieldID(QString FieldI
     return transfer;
 }
 
-RPCRuntimeParamterDescription RPCRuntimeDecoder::getParamDescriptionByFieldID(QString FieldID)
+RPCRuntimeParameterDescription RPCRuntimeDecoder::getParamDescriptionByFieldID(QString FieldID)
 {
     return protocolDescription.getParamDescriptionByFieldID(FieldID);
 }
@@ -308,10 +308,10 @@ QByteArray RPCRuntimeDecoder::RPCDecodeRPCData(QByteArray inBuffer)
     return result;
 }
 
-QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams)
+QByteArray RPCRuntimeDecoder::decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParameterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams)
 {
     for (int i = 0; i<paramDescriptionList.count();i++){
-        RPCRuntimeParamterDescription paramDesc = paramDescriptionList[i];
+		RPCRuntimeParameterDescription paramDesc = paramDescriptionList[i];
         RPCRuntimeDecodedParam decParam(paramDesc);
         if (paramDesc.subParameters.count()){
             if (paramDesc.rpcParamType == RPCParamType_t::param_array){
@@ -435,7 +435,7 @@ QList<QTreeWidgetItem *> RPCRuntimeDecoder::getTreeWidgetReport_recursive(QTreeW
 
 
         RPCRuntimeDecodedParam decodedParam = decodedParamList[i];
-        RPCRuntimeParamterDescription paramDesc = decodedParam.getParamDescription();
+		RPCRuntimeParameterDescription paramDesc = decodedParam.getParamDescription();
 
         QList<QTreeWidgetItem *> subList;
 
@@ -531,7 +531,7 @@ QStringList RPCRuntimeDecoder::printsubType(int tabDepth, QList<RPCRuntimeDecode
 
     for (int i=0;i<decodedParamList.count();i++){
         RPCRuntimeDecodedParam decodedParam = decodedParamList[i];
-        RPCRuntimeParamterDescription paramDesc = decodedParam.getParamDescription();
+		RPCRuntimeParameterDescription paramDesc = decodedParam.getParamDescription();
         QStringList subList;
 
 

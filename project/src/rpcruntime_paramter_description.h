@@ -1,5 +1,5 @@
-#ifndef RPCRUNTIMEPARAMTERDESCRIPTION_H
-#define RPCRUNTIMEPARAMTERDESCRIPTION_H
+#ifndef RPCRUNTIMEPARAMETERDESCRIPTION_H
+#define RPCRUNTIMEPARAMETERDESCRIPTION_H
 
 #include <QtXml>
 #include <QList>
@@ -7,10 +7,10 @@
 
 enum class  RPCParamType_t {param_none,param_int,param_enum,param_character,param_array,param_struct};
 
-class RPCRuntimeParamterDescription
+class RPCRuntimeParameterDescription
 {
 public:
-	RPCRuntimeParamterDescription();
+	RPCRuntimeParameterDescription();
 
 	bool loadFromXML(QDomElement xmlParams);
 	bool setTypeByString(QString typeName);
@@ -18,9 +18,9 @@ public:
 	QString name;
 	QString typeName;
 	QList<QPair<int,QString>> enumValues;
-	QList<RPCRuntimeParamterDescription> subParameters;
+	QList<RPCRuntimeParameterDescription> subParameters;
 
-	RPCRuntimeParamterDescription getParameterDescriptionByFieldIDToken(QStringList &IDToken, int index);
+	RPCRuntimeParameterDescription getParameterDescriptionByFieldIDToken(QStringList &IDToken, int index);
 
 	int elementBitLength;
 	int elementCount;
@@ -34,4 +34,4 @@ public:
 	void calcLength();
 };
 
-#endif // RPCRUNTIMEPARAMTERDESCRIPTION_H
+#endif // RPCRUNTIMEPARAMETERDESCRIPTION_H

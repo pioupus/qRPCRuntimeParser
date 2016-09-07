@@ -10,11 +10,11 @@
 
 class RPCRuntimeDecodedParam{
 public:
-	RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription);
+	RPCRuntimeDecodedParam(RPCRuntimeParameterDescription paramDescription);
 	RPCRuntimeDecodedParam();
 	QByteArray decode(QByteArray inBuffer);
 	QList<RPCRuntimeDecodedParam> subParams;
-	RPCRuntimeParamterDescription getParamDescription() const;
+	RPCRuntimeParameterDescription getParamDescription() const;
 
 	int64_t value;
 	QString string;
@@ -23,7 +23,7 @@ public:
 
 private:
 	bool null;
-	RPCRuntimeParamterDescription paramDescription;
+	RPCRuntimeParameterDescription paramDescription;
 };
 
 #endif //RPCRUNTIMEDECODEDPARAM_H

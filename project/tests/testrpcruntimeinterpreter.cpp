@@ -1081,7 +1081,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcAccessParamDescriptionByFieldID_s
     bool result = rpcinterpreter.openProtocolDescription("scripts/decodeTest_struct_int.xml");
     QCOMPARE(result, true);
 
-    RPCRuntimeParamterDescription paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?0");
+	RPCRuntimeParameterDescription paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?0");
 
     QCOMPARE(paramDesc.rpcParamType,RPCParamType_t::param_int);
 

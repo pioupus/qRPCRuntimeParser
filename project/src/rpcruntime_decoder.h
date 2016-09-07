@@ -55,7 +55,7 @@ public:
 
     RPCRuntimeTransfer getDecodedTransferByFieldID(QString FieldID);
 
-    RPCRuntimeParamterDescription getParamDescriptionByFieldID(QString FieldID);
+	RPCRuntimeParameterDescription getParamDescriptionByFieldID(QString FieldID);
 
 	void addWatchPoint(QString FieldID, QString humanReadableName, QPair<int,int> plotIndex, RPCWatchPoint::WatchCallBack callback);
     void removeWatchPoint(QString FieldID);
@@ -65,7 +65,7 @@ public:
 
 private:
 
-    QByteArray decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParamterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
+	QByteArray decodeParams(QByteArray inBuffer, QString FieldID, QString OverwriteID, QList<RPCRuntimeParameterDescription> paramDescriptionList, QList<RPCRuntimeDecodedParam> &decodedParams);
     QStringList printsubType(int tabDepth, QList<RPCRuntimeDecodedParam> decodedParamList , bool isArrayField);
     QByteArray codecOutput;
     RPCRuntimeFunction getFunctionByID(uint8_t ID);

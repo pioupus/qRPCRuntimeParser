@@ -13,7 +13,7 @@ class RPCRuntimeTransfer
 public:
 	RPCRuntimeTransfer();
 
-	QList<RPCRuntimeParamterDescription> paramList;
+	QList<RPCRuntimeParameterDescription> paramList;
 	int ID;
 
 	int getPackageLength();

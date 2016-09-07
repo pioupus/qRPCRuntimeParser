@@ -21,7 +21,7 @@ public:
 
 	RPCRuntimeTransfer getTransferByID(int ID) const;
 
-    RPCRuntimeParamterDescription getParamDescriptionByFieldID(QString FieldID);
+	RPCRuntimeParameterDescription getParamDescriptionByFieldID(QString FieldID);
 
 	QString getFileName() const;
 
@@ -29,7 +29,7 @@ private:
     QList<RPCRuntimeFunction> functionList;
     QString fileName;
 
-    RPCRuntimeParamterDescription getParameterDescriptionByFieldIDToken(QList<RPCRuntimeParamterDescription> &paramList, QStringList &IDToken, int index, bool isArray, int arrayElementCount);
+	RPCRuntimeParameterDescription getParameterDescriptionByFieldIDToken(QList<RPCRuntimeParameterDescription> &paramList, QStringList &IDToken, int index, bool isArray, int arrayElementCount);
 };
 
 #endif // RPCRUNTIMEINTERPRETER_H

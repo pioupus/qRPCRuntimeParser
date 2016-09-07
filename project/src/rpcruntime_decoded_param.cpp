@@ -1,6 +1,6 @@
 #include "rpcruntime_decoded_param.h"
 
-RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(RPCRuntimeParamterDescription paramDescription)
+RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(RPCRuntimeParameterDescription paramDescription)
 {
 	this->paramDescription = paramDescription;
 	value = 0;
@@ -72,7 +72,7 @@ QByteArray RPCRuntimeDecodedParam::decode(QByteArray inBuffer)
 	return inBuffer.mid(lengthInByte);
 }
 
-RPCRuntimeParamterDescription RPCRuntimeDecodedParam::getParamDescription() const
+RPCRuntimeParameterDescription RPCRuntimeDecodedParam::getParamDescription() const
 {
 	return paramDescription;
 }
