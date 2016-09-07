@@ -1,37 +1,38 @@
 #ifndef RPCRUNTIMETRANSFER_H
 #define RPCRUNTIMETRANSFER_H
 
-#include <rpcruntime_paramter_description.h>
+#include <vector>
 
-#include <QList>
-#include <QString>
+class RPCRuntimeFunction;
 
-//TODO: What is a RPCRuntimeTransfer?
+/*
+ * A RPCRuntimeTransfer represents the Data in RPC-Generator encoding received or to be sent
+ */
 
-class RPCRuntimeTransfer
-{
-public:
-	RPCRuntimeTransfer();
+class RPCRuntimeTransfer {
+	public:
+	enum class TransferType {
+		request,
+		reply,
+	};
 
-	QList<RPCRuntimeParameterDescription> paramList;
-	int ID;
+	//Note: The passed in RPCRuntimeFunction must stay valid during the life-time of a RPCRuntimeTransfer
+	RPCRuntimeTransfer(RPCRuntimeFunction &function, TransferType transfer_type);
 
-	int getPackageLength();
-	void calcPackagelength();
-	bool loadParamListFromXML(QDomElement xmlParams);
-	bool isNull() const;
-	void setIsNull(bool value);
+	//number of bytes that need to be added before the message is complete
+	int get_number_of_missing_bytes() const;
 
-	int getTotalLength(void);
-	bool isReply();
-	void setReply(bool r);
-	QString getName();
-	void setName(QString n);
-private:
-	bool isPackageLenghCalced; //inited false
-	bool empty;
-	bool reply;
-	QString name;
+	template <class Iterator>
+	void add_data(Iterator &begin_it, Iterator &end_it) {
+		data.insert(data.end(), begin_it, end_it);
+	}
+
+	const std::vector<unsigned char> encode() const;
+
+	private:
+	std::vector<unsigned char> data;
+	RPCRuntimeFunction *function;
+	TransferType transfer_type;
 };
 
 #endif //RPCRUNTIMETRANSFER_H

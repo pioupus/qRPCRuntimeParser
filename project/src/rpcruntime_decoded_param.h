@@ -1,29 +1,15 @@
 #ifndef RPCRUNTIMEDECODEDPARAM_H
 #define RPCRUNTIMEDECODEDPARAM_H
 
-#include <QByteArray>
-#include "rpcruntime_paramter_description.h"
+#include "rpcruntime_transfer.h"
 
 /*
- * TODO: What is a RPCRuntimeDecodedParam?
+ * A RPCRuntimeDecodedParam represents a script-understandable parameter in an RPC-Function call
  */
 
 class RPCRuntimeDecodedParam{
 public:
-	RPCRuntimeDecodedParam(RPCRuntimeParameterDescription paramDescription);
 	RPCRuntimeDecodedParam();
-	QByteArray decode(QByteArray inBuffer);
-	QList<RPCRuntimeDecodedParam> subParams;
-	RPCRuntimeParameterDescription getParamDescription() const;
-
-	int64_t value;
-	QString string;
-	QString FieldID;
-	bool isNull();
-
-private:
-	bool null;
-	RPCRuntimeParameterDescription paramDescription;
 };
 
 #endif //RPCRUNTIMEDECODEDPARAM_H

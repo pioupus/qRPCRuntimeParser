@@ -1,37 +1,20 @@
 #ifndef RPCRUNTIMEPARAMETERDESCRIPTION_H
 #define RPCRUNTIMEPARAMETERDESCRIPTION_H
 
-#include <QtXml>
-#include <QList>
-#include <QString>
+#include <string>
 
-enum class  RPCParamType_t {param_none,param_int,param_enum,param_character,param_array,param_struct};
+/*
+ * A RPCRuntimeParameterDescription represents how a Parameter is encoded in a RPC-generated message
+ */
+
+class RPCRuntimeDecodedParam;
 
 class RPCRuntimeParameterDescription
 {
 public:
-	RPCRuntimeParameterDescription();
-
-	bool loadFromXML(QDomElement xmlParams);
-	bool setTypeByString(QString typeName);
-
-	QString name;
-	QString typeName;
-	QList<QPair<int,QString>> enumValues;
-	QList<RPCRuntimeParameterDescription> subParameters;
-
-	RPCRuntimeParameterDescription getParameterDescriptionByFieldIDToken(QStringList &IDToken, int index);
-
-	int elementBitLength;
-	int elementCount;
-	int indexPosition;
-
-
-	RPCParamType_t rpcParamType;
-	bool isSigned;
-public:
-
-	void calcLength();
+	std::string parameter_name;
+	std::string parameter_type; //TODO: this is probably not enough
+	RPCRuntimeDecodedParam create_value() const;
 };
 
 #endif // RPCRUNTIMEPARAMETERDESCRIPTION_H
