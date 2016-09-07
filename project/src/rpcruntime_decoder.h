@@ -14,7 +14,7 @@
 #define CHANNEL_CODEC_RX_BUFFER_SIZE 64
 
 /*
- * TODO: What does a RPCRuntimeDecoder do?
+ * The RPCRuntimeDecoder decodes binary data into scrip-understandable Function calls and encodes the reply
  */
 
 struct RPCRuntimeDecoder

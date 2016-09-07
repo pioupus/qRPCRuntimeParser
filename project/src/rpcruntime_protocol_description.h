@@ -6,8 +6,7 @@
 #include "rpcruntime_function.h"
 
 /*
- * A RPCRunTimeProtocolDescription can load an XML file created by the RPC-Generator
- * TODO: What does it do?
+ * A RPCRunTimeProtocolDescription describes the Protocol created by the RPC-Generator loaded from an XML-File
 */
 
 class RPCRunTimeProtocolDescription
