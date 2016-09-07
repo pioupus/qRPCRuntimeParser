@@ -11,16 +11,11 @@ class RPCRuntimeFunction;
 
 class RPCRuntimeTransfer {
 	public:
-	enum class TransferType {
-		request,
-		reply,
-	};
-
 	//Note: The passed in RPCRuntimeFunction must stay valid during the life-time of a RPCRuntimeTransfer
-	RPCRuntimeTransfer(RPCRuntimeFunction &function, TransferType transfer_type);
+	RPCRuntimeTransfer(const RPCRuntimeFunction &function);
 
 	//number of bytes that need to be added before the message is complete
-	int get_number_of_missing_bytes() const;
+	int get_min_number_of_missing_bytes() const;
 
 	template <class Iterator>
 	void add_data(Iterator &begin_it, Iterator &end_it) {
@@ -31,8 +26,7 @@ class RPCRuntimeTransfer {
 
 	private:
 	std::vector<unsigned char> data;
-	RPCRuntimeFunction *function;
-	TransferType transfer_type;
+	const RPCRuntimeFunction *function;
 };
 
 #endif //RPCRUNTIMETRANSFER_H

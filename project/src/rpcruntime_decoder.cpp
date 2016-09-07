@@ -1,4 +1,5 @@
 #include "rpcruntime_decoder.h"
+#include "rpcruntime_transfer.h"
 #include "channel_codec/channel_codec.h"
 #include "channel_codec/channel_codec_config.h"
 
@@ -33,7 +34,8 @@ static RPC_SIZE_RESULT get_transmission_size(channel_codec_instance_t *instance,
 		return returnvalue;
 	}
 
-	transferSize = sendingClass->getTransferLength(*current);
+	RPCRuntimeTransfer decoder = sendingClass->decode(current, size_bytes);
+	transferSize = decoder.get_min_number_of_missing_bytes();
 
 	if (transferSize > 0){
 		returnvalue.size = transferSize;
