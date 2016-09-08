@@ -9,10 +9,10 @@ class RPCRuntimeTransfer;
  * The RPCRuntimeDecoder decodes binary data into scrip-understandable Function calls and encodes the reply
  */
 
-struct RPCRuntimeDecoder
-{
+struct RPCRuntimeDecoder {
 	RPCRuntimeTransfer decode(const unsigned char *data, int size);
-private:
+
+	private:
 	RPCRunTimeProtocolDescription description;
 };
 

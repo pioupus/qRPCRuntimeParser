@@ -1,6 +1,6 @@
-#include "rpcruntime_decoder.h"
 #include "channel_codec/channel_codec.h"
 #include "channel_codec/channel_codec_config.h"
+#include "rpcruntime_decoder.h"
 #include "rpcruntime_transfer.h"
 
 #include <assert.h>
@@ -18,7 +18,6 @@
 
 //returns if the given data is a complete message
 static RPC_SIZE_RESULT get_transmission_size(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes) {
-
 	assert(instance->aux.RPCRuntimeDecoderInstance);
 	RPCRuntimeDecoder *sendingClass = instance->aux.RPCRuntimeDecoderInstance;
 

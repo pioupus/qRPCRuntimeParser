@@ -1,7 +1,6 @@
 #include "rpc_watch_point.h"
 
-RPCWatchPoint::RPCWatchPoint(QString FieldID, QString humanReadableName, QPair<int, int> plotIndex, RPCWatchPoint::WatchCallBack callback)
-{
+RPCWatchPoint::RPCWatchPoint(QString FieldID, QString humanReadableName, QPair<int, int> plotIndex, RPCWatchPoint::WatchCallBack callback) {
 	this->callback = callback;
 	this->plotIndex = plotIndex;
 	this->humanReadableName = humanReadableName;
@@ -9,7 +8,6 @@ RPCWatchPoint::RPCWatchPoint(QString FieldID, QString humanReadableName, QPair<i
 	valid = true;
 }
 
-void RPCWatchPoint::call(QDateTime timeStamp, int64_t val)
-{
-	callback(FieldID,humanReadableName,plotIndex,timeStamp,val);
+void RPCWatchPoint::call(QDateTime timeStamp, int64_t val) {
+	callback(FieldID, humanReadableName, plotIndex, timeStamp, val);
 }

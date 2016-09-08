@@ -18,11 +18,11 @@ class RPCRuntimeDecodedParam {
 	RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &param);
 	uint64_t as_uint() const;
 	int64_t as_int() const;
-	std::pair<int64_t, std::string> as_enum() const;
-	std::pair<uint64_t, std::string> as_uenum() const;
+	std::pair<int, std::string> as_enum() const; //since we come from C we only need to support enums that have int as their underlying type
 	std::vector<std::string, RPCRuntimeDecodedParam> as_struct() const;
 	std::vector<RPCRuntimeDecodedParam> as_array() const;
-private:
+
+	private:
 	const RPCRuntimeParameterDescription *param;
 };
 

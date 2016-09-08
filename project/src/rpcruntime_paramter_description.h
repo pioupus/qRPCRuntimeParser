@@ -9,12 +9,19 @@
 
 class RPCRuntimeDecodedParam;
 
-class RPCRuntimeParameterDescription
-{
-public:
+class RPCRuntimeParameterDescription {
+	public:
+	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, std::string parameter_type);
+
+	RPCRuntimeDecodedParam create_value() const;
+	int get_bit_size() const;
+	const std::string &get_parameter_name() const;
+	const std::string &get_parameter_type() const;
+
+	private:
+	int bit_size;
 	std::string parameter_name;
 	std::string parameter_type; //TODO: this is probably not enough
-	RPCRuntimeDecodedParam create_value() const;
 };
 
 #endif // RPCRUNTIMEPARAMETERDESCRIPTION_H

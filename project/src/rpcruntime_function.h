@@ -15,8 +15,15 @@ class RPCRuntimeFunction {
 	public:
 	std::string function_name;
 	std::string function_declaration;
+	int get_request_id() const;
+	int get_reply_id() const;
+	const std::vector<RPCRuntimeParameterDescription> &get_request_parameters() const;
+	const std::vector<RPCRuntimeParameterDescription> &get_reply_parameters() const;
+
+	private:
 	int function_id;
-	std::vector<RPCRuntimeParameterDescription> parameters;
+	std::vector<RPCRuntimeParameterDescription> request_parameters;
+	std::vector<RPCRuntimeParameterDescription> reply_parameters;
 };
 
 #endif // RPCRUNTIMEFUNCTION_H
