@@ -42,44 +42,44 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest() {
 	QCOMPARE(funList[0].get_request_parameters()[1].get_parameter_name(), "param2");
 	QCOMPARE(funList[0].get_request_parameters()[2].get_parameter_name(), "param3");
 
+	QCOMPARE(funList[0].get_request_parameters()[0].get_parameter_name(), "uint16_t");
+	QCOMPARE(funList[0].get_request_parameters()[1].get_parameter_name(), "enum1_t");
+	QCOMPARE(funList[0].get_request_parameters()[2].get_parameter_name(), "enum2_t");
+
+	QCOMPARE(funList[0].get_request_parameters()[0].get_type(), RPCRuntimeParameterDescription::Type::integer);
+	QCOMPARE(funList[0].get_request_parameters()[1].get_type(), RPCRuntimeParameterDescription::Type::enumeration);
+	QCOMPARE(funList[0].get_request_parameters()[2].get_type(), RPCRuntimeParameterDescription::Type::enumeration);
+
 	QCOMPARE(funList[0].get_request_parameters()[0].get_bit_size(), 16);
-	QCOMPARE(funList[0].get_request_parameters()[0].isSigned, false);
-	QCOMPARE(funList[0].get_request_parameters()[1].elementBitLength, 8);
-	QCOMPARE(funList[0].get_request_parameters()[2].elementBitLength, 8);
+	QCOMPARE(funList[0].get_request_parameters()[0].as_integer().is_signed, false);
+	QCOMPARE(funList[0].get_request_parameters()[1].get_bit_size(), 8);
+	QCOMPARE(funList[0].get_request_parameters()[2].get_bit_size(), 8);
 
-	QCOMPARE(funList[0].get_request_parameters()[0].typeName, QString("uint16_t"));
-	QCOMPARE(funList[0].get_request_parameters()[1].typeName, QString("enum1_t"));
-	QCOMPARE(funList[0].get_request_parameters()[2].typeName, QString("enum2_t"));
+	QCOMPARE(funList[0].get_request_parameters()[0].get_parameter_position(), 1);
+	QCOMPARE(funList[0].get_request_parameters()[1].get_parameter_position(), 2);
+	QCOMPARE(funList[0].get_request_parameters()[2].get_parameter_position(), 3);
 
-	QCOMPARE(funList[0].get_request_parameters()[0].rpcParamType, RPCParamType_t::param_int);
-	QCOMPARE(funList[0].get_request_parameters()[1].rpcParamType, RPCParamType_t::param_enum);
-	QCOMPARE(funList[0].get_request_parameters()[2].rpcParamType, RPCParamType_t::param_enum);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values.size(), 4);
 
-	QCOMPARE(funList[0].get_request_parameters()[0].indexPosition, 1);
-	QCOMPARE(funList[0].get_request_parameters()[1].indexPosition, 2);
-	QCOMPARE(funList[0].get_request_parameters()[2].indexPosition, 3);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[0].first, 0);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[0].second, "enum1_None");
 
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues.count(), 4);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[1].first, 1);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[1].second, "enum1_A");
 
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[0].first, 0);
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[0].second, QString("enum1_None"));
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[2].first, 2);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[2].second, "enum1_B");
 
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[1].first, 1);
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[1].second, QString("enum1_A"));
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[3].first, 3);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[3].second, "enum1_C");
 
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[2].first, 2);
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[2].second, QString("enum1_B"));
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values.size(), 2);
 
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[3].first, 3);
-	QCOMPARE(funList[0].get_request_parameters()[1].enumValues[3].second, QString("enum1_C"));
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[0].first, 0);
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[0].second, "enum2_A");
 
-	QCOMPARE(funList[0].get_request_parameters()[2].enumValues.count(), 2);
-
-	QCOMPARE(funList[0].get_request_parameters()[2].enumValues[0].first, 0);
-	QCOMPARE(funList[0].get_request_parameters()[2].enumValues[0].second, QString("enum2_A"));
-
-	QCOMPARE(funList[0].get_request_parameters()[2].enumValues[1].first, 1);
-	QCOMPARE(funList[0].get_request_parameters()[2].enumValues[1].second, QString("enum2_B"));
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[1].first, 1);
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[1].second, "enum2_B");
 
 	QCOMPARE(funList[0].get_reply_parameters().empty(), true);
 #endif

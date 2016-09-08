@@ -14,7 +14,6 @@ class RPCRuntimeParameterDescription;
 
 class RPCRuntimeDecodedParam {
 	public:
-	enum class Type { integer, enumeration, structure, array };
 	RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &param);
 	uint64_t as_uint() const;
 	int64_t as_int() const;
@@ -23,7 +22,7 @@ class RPCRuntimeDecodedParam {
 	std::vector<RPCRuntimeDecodedParam> as_array() const;
 
 	private:
-	const RPCRuntimeParameterDescription *param;
+	const RPCRuntimeParameterDescription *description;
 };
 
 std::istream &operator>>(std::istream &is, RPCRuntimeDecodedParam &param);
