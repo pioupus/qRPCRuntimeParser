@@ -4,16 +4,30 @@
 #include <string>
 #include <vector>
 
+class RPCRuntimeDecodedParam;
+
 /*
  * A RPCRuntimeParameterDescription represents how a Parameter is encoded in a RPC-generated message
  */
 
-class RPCRuntimeDecodedParam;
+class RPCRuntimeParameterDescription;
 
-struct RPCRuntimeIntegerParameter;
-struct RPCRuntimeEnumerationParameter;
-struct RPCRuntimeStructureParameter;
-struct RPCRuntimeArrayParameter;
+struct RPCRuntimeIntegerParameter {
+	bool is_signed;
+};
+
+struct RPCRuntimeEnumerationParameter {
+	std::vector<std::pair<int, std::string>> values;
+};
+
+struct RPCRuntimeStructureParameter {
+	std::vector<RPCRuntimeParameterDescription> members;
+};
+
+struct RPCRuntimeArrayParameter {
+	std::vector<RPCRuntimeParameterDescription> members;
+};
+
 
 class RPCRuntimeParameterDescription {
 	public:
@@ -27,32 +41,22 @@ class RPCRuntimeParameterDescription {
 	const std::string &get_parameter_name() const;
 	int get_parameter_position() const;
 
-	RPCRuntimeIntegerParameter as_integer() const;
-	RPCRuntimeEnumerationParameter as_enumeration() const;
-	RPCRuntimeStructureParameter as_structure() const;
-	RPCRuntimeArrayParameter as_array() const;
+	const RPCRuntimeIntegerParameter &as_integer() const;
+	const RPCRuntimeEnumerationParameter &as_enumeration() const;
+	const RPCRuntimeStructureParameter &as_structure() const;
+	const RPCRuntimeArrayParameter &as_array() const;
 
 	private:
 	Type type;
 	int bit_size;
 	std::string parameter_name;
 	int parameter_position;
-};
-
-struct RPCRuntimeIntegerParameter {
-	bool is_signed;
-};
-
-struct RPCRuntimeEnumerationParameter {
-	std::vector<std::pair<std::string, int>> values;
-};
-
-struct RPCRuntimeStructureParameter {
-	std::vector<RPCRuntimeParameterDescription> members;
-};
-
-struct RPCRuntimeArrayParameter {
-	std::vector<RPCRuntimeParameterDescription> members;
+	struct Type_dependent_values{ //this could be a union, but the implementation difficulty is not justified by a couple of bytes
+		RPCRuntimeIntegerParameter integer;
+		RPCRuntimeEnumerationParameter enumeration;
+		RPCRuntimeStructureParameter structure;
+		RPCRuntimeArrayParameter array;
+	}type_dependent_values;
 };
 
 #endif // RPCRUNTIMEPARAMETERDESCRIPTION_H
