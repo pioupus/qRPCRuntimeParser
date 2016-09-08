@@ -13,6 +13,7 @@ SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_paramter_description.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_transfer.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpc_watch_point.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_decoded_param.cpp
+SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/channel_codec_impl.cpp
 
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_decoder.h
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_function.h
