@@ -73,6 +73,36 @@ static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml
 			common_attributes.parameter_position, std::move(enumeration)};
 }
 
+static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeArrayParameter array;
+
+	xml_reader.skipCurrentElement();
+
+	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+			common_attributes.parameter_position, std::move(array)};
+}
+
+static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeStructureParameter structure;
+
+	xml_reader.skipCurrentElement();
+
+	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+			common_attributes.parameter_position, std::move(structure)};
+}
+
+static RPCRuntimeParameterDescription parse_character_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeStructureParameter structure;
+
+	xml_reader.skipCurrentElement();
+
+	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+			common_attributes.parameter_position, std::move(structure)};
+}
+
 static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader) {
 	assert(xml_reader.name() == "parameter");
 	const auto &parameter_attributes = xml_reader.attributes();
@@ -82,9 +112,11 @@ static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_read
 	} else if (type_name == "enum") {
 		return parse_enum_parameter(xml_reader);
 	} else if (type_name == "struct") {
-		//return parse_struct_parameter();
+		return parse_struct_parameter(xml_reader);
 	} else if (type_name == "array") {
-		//return parse_array_parameter();
+		return parse_array_parameter(xml_reader);
+	}else if (type_name == "character"){
+		return parse_character_parameter(xml_reader);
 	}
 	//unknown type
 	qDebug() << "unknown parameter type" << type_name;

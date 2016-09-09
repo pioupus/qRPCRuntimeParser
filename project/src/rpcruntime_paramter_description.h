@@ -28,14 +28,18 @@ struct RPCRuntimeArrayParameter {
 	std::vector<RPCRuntimeParameterDescription> members;
 };
 
+struct RPCRuntimeCharacterParameter {
+};
+
 class RPCRuntimeParameterDescription {
 	public:
-	enum class Type { integer, enumeration, structure, array };
+	enum class Type { integer, enumeration, structure, array, character };
 
 	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeIntegerParameter integer);
 	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeEnumerationParameter enumeration);
 	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeStructureParameter structure);
 	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeArrayParameter array);
+	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeCharacterParameter character);
 
 	RPCRuntimeDecodedParam create_value() const;
 	Type get_type() const;
@@ -48,6 +52,7 @@ class RPCRuntimeParameterDescription {
 	const RPCRuntimeEnumerationParameter &as_enumeration() const;
 	const RPCRuntimeStructureParameter &as_structure() const;
 	const RPCRuntimeArrayParameter &as_array() const;
+	const RPCRuntimeCharacterParameter &as_character() const;
 
 	private:
 	Type type;
@@ -60,6 +65,7 @@ class RPCRuntimeParameterDescription {
 		RPCRuntimeEnumerationParameter enumeration;
 		RPCRuntimeStructureParameter structure;
 		RPCRuntimeArrayParameter array;
+		RPCRuntimeCharacterParameter character;
 	} type_dependent_values;
 };
 

@@ -41,6 +41,15 @@ RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std
 	type_dependent_values.array = std::move(array);
 }
 
+RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeCharacterParameter character)
+	: type(RPCRuntimeParameterDescription::Type::array)
+	, bit_size(bit_size)
+	, parameter_name(std::move(name))
+	, parameter_ctype(std::move(ctype))
+	, parameter_position(position) {
+	type_dependent_values.character = std::move(character);
+}
+
 RPCRuntimeParameterDescription::Type RPCRuntimeParameterDescription::get_type() const {
 	return type;
 }
@@ -80,4 +89,10 @@ const RPCRuntimeStructureParameter &RPCRuntimeParameterDescription::as_structure
 const RPCRuntimeArrayParameter &RPCRuntimeParameterDescription::as_array() const {
 	assert(type == Type::array);
 	return type_dependent_values.array;
+}
+
+const RPCRuntimeCharacterParameter &RPCRuntimeParameterDescription::as_character() const
+{
+	assert(type == Type::character);
+	return type_dependent_values.character;
 }

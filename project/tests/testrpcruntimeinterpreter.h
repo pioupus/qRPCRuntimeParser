@@ -24,6 +24,7 @@ private slots:
     void loadXMLFile_rpcArrayInStructTest();
     void loadXMLFile_rpcEnumInArrayTest();
     void loadXMLFile_rpcNegValueInEnumTest();
+#if 0
     void loadXMLFile_rpcDecodeTest_uint32_t();
     void loadXMLFile_rpcDecodeTest_int8_t();
     void loadXMLFile_rpcDecodeTest_int16_t();
@@ -49,6 +50,7 @@ private slots:
 
     void loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report();
     void loadXMLFile_rpcSignedUnsingedBug();
+#endif
 private:
     QString callBack_FieldID;
     QString callBack_humanReadableName;
