@@ -40,14 +40,15 @@ static RPCRuntimeParameterDescription parse_integer_parameter(QXmlStreamReader &
 	xml_reader.readNextStartElement();
 	assert(xml_reader.name() == "integer");
 	auto signed_string = xml_reader.attributes().value("signed");
-	if (signed_string == "True") {
+	if (signed_string == "True" || signed_string == "true") {
 		integer_parameter.is_signed = true;
-	} else if (signed_string == "False") {
+	} else if (signed_string == "False" || signed_string == "false") {
 		integer_parameter.is_signed = false;
 	} else {
-		throw std::runtime_error("Integer parameter has no signed attribute");
+		throw std::runtime_error("Integer parameter has no propper signed attribute");
 	}
 	xml_reader.skipCurrentElement(); //integer
+
 	xml_reader.skipCurrentElement(); //parameter
 	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
 			common_attributes.parameter_position, std::move(integer_parameter)};

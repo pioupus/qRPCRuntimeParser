@@ -89,21 +89,25 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest() {
 }
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsignedTest() {
-#if RUNTEST
+#if RUNTEST || 1
     RPCRunTimeProtocolDescription rpcinterpreter;
 
-    bool result = rpcinterpreter.openProtocolDescription("scripts/rpcSignedUnsignedTest.xml");
-    QCOMPARE(result, true);
+	{
+		std::ifstream xmlfile{"scripts/rpcSignedUnsignedTest.xml"};
+		Q_ASSERT(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
-    QCOMPARE(funList.count(), 1);
-    QCOMPARE(funList[0].request.paramList.count(), 4);
-    QCOMPARE(funList[0].request.paramList[0].isSigned, true);
-    QCOMPARE(funList[0].request.paramList[1].isSigned, true);
-    QCOMPARE(funList[0].request.paramList[2].isSigned, false);
-    QCOMPARE(funList[0].request.paramList[3].isSigned, false);
+	auto &funList = rpcinterpreter.get_functions();
+	QCOMPARE(funList.size(), 1u);
+	QCOMPARE(funList[0].get_request_parameters().size(), 4u);
+	QCOMPARE(funList[0].get_request_parameters()[0].as_integer().is_signed, true);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_integer().is_signed, true);
+	QCOMPARE(funList[0].get_request_parameters()[2].as_integer().is_signed, false);
+	QCOMPARE(funList[0].get_request_parameters()[3].as_integer().is_signed, false);
 
-    QCOMPARE(funList[0].reply.isNull(), true);
+	QCOMPARE(funList[0].get_reply_parameters().empty(), true);
 #endif
 }
 
@@ -114,19 +118,19 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt32ReplyTest() {
     bool result = rpcinterpreter.openProtocolDescription("scripts/rpcInt32ReplyTest.xml");
     QCOMPARE(result, true);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
-    QCOMPARE(funList.count(), 1);
+	auto &funList = rpcinterpreter.get_functions();
+	QCOMPARE(funList.size(), 1);
     QCOMPARE(funList[0].name, QString("simpleTest"));
     QCOMPARE(funList[0].request.ID, 4);
-    QCOMPARE(funList[0].request.paramList.count(), 1);
-    QCOMPARE(funList[0].request.paramList[0].name, QString("i"));
-    QCOMPARE(funList[0].request.paramList[0].elementBitLength, 32);
-    QCOMPARE(funList[0].request.paramList[0].isSigned, true);
-    QCOMPARE(funList[0].request.paramList[0].typeName, QString("int32_t"));
-    QCOMPARE(funList[0].request.paramList[0].rpcParamType, RPCParamType_t::param_int);
-    QCOMPARE(funList[0].request.paramList[0].indexPosition, 1);
+	QCOMPARE(funList[0].get_request_parameters().size(), 1);
+	QCOMPARE(funList[0].get_request_parameters()[0].name, QString("i"));
+	QCOMPARE(funList[0].get_request_parameters()[0].elementBitLength, 32);
+	QCOMPARE(funList[0].get_request_parameters()[0].as_integer().is_signed, true);
+	QCOMPARE(funList[0].get_request_parameters()[0].typeName, QString("int32_t"));
+	QCOMPARE(funList[0].get_request_parameters()[0].rpcParamType, RPCParamType_t::param_int);
+	QCOMPARE(funList[0].get_request_parameters()[0].indexPosition, 1);
 
-    QCOMPARE(funList[0].reply.isNull(), false);
+	QCOMPARE(funList[0].get_reply_parameters().empty(), false);
     QCOMPARE(funList[0].reply.ID, 5);
     QCOMPARE(funList[0].reply.paramList.count(), 1);
     QCOMPARE(funList[0].reply.paramList[0].name, QString("return_value_out"));
@@ -136,7 +140,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt32ReplyTest() {
     QCOMPARE(funList[0].reply.paramList[0].subParameters.count(), 1);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].rpcParamType, RPCParamType_t::param_int);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].elementBitLength, 32);
-    QCOMPARE(funList[0].reply.paramList[0].subParameters[0].isSigned, true);
+	QCOMPARE(funList[0].reply.paramList[0].subParameters[0].as_integer().is_signed, true);
 #endif
 }
 
@@ -147,23 +151,23 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInputTest() {
     bool result = rpcinterpreter.openProtocolDescription("scripts/arrayInputTest.xml");
     QCOMPARE(result, true);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
-    QCOMPARE(funList.count(), 1);
+	auto &funList = rpcinterpreter.get_functions();
+	QCOMPARE(funList.size(), 1);
     QCOMPARE(funList[0].name, QString("arrayInputTest"));
     QCOMPARE(funList[0].request.ID, 10);
-    QCOMPARE(funList[0].request.paramList.count(), 1);
-    QCOMPARE(funList[0].request.paramList[0].name, QString("text_in"));
-    QCOMPARE(funList[0].request.paramList[0].elementBitLength, 336);
-    QCOMPARE(funList[0].request.paramList[0].rpcParamType, RPCParamType_t::param_array);
-    QCOMPARE(funList[0].request.paramList[0].elementCount, 42);
-    QCOMPARE(funList[0].request.paramList[0].indexPosition, 1);
+	QCOMPARE(funList[0].get_request_parameters().size(), 1);
+	QCOMPARE(funList[0].get_request_parameters()[0].name, QString("text_in"));
+	QCOMPARE(funList[0].get_request_parameters()[0].elementBitLength, 336);
+	QCOMPARE(funList[0].get_request_parameters()[0].rpcParamType, RPCParamType_t::param_array);
+	QCOMPARE(funList[0].get_request_parameters()[0].elementCount, 42);
+	QCOMPARE(funList[0].get_request_parameters()[0].indexPosition, 1);
 
-    QCOMPARE(funList[0].request.paramList[0].subParameters.count(), 1);
-    QCOMPARE(funList[0].request.paramList[0].subParameters[0].rpcParamType, RPCParamType_t::param_character);
-    QCOMPARE(funList[0].request.paramList[0].subParameters[0].elementBitLength, 8);
-    QCOMPARE(funList[0].request.paramList[0].subParameters[0].typeName, QString("char"));
+	QCOMPARE(funList[0].get_request_parameters()[0].subParameters.count(), 1);
+	QCOMPARE(funList[0].get_request_parameters()[0].subParameters[0].rpcParamType, RPCParamType_t::param_character);
+	QCOMPARE(funList[0].get_request_parameters()[0].subParameters[0].elementBitLength, 8);
+	QCOMPARE(funList[0].get_request_parameters()[0].subParameters[0].typeName, QString("char"));
 
-    QCOMPARE(funList[0].reply.isNull(), false);
+	QCOMPARE(funList[0].get_reply_parameters().empty(), false);
     QCOMPARE(funList[0].reply.ID, 11);
     QCOMPARE(funList[0].reply.paramList.count(), 0);
 #endif
@@ -176,10 +180,10 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcMultiArrayInputTest() {
     bool result = rpcinterpreter.openProtocolDescription("scripts/multiArrayInputTest.xml");
     QCOMPARE(result, true);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
-    auto &pl = funList[0].request.paramList;
+	auto &funList = rpcinterpreter.get_functions();
+	auto &pl = funList[0].get_request_parameters();
 
-    QCOMPARE(funList.count(), 1);
+	QCOMPARE(funList.size(), 1);
 
     QCOMPARE(funList[0].name, QString("multiArrayTest"));
     QCOMPARE(funList[0].request.ID, 8);
@@ -210,7 +214,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcMultiArrayInputTest() {
     QCOMPARE(pl[0].subParameters[0].subParameters[0].subParameters[0].typeName, QString("char"));
     QCOMPARE(pl[0].subParameters[0].subParameters[0].subParameters[0].elementCount, 1);
 
-    QCOMPARE(funList[0].reply.isNull(), false);
+	QCOMPARE(funList[0].get_reply_parameters().empty(), false);
     QCOMPARE(funList[0].reply.ID, 9);
     QCOMPARE(funList[0].reply.paramList.count(), 0);
 #endif
@@ -223,13 +227,13 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest() {
     bool result = rpcinterpreter.openProtocolDescription("scripts/structInputTest.xml");
     QCOMPARE(result, true);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
+	auto &funList = rpcinterpreter.get_functions();
 
-    QCOMPARE(funList.count(), 1);
+	QCOMPARE(funList.size(), 1);
 
     QCOMPARE(funList[0].name, QString("structInputTest"));
     QCOMPARE(funList[0].request.ID, 22);
-    QCOMPARE(funList[0].request.paramList.count(), 0);
+	QCOMPARE(funList[0].get_request_parameters().size(), 0);
 
     QCOMPARE(funList[0].reply.ID, 23);
     QCOMPARE(funList[0].reply.paramList.count(), 1);
@@ -248,7 +252,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest() {
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].rpcParamType, RPCParamType_t::param_int);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].elementBitLength, 32);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].name, QString("n1"));
-    QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].isSigned, false);
+	QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].as_integer().is_signed, false);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].typeName, QString("uint32_t"));
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].indexPosition, 1);
 
@@ -256,7 +260,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest() {
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].elementBitLength, 16);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].name, QString("n2"));
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].typeName, QString("int16_t"));
-    QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].isSigned, true);
+	QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].as_integer().is_signed, true);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].indexPosition, 2);
 
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[2].rpcParamType, RPCParamType_t::param_character);
@@ -269,7 +273,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest() {
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[3].elementBitLength, 8);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[3].name, QString("n4"));
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[3].typeName, QString("uint8_t"));
-    QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[3].isSigned, false);
+	QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[3].as_integer().is_signed, false);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[3].indexPosition, 4);
 
 #endif
@@ -282,13 +286,13 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
     bool result = rpcinterpreter.openProtocolDescription("scripts/arrayInStructTest.xml");
     QCOMPARE(result, true);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
+	auto &funList = rpcinterpreter.get_functions();
 
-    QCOMPARE(funList.count(), 1);
+	QCOMPARE(funList.size(), 1);
 
     QCOMPARE(funList[0].name, QString("arrayInStructTest"));
     QCOMPARE(funList[0].request.ID, 24);
-    QCOMPARE(funList[0].request.paramList.count(), 0);
+	QCOMPARE(funList[0].get_request_parameters().size(), 0);
 
     QCOMPARE(funList[0].reply.ID, 23);
     QCOMPARE(funList[0].reply.paramList.count(), 1);
@@ -307,7 +311,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].rpcParamType, RPCParamType_t::param_int);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].elementBitLength, 16);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].name, QString("n"));
-    QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].isSigned, false);
+	QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].as_integer().is_signed, false);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].typeName, QString("uint16_t"));
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[0].indexPosition, 1);
 
@@ -322,7 +326,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].subParameters[0].rpcParamType, RPCParamType_t::param_int);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].subParameters[0].typeName, QString("uint8_t"));
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].subParameters[0].elementBitLength, 8);
-    QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].subParameters[0].isSigned, false);
+	QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].subParameters[0].as_integer().is_signed, false);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[1].subParameters[0].elementCount, 1);
 
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[2].rpcParamType, RPCParamType_t::param_array);
@@ -348,7 +352,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
 			 RPCParamType_t::param_int);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[2].subParameters[0].subParameters[0].subParameters[0].elementBitLength, 8);
     QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[2].subParameters[0].subParameters[0].subParameters[0].typeName, QString("uint8_t"));
-    QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[2].subParameters[0].subParameters[0].subParameters[0].isSigned, false);
+	QCOMPARE(funList[0].reply.paramList[0].subParameters[0].subParameters[2].subParameters[0].subParameters[0].subParameters[0].as_integer().is_signed, false);
 
 #endif
 }
@@ -360,10 +364,10 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcEnumInArrayTest() {
     bool result = rpcinterpreter.openProtocolDescription("scripts/enumInArray.xml");
     QCOMPARE(result, true);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
+	auto &funList = rpcinterpreter.get_functions();
     auto &pl = funList[0].reply.paramList;
 
-    QCOMPARE(funList.count(), 1);
+	QCOMPARE(funList.size(), 1);
 
     QCOMPARE(funList[0].name, QString("enumInArray"));
     QCOMPARE(funList[0].request.ID, 24);
@@ -403,10 +407,10 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcNegValueInEnumTest() {
     bool result = rpcinterpreter.openProtocolDescription("scripts/negValueInEnum.xml");
     QCOMPARE(result, true);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
+	auto &funList = rpcinterpreter.get_functions();
     auto &pl = funList[0].reply.paramList;
 
-    QCOMPARE(funList.count(), 1);
+	QCOMPARE(funList.size(), 1);
 
     QCOMPARE(funList[0].name, QString("negValueInEnum"));
     QCOMPARE(funList[0].request.ID, 24);
@@ -526,7 +530,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
     RPCRuntimeDecoder decoder(rpcinterpreter);
     decoder.RPCDecodeRPCData(inBinData);
 
-    QList<RPCRuntimeFunction> funList = rpcinterpreter.getFunctionList();
+	auto &funList = rpcinterpreter.get_functions();
     QCOMPARE(funList[0].reply.paramList.count(), 1);
     QCOMPARE(funList[0].reply.paramList[0].name, QString("s_inout"));
     QCOMPARE(funList[0].reply.paramList[0].rpcParamType, RPCParamType_t::param_array);
