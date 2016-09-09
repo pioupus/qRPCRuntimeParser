@@ -13,17 +13,23 @@
 //maybe we will need to differentiate between request and reply functions
 class RPCRuntimeFunction {
 	public:
-	std::string function_name;
-	std::string function_declaration;
+	RPCRuntimeFunction(int request_id, int reply_id, std::vector<RPCRuntimeParameterDescription> request_parameters,
+					   std::vector<RPCRuntimeParameterDescription> reply_parameters, std::string function_name, std::string function_declaration);
+	std::string get_function_name() const;
+	std::string get_function_declaration() const;
+
 	int get_request_id() const;
 	int get_reply_id() const;
 	const std::vector<RPCRuntimeParameterDescription> &get_request_parameters() const;
 	const std::vector<RPCRuntimeParameterDescription> &get_reply_parameters() const;
 
 	private:
-	int function_id;
+	int request_id;
+	int reply_id;
 	std::vector<RPCRuntimeParameterDescription> request_parameters;
 	std::vector<RPCRuntimeParameterDescription> reply_parameters;
+	std::string function_name;
+	std::string function_declaration;
 };
 
 #endif // RPCRUNTIMEFUNCTION_H

@@ -28,12 +28,14 @@ struct RPCRuntimeArrayParameter {
 	std::vector<RPCRuntimeParameterDescription> members;
 };
 
-
 class RPCRuntimeParameterDescription {
 	public:
 	enum class Type { integer, enumeration, structure, array };
 
-	RPCRuntimeParameterDescription(Type type, int bit_size, std::string parameter_name);
+	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeIntegerParameter integer);
+	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeEnumerationParameter enumeration);
+	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeStructureParameter structure);
+	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeArrayParameter array);
 
 	RPCRuntimeDecodedParam create_value() const;
 	Type get_type() const;
@@ -51,12 +53,12 @@ class RPCRuntimeParameterDescription {
 	int bit_size;
 	std::string parameter_name;
 	int parameter_position;
-	struct Type_dependent_values{ //this could be a union, but the implementation difficulty is not justified by a couple of bytes
+	struct Type_dependent_values { //this could be a union, but the implementation difficulty is not justified by a couple of bytes
 		RPCRuntimeIntegerParameter integer;
 		RPCRuntimeEnumerationParameter enumeration;
 		RPCRuntimeStructureParameter structure;
 		RPCRuntimeArrayParameter array;
-	}type_dependent_values;
+	} type_dependent_values;
 };
 
 #endif // RPCRUNTIMEPARAMETERDESCRIPTION_H

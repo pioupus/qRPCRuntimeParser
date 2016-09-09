@@ -2,10 +2,33 @@
 
 #include <cassert>
 
-RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(RPCRuntimeParameterDescription::Type type, int bit_size, std::string parameter_name)
-	: type(type)
+RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeIntegerParameter integer)
+	: type(RPCRuntimeParameterDescription::Type::integer)
 	, bit_size(bit_size)
-	, parameter_name(std::move(parameter_name)) {}
+	, parameter_name(std::move(parameter_name)) {
+	type_dependent_values.integer = std::move(integer);
+}
+
+RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeEnumerationParameter enumeration)
+	: type(RPCRuntimeParameterDescription::Type::enumeration)
+	, bit_size(bit_size)
+	, parameter_name(std::move(parameter_name)) {
+	type_dependent_values.enumeration = std::move(enumeration);
+}
+
+RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeStructureParameter structure)
+	: type(RPCRuntimeParameterDescription::Type::structure)
+	, bit_size(bit_size)
+	, parameter_name(std::move(parameter_name)) {
+	type_dependent_values.structure = std::move(structure);
+}
+
+RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeArrayParameter array)
+	: type(RPCRuntimeParameterDescription::Type::array)
+	, bit_size(bit_size)
+	, parameter_name(std::move(parameter_name)) {
+	type_dependent_values.array = std::move(array);
+}
 
 RPCRuntimeParameterDescription::Type RPCRuntimeParameterDescription::get_type() const {
 	return type;

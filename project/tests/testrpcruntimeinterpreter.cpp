@@ -36,7 +36,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest() {
 	auto &funList = rpcinterpreter.get_functions();
 
 	QCOMPARE(funList.size(), 1u);
-	QCOMPARE(funList[0].function_name, "rpcFunc_sendUint16AndEnumAndEnum"s);
+	QCOMPARE(funList[0].get_function_name(), "rpcFunc_sendUint16AndEnumAndEnum"s);
 	QCOMPARE(funList[0].get_request_id(), 2);
 	QCOMPARE(funList[0].get_request_parameters().empty(), false);
 
