@@ -6,20 +6,94 @@
 #include <fstream>
 #include <string>
 
-#if 0
-static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader){
-	//TODO
-	return {};
+struct Common_parameter_attributes {
+	int bit_size;
+	std::string parameter_name;
+	std::string parameter_ctype;
+	int parameter_position;
+};
+
+static Common_parameter_attributes parse_common_parameter_attributes(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes retval;
+	const auto &parameter_attributes = xml_reader.attributes();
+
+	retval.bit_size = parameter_attributes.value("bits").toInt();
+	assert(retval.bit_size != 0); //this fails if bit_size doesn't exist or could not be parsed or has an invalid value
+
+	retval.parameter_name = parameter_attributes.value("name").toString().toStdString();
+
+	retval.parameter_ctype = parameter_attributes.value("ctype").toString().toStdString();
+
+	retval.parameter_position = parameter_attributes.value("position").toInt();
+	assert(retval.parameter_position);
+
+	return retval;
 }
-#endif
 
-#if 0
-static std::vector<RPCRuntimeParameterDescription> parse_parameters(QXmlStreamReader &xml_reader){
+static RPCRuntimeParameterDescription parse_integer_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeIntegerParameter integer_parameter;
 
+	const auto &parameter_attributes = xml_reader.attributes();
+	assert(parameter_attributes.value("type") == "integer");
+
+	xml_reader.readNextStartElement();
+	assert(xml_reader.name() == "integer");
+	auto signed_string = xml_reader.attributes().value("signed");
+	if (signed_string == "True") {
+		integer_parameter.is_signed = true;
+	} else if (signed_string == "False") {
+		integer_parameter.is_signed = false;
+	} else {
+		throw std::runtime_error("Integer parameter has no signed attribute");
+	}
+	xml_reader.skipCurrentElement(); //integer
+	xml_reader.skipCurrentElement(); //parameter
+	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+			common_attributes.parameter_position, std::move(integer_parameter)};
 }
-#endif
 
-static std::ofstream debugoutput;
+static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeEnumerationParameter enumeration;
+
+	xml_reader.skipCurrentElement(); //parameter
+	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+			common_attributes.parameter_position, std::move(enumeration)};
+}
+
+static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader) {
+	assert(xml_reader.name() == "parameter");
+	const auto &parameter_attributes = xml_reader.attributes();
+	const auto &type_name = parameter_attributes.value("type");
+	if (type_name == "integer") {
+		return parse_integer_parameter(xml_reader);
+	} else if (type_name == "enum") {
+		return parse_enum_parameter(xml_reader);
+	} else if (type_name == "struct") {
+		//return parse_struct_parameter();
+	} else if (type_name == "array") {
+		//return parse_array_parameter();
+	}
+	//unknown type
+	qDebug() << "unknown parameter type" << type_name;
+	throw std::runtime_error("unknown parameter type: " + type_name.toString().toStdString());
+}
+
+static std::vector<RPCRuntimeParameterDescription> parse_parameters(QXmlStreamReader &xml_reader) {
+	std::vector<RPCRuntimeParameterDescription> retval;
+	while (xml_reader.readNextStartElement()) {
+		if (xml_reader.name() != "parameter") {
+			qDebug() << "next element should be \"parameter\" but is " << xml_reader.name() << "instead";
+		}
+		assert(xml_reader.name() == "parameter");
+		//const auto &parameter_attributes = xml_reader.attributes();
+		//debugoutput << "parameter name: " << parameter_attributes.value("name").toString().toStdString() << '\n';
+		//xml_reader.skipCurrentElement();
+		retval.push_back(parse_parameter(xml_reader));
+	}
+	return retval;
+}
 
 static RPCRuntimeFunction parse_function(QXmlStreamReader &xml_reader) {
 	int request_id = -1;
@@ -29,33 +103,31 @@ static RPCRuntimeFunction parse_function(QXmlStreamReader &xml_reader) {
 	std::string function_name;
 	std::string function_declaration;
 
-	assert(xml_reader.name() == "function");
 	const auto &function_attributes = xml_reader.attributes();
+	qDebug() << "should be function:" << xml_reader.name() << "name:" << function_attributes.value("name");
+
+	assert(xml_reader.name() == "function");
 	function_name = function_attributes.value("name").toString().toStdString();
-	debugoutput << "function_name: " << function_name << '\n';
+	qDebug() << "function_name:" << function_name.c_str();
 
 	while (xml_reader.readNextStartElement()) {
 		if (xml_reader.name() == "declaration") {
 			function_declaration = xml_reader.readElementText().toStdString();
-			debugoutput << "function_declaration: " << function_declaration << '\n';
+			qDebug() << "function_declaration:" << function_declaration.c_str();
 		} else if (xml_reader.name() == "request") {
 			bool ok;
 			request_id = xml_reader.attributes().value("ID").toInt(&ok);
-			if (!ok){
+			if (!ok) {
 				request_id = -1;
 			}
-			// TODO: parse request
-			debugoutput << "TODO: parse request\n";
-			xml_reader.skipCurrentElement();
+			request_parameters = parse_parameters(xml_reader);
 		} else if (xml_reader.name() == "reply") {
 			bool ok;
 			reply_id = xml_reader.attributes().value("ID").toInt(&ok);
-			if (!ok){
+			if (!ok) {
 				reply_id = -1;
 			}
-			// TODO: parse reply
-			debugoutput << "TODO: parse reply\n";
-			xml_reader.skipCurrentElement();
+			reply_parameters = parse_parameters(xml_reader);
 		} else {
 			qDebug() << "unknown function attribute" << xml_reader.name();
 			xml_reader.skipCurrentElement();
@@ -72,7 +144,6 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(std::istream &input)
 			return false;                                                                                                                                      \
 		}                                                                                                                                                      \
 	} while (0)
-	debugoutput.open("C:/TEMP/debug_output.txt");
 	QXmlStreamReader xml_reader;
 	xml_reader.setNamespaceProcessing(false);
 	for (std::string line; std::getline(input, line);) {

@@ -45,9 +45,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest() {
 	QCOMPARE(funList[0].get_request_parameters()[1].get_parameter_name(), "param2"s);
 	QCOMPARE(funList[0].get_request_parameters()[2].get_parameter_name(), "param3"s);
 
-	QCOMPARE(funList[0].get_request_parameters()[0].get_parameter_name(), "uint16_t"s);
-	QCOMPARE(funList[0].get_request_parameters()[1].get_parameter_name(), "enum1_t"s);
-	QCOMPARE(funList[0].get_request_parameters()[2].get_parameter_name(), "enum2_t"s);
+	QCOMPARE(funList[0].get_request_parameters()[0].get_parameter_type(), "uint16_t"s);
+	QCOMPARE(funList[0].get_request_parameters()[1].get_parameter_type(), "enum1_t"s);
+	QCOMPARE(funList[0].get_request_parameters()[2].get_parameter_type(), "enum2_t"s);
 
 	QCOMPARE(funList[0].get_request_parameters()[0].get_type(), RPCRuntimeParameterDescription::Type::integer);
 	QCOMPARE(funList[0].get_request_parameters()[1].get_type(), RPCRuntimeParameterDescription::Type::enumeration);

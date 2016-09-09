@@ -32,15 +32,16 @@ class RPCRuntimeParameterDescription {
 	public:
 	enum class Type { integer, enumeration, structure, array };
 
-	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeIntegerParameter integer);
-	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeEnumerationParameter enumeration);
-	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeStructureParameter structure);
-	RPCRuntimeParameterDescription(int bit_size, std::string parameter_name, RPCRuntimeArrayParameter array);
+	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeIntegerParameter integer);
+	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeEnumerationParameter enumeration);
+	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeStructureParameter structure);
+	RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeArrayParameter array);
 
 	RPCRuntimeDecodedParam create_value() const;
 	Type get_type() const;
 	int get_bit_size() const;
 	const std::string &get_parameter_name() const;
+	const std::string &get_parameter_type() const;
 	int get_parameter_position() const;
 
 	const RPCRuntimeIntegerParameter &as_integer() const;
@@ -52,6 +53,7 @@ class RPCRuntimeParameterDescription {
 	Type type;
 	int bit_size;
 	std::string parameter_name;
+	std::string parameter_ctype;
 	int parameter_position;
 	struct Type_dependent_values { //this could be a union, but the implementation difficulty is not justified by a couple of bytes
 		RPCRuntimeIntegerParameter integer;
