@@ -41,7 +41,8 @@ RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std
 	type_dependent_values.array = std::move(array);
 }
 
-RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position, RPCRuntimeCharacterParameter character)
+RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position,
+															   RPCRuntimeCharacterParameter character)
 	: type(RPCRuntimeParameterDescription::Type::array)
 	, bit_size(bit_size)
 	, parameter_name(std::move(name))
@@ -62,8 +63,7 @@ const std::string &RPCRuntimeParameterDescription::get_parameter_name() const {
 	return parameter_name;
 }
 
-const std::string &RPCRuntimeParameterDescription::get_parameter_type() const
-{
+const std::string &RPCRuntimeParameterDescription::get_parameter_type() const {
 	return parameter_ctype;
 }
 
@@ -91,8 +91,16 @@ const RPCRuntimeArrayParameter &RPCRuntimeParameterDescription::as_array() const
 	return type_dependent_values.array;
 }
 
-const RPCRuntimeCharacterParameter &RPCRuntimeParameterDescription::as_character() const
-{
+const RPCRuntimeCharacterParameter &RPCRuntimeParameterDescription::as_character() const {
 	assert(type == Type::character);
 	return type_dependent_values.character;
+}
+
+RPCRuntimeArrayParameter::RPCRuntimeArrayParameter() {}
+
+RPCRuntimeArrayParameter::RPCRuntimeArrayParameter(const RPCRuntimeArrayParameter &other) {
+	if (other.type != nullptr) {
+		type = std::make_unique<RPCRuntimeParameterDescription>(*other.type);
+		number_of_elements = other.number_of_elements;
+	}
 }

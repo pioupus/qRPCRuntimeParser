@@ -73,6 +73,18 @@ static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml
 			common_attributes.parameter_position, std::move(enumeration)};
 }
 
+static RPCRuntimeParameterDescription parse_character_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeStructureParameter structure;
+
+	xml_reader.skipCurrentElement();
+
+	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+			common_attributes.parameter_position, std::move(structure)};
+}
+
+static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader);
+
 static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xml_reader) {
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
 	RPCRuntimeArrayParameter array;
@@ -84,16 +96,6 @@ static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xm
 }
 
 static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader) {
-	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
-	RPCRuntimeStructureParameter structure;
-
-	xml_reader.skipCurrentElement();
-
-	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
-			common_attributes.parameter_position, std::move(structure)};
-}
-
-static RPCRuntimeParameterDescription parse_character_parameter(QXmlStreamReader &xml_reader) {
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
 	RPCRuntimeStructureParameter structure;
 
@@ -147,16 +149,16 @@ static RPCRuntimeFunction parse_function(QXmlStreamReader &xml_reader) {
 	std::string function_declaration;
 
 	const auto &function_attributes = xml_reader.attributes();
-	qDebug() << "should be function:" << xml_reader.name() << "name:" << function_attributes.value("name");
+	if (xml_reader.name() != "function") {
+		qDebug() << "next element should be \"function\" but is " << xml_reader.name() << "instead";
+	}
 
 	assert(xml_reader.name() == "function");
 	function_name = function_attributes.value("name").toString().toStdString();
-	qDebug() << "function_name:" << function_name.c_str();
 
 	while (xml_reader.readNextStartElement()) {
 		if (xml_reader.name() == "declaration") {
 			function_declaration = xml_reader.readElementText().toStdString();
-			qDebug() << "function_declaration:" << function_declaration.c_str();
 		} else if (xml_reader.name() == "request") {
 			bool ok;
 			request_id = xml_reader.attributes().value("ID").toInt(&ok);

@@ -1,6 +1,7 @@
 #ifndef RPCRUNTIMEPARAMETERDESCRIPTION_H
 #define RPCRUNTIMEPARAMETERDESCRIPTION_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -25,11 +26,19 @@ struct RPCRuntimeStructureParameter {
 };
 
 struct RPCRuntimeArrayParameter {
-	std::vector<RPCRuntimeParameterDescription> members;
+	RPCRuntimeArrayParameter();
+	RPCRuntimeArrayParameter(RPCRuntimeParameterDescription desc, int number_of_elements);
+	RPCRuntimeArrayParameter(const RPCRuntimeArrayParameter &other);
+	RPCRuntimeArrayParameter(RPCRuntimeArrayParameter &&other) = default;
+	RPCRuntimeArrayParameter &operator=(const RPCRuntimeArrayParameter &other);
+	RPCRuntimeArrayParameter &operator=(RPCRuntimeArrayParameter &&other) = default;
+	~RPCRuntimeArrayParameter() = default;
+
+	std::unique_ptr<RPCRuntimeParameterDescription> type; //pointer because size is unknown at this point
+	int number_of_elements = -1;
 };
 
-struct RPCRuntimeCharacterParameter {
-};
+struct RPCRuntimeCharacterParameter {};
 
 class RPCRuntimeParameterDescription {
 	public:
