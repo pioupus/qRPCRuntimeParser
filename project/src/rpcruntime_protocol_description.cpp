@@ -57,7 +57,17 @@ static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
 	RPCRuntimeEnumerationParameter enumeration;
 
-	xml_reader.skipCurrentElement(); //parameter
+	while (xml_reader.readNextStartElement()) {
+		assert(xml_reader.name() == "enum");
+		const auto &enum_attributes = xml_reader.attributes();
+		int value = enum_attributes.value("value").toInt();
+		std::string name = enum_attributes.value("name").toString().toStdString();
+
+		enumeration.values.emplace_back(value, std::move(name));
+
+		xml_reader.skipCurrentElement(); //enum
+	}
+
 	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
 			common_attributes.parameter_position, std::move(enumeration)};
 }
