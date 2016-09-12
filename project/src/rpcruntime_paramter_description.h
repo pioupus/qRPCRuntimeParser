@@ -46,6 +46,8 @@ class RPCRuntimeParameterDescription {
 	//RPCRuntimeParameterDescription &operator=(RPCRuntimeParameterDescription &&other);
 	~RPCRuntimeParameterDescription();
 
+	void fix_array_bit_byte_bug();
+
 	private:
 	Type type;
 	int bit_size;
@@ -66,7 +68,14 @@ struct RPCRuntimeIntegerParameter {
 };
 
 struct RPCRuntimeEnumerationParameter {
-	std::vector<std::pair<int, std::string>> values;
+	struct Enum_value{
+		std::string value; //can usually be converted to an int, but not always
+		std::string name;
+		int to_int() const; //will throw a std::domain_error if value is not convertible to int
+		bool is_int() const;
+	};
+
+	std::vector<Enum_value> values;
 };
 
 struct RPCRuntimeStructureParameter {

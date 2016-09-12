@@ -1,5 +1,6 @@
 #include "rpcruntime_paramter_description.h"
 
+#include <sstream>
 #include <cassert>
 
 RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position,
@@ -171,6 +172,29 @@ RPCRuntimeParameterDescription::~RPCRuntimeParameterDescription() {
 	}
 }
 
+void RPCRuntimeParameterDescription::fix_array_bit_byte_bug()
+{
+	//the bits reported in an array are incorrectly reported in bytes, not in bits
+	bit_size *= 8;
+}
+
 RPCRuntimeArrayParameter::RPCRuntimeArrayParameter(RPCRuntimeParameterDescription type, int number_of_elements)
 	: type(std::move(type))
 	, number_of_elements(number_of_elements) {}
+
+int RPCRuntimeEnumerationParameter::Enum_value::to_int() const
+{
+	int retval;
+	std::stringstream ss(value);
+	if (!(ss >> retval)){
+		throw std::domain_error("empty string cannot be converted to int");
+	}
+	return retval;
+}
+
+bool RPCRuntimeEnumerationParameter::Enum_value::is_int() const
+{
+	int retval = 0;
+	std::stringstream ss(value);
+	return ss >> retval;
+}

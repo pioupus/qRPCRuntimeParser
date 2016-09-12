@@ -64,25 +64,25 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest() {
 
 	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values.size(), 4u);
 
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[0].first, 0);
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[0].second, "enum1_None"s);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[0].to_int(), 0);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[0].name, "enum1_None"s);
 
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[1].first, 1);
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[1].second, "enum1_A"s);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[1].to_int(), 1);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[1].name, "enum1_A"s);
 
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[2].first, 2);
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[2].second, "enum1_B"s);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[2].to_int(), 2);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[2].name, "enum1_B"s);
 
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[3].first, 3);
-	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[3].second, "enum1_C"s);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[3].to_int(), 3);
+	QCOMPARE(funList[0].get_request_parameters()[1].as_enumeration().values[3].name, "enum1_C"s);
 
 	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values.size(), 2u);
 
-	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[0].first, 0);
-	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[0].second, "enum2_A"s);
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[0].to_int(), 0);
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[0].name, "enum2_A"s);
 
-	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[1].first, 1);
-	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[1].second, "enum2_B"s);
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[1].to_int(), 1);
+	QCOMPARE(funList[0].get_request_parameters()[2].as_enumeration().values[1].name, "enum2_B"s);
 
 	QCOMPARE(funList[0].get_reply_parameters().empty(), true);
 #endif
@@ -336,13 +336,12 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_type(), "uint8_t [42]"s);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_position(), 2);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().number_of_elements, 1);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.get_type(),
 			 RPCRuntimeParameterDescription::Type::integer);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.get_parameter_type(), "uint8_t"s);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.get_bit_size(), 8);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.as_integer().is_signed, false);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.as_array().number_of_elements, 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().number_of_elements, 42);
 
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_type(), RPCRuntimeParameterDescription::Type::array);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_bit_size(), 48);
@@ -358,7 +357,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.get_bit_size(), 48);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().number_of_elements, 2);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().number_of_elements, 1);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.get_type(),
 			 RPCRuntimeParameterDescription::Type::array);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.get_parameter_type(),
@@ -420,18 +418,20 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcEnumInArrayTest() {
 	QCOMPARE(pl[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::enumeration);
 	QCOMPARE(pl[0].as_array().type.get_bit_size(), 32);
 	QCOMPARE(pl[0].as_array().type.get_parameter_type(), "TypedefTestEnum"s);
-	QCOMPARE(pl[0].as_array().type.as_array().number_of_elements, 1);
 
-	QCOMPARE(pl[0].as_array().type.as_enumeration().values.size(), 3u);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values.size(), 4u);
 
-	QCOMPARE(pl[0].as_array().type.as_enumeration().values[0].first, 0);
-	QCOMPARE(pl[0].as_array().type.as_enumeration().values[0].second, "TTEa"s);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[0].to_int(), 0);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[0].name, "TTEa"s);
 
-	QCOMPARE(pl[0].as_array().type.as_enumeration().values[1].first, 1);
-	QCOMPARE(pl[0].as_array().type.as_enumeration().values[1].second, "TTEb"s);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[1].to_int(), 1);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[1].name, "TTEb"s);
 
-	QCOMPARE(pl[0].as_array().type.as_enumeration().values[2].first, 5);
-	QCOMPARE(pl[0].as_array().type.as_enumeration().values[2].second, "TTEc"s);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[2].to_int(), 5);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[2].name, "TTEc"s);
+
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[3].value, "TTEc + 1"s);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[3].name, "TTEd"s);
 
 #endif
 }
@@ -462,15 +462,14 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcNegValueInEnumTest() {
 	QCOMPARE(pl[0].get_type(), RPCRuntimeParameterDescription::Type::enumeration);
 	QCOMPARE(pl[0].get_bit_size(), 8);
 	QCOMPARE(pl[0].get_parameter_type(), "enum TestEnum"s);
-	QCOMPARE(pl[0].as_array().number_of_elements, 1);
 
-	QCOMPARE(pl[0].as_enumeration().values.size(), 2u);
+	QCOMPARE(pl[0].as_enumeration().values.size(), 3u);
 
-	QCOMPARE(pl[0].as_enumeration().values[0].first, 0);
-	QCOMPARE(pl[0].as_enumeration().values[0].second, "TEa"s);
+	QCOMPARE(pl[0].as_enumeration().values[0].to_int(), 0);
+	QCOMPARE(pl[0].as_enumeration().values[0].name, "TEa"s);
 
-	QCOMPARE(pl[0].as_enumeration().values[1].first, 1);
-	QCOMPARE(pl[0].as_enumeration().values[1].second, "TEb"s);
+	QCOMPARE(pl[0].as_enumeration().values[1].to_int(), 1);
+	QCOMPARE(pl[0].as_enumeration().values[1].name, "TEb"s);
 
 #endif
 }
