@@ -1,5 +1,7 @@
 #include "rpcruntime_function.h"
 
+#include <algorithm>
+
 RPCRuntimeFunction::RPCRuntimeFunction(int request_id, int reply_id, std::vector<RPCRuntimeParameterDescription> request_parameters,
 									   std::vector<RPCRuntimeParameterDescription> reply_parameters, std::string function_name,
 									   std::string function_declaration)
@@ -32,4 +34,18 @@ const std::vector<RPCRuntimeParameterDescription> &RPCRuntimeFunction::get_reque
 
 const std::vector<RPCRuntimeParameterDescription> &RPCRuntimeFunction::get_reply_parameters() const {
 	return reply_parameters;
+}
+
+int RPCRuntimeFunction::get_request_size() const
+{
+	return std::accumulate(std::begin(request_parameters), std::end(request_parameters), 1, [](int sum, const RPCRuntimeParameterDescription &param){
+		return sum + param.get_bit_size() / 8;
+	});
+}
+
+int RPCRuntimeFunction::get_reply_size() const
+{
+	return std::accumulate(std::begin(reply_parameters), std::end(reply_parameters), 1, [](int sum, const RPCRuntimeParameterDescription &param){
+		return sum + param.get_bit_size() / 8;
+	});
 }

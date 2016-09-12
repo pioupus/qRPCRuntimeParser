@@ -22,6 +22,8 @@ class RPCRuntimeFunction {
 	int get_reply_id() const;
 	const std::vector<RPCRuntimeParameterDescription> &get_request_parameters() const;
 	const std::vector<RPCRuntimeParameterDescription> &get_reply_parameters() const;
+	int get_request_size() const;
+	int get_reply_size() const;
 
 	private:
 	int request_id;

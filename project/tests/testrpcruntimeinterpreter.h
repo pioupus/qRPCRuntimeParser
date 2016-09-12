@@ -24,8 +24,8 @@ private slots:
     void loadXMLFile_rpcArrayInStructTest();
     void loadXMLFile_rpcEnumInArrayTest();
     void loadXMLFile_rpcNegValueInEnumTest();
-#if 0
     void loadXMLFile_rpcDecodeTest_uint32_t();
+#if 0
     void loadXMLFile_rpcDecodeTest_int8_t();
     void loadXMLFile_rpcDecodeTest_int16_t();
     void loadXMLFile_rpcDecodeTest_array_char();

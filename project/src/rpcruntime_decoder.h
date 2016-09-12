@@ -2,18 +2,24 @@
 #define RPCRUNTIMEDECODER_H
 
 #include "rpcruntime_protocol_description.h"
-
-class RPCRuntimeTransfer;
+#include "rpcruntime_transfer.h"
+//class RPCRuntimeTransfer;
 
 /*
  * The RPCRuntimeDecoder decodes binary data into scrip-understandable Function calls and encodes the reply
  */
 
 struct RPCRuntimeDecoder {
+	RPCRuntimeDecoder(RPCRunTimeProtocolDescription &description);
+	template<std::size_t size>
+	RPCRuntimeTransfer decode(const unsigned char (&data)[size]){
+		return decode(data, size);
+	}
+
 	RPCRuntimeTransfer decode(const unsigned char *data, int size);
 
 	private:
-	RPCRunTimeProtocolDescription description;
+	RPCRunTimeProtocolDescription *description;
 };
 
 #endif // RPCRUNTIMEDECODERESULT_H

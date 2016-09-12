@@ -1,6 +1,7 @@
 #include "testrpcruntimeinterpreter.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_protocol_description.h"
+#include "rpcruntime_decoded_function_call.h"
 
 #include <QByteArray>
 #include <QPair>
@@ -474,13 +475,10 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcNegValueInEnumTest() {
 #endif
 }
 
-#if 0
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t() {
 #if RUNTEST
 	const uint8_t inBinData_array[] = {0x04, 0x05, 0x10, 0x20, 0x30};
     RPCRunTimeProtocolDescription rpcinterpreter;
-
-	QByteArray inBinData = QByteArray((char *)inBinData_array, sizeof(inBinData_array));
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_uint32_t.xml"};
@@ -490,15 +488,20 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t() {
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.RPCDecodeRPCData(inBinData);
-	QCOMPARE(decoder.transfer.getTotalLength(), 5);
+	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
 
-	QCOMPARE(decoder.decodedParams.count(), (int)1);
-	QCOMPARE(decoder.decodedParams[0].value, (int64_t)0x30201005);
+	QCOMPARE(transfer.is_complete(), true);
+	QCOMPARE(transfer.get_min_number_of_bytes(), 5);
+
+	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
+
+	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_int(), 0x30201005ll);
 
 #endif
 }
 
+#if 0
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int8_t() {
 #if RUNTEST
     const uint8_t inBinData_array[2] = {0x04, 0xF0};

@@ -4,6 +4,8 @@
 #include <vector>
 
 class RPCRunTimeProtocolDescription;
+class RPCRuntimeParameterDescription;
+class RPCRuntimeDecodedFunctionCall;
 
 /*
  * A RPCRuntimeTransfer represents the Data in RPC-Generator encoding received or to be sent
@@ -16,6 +18,8 @@ class RPCRuntimeTransfer {
 
 	//number of bytes that are at least required to make a complete message
 	int get_min_number_of_bytes() const;
+	//returns if we don't require more bytes for the transfer to be complete
+	bool is_complete() const;
 
 	template <class Iterator>
 	void add_data(Iterator begin_it, Iterator end_it) {
@@ -23,10 +27,11 @@ class RPCRuntimeTransfer {
 	}
 
 	const std::vector<unsigned char> encode() const;
+	RPCRuntimeDecodedFunctionCall decode() const;
 
 	private:
 	std::vector<unsigned char> data;
-	const RPCRunTimeProtocolDescription *function;
+	const RPCRunTimeProtocolDescription *protocol;
 };
 
 #endif //RPCRUNTIMETRANSFER_H

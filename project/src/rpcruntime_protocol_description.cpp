@@ -265,3 +265,25 @@ int RPCRunTimeProtocolDescription::get_version_number() const {
 int RPCRunTimeProtocolDescription::get_command_id_start() const {
 	return command_id_start;
 }
+
+const std::vector<RPCRuntimeParameterDescription> &RPCRunTimeProtocolDescription::get_parameters(int id) const
+{
+	for (auto &function : functions){
+		if (function.get_reply_id() == id){
+			return function.get_reply_parameters();
+		}
+		if (function.get_request_id() == id){
+			return function.get_request_parameters();
+		}
+	}
+	//don't have a function with the appropriate ID
+	throw std::runtime_error("invalid ID for loaded functions");
+}
+
+int RPCRunTimeProtocolDescription::get_parameter_size_bytes(int id) const
+{
+	auto &parameters = get_parameters(id);
+	return std::accumulate(std::begin(parameters), std::end(parameters), 1, [](int sum, const RPCRuntimeParameterDescription &param){
+		return sum + param.get_bit_size() / 8;
+	});
+}

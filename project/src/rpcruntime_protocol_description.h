@@ -4,6 +4,7 @@
 #include "rpcruntime_function.h"
 
 #include <istream>
+#include <vector>
 
 /*
  * A RPCRunTimeProtocolDescription describes the Protocol created by the RPC-Generator loaded from an XML-File
@@ -17,6 +18,8 @@ class RPCRunTimeProtocolDescription {
 	const std::string &get_project_name() const;
 	int get_version_number() const;
 	int get_command_id_start() const;
+	const std::vector<RPCRuntimeParameterDescription> &get_parameters(int id) const;
+	int get_parameter_size_bytes(int id) const;
 
 	private:
 	std::vector<RPCRuntimeFunction> functions;
