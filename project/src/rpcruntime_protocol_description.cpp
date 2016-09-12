@@ -25,7 +25,6 @@ static Common_parameter_attributes parse_common_parameter_attributes(QXmlStreamR
 	retval.parameter_ctype = parameter_attributes.value("ctype").toString().toStdString();
 
 	retval.parameter_position = parameter_attributes.value("position").toInt();
-	assert(retval.parameter_position);
 
 	return retval;
 }
@@ -75,20 +74,33 @@ static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml
 
 static RPCRuntimeParameterDescription parse_character_parameter(QXmlStreamReader &xml_reader) {
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
-	RPCRuntimeStructureParameter structure;
+	RPCRuntimeCharacterParameter character;
 
 	xml_reader.skipCurrentElement();
 
 	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
-			common_attributes.parameter_position, std::move(structure)};
+			common_attributes.parameter_position, std::move(character)};
 }
 
 static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader);
 
+static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader);
+
 static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xml_reader) {
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
-	RPCRuntimeArrayParameter array;
 
+	const auto &parameter_attributes = xml_reader.attributes();
+	assert(parameter_attributes.value("type") == "array");
+
+	xml_reader.readNextStartElement();
+
+	const auto &array_attributes = xml_reader.attributes();
+	assert(xml_reader.name() == "array");
+
+	int number_of_elements = array_attributes.value("elements").toInt();
+	assert(number_of_elements);
+
+	RPCRuntimeArrayParameter array{parse_parameter(xml_reader), number_of_elements};
 	xml_reader.skipCurrentElement();
 
 	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
@@ -106,7 +118,7 @@ static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &x
 }
 
 static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader) {
-	assert(xml_reader.name() == "parameter");
+	assert(xml_reader.name() == "parameter" || xml_reader.name() == "array");
 	const auto &parameter_attributes = xml_reader.attributes();
 	const auto &type_name = parameter_attributes.value("type");
 	if (type_name == "integer") {

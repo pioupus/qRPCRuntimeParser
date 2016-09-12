@@ -142,9 +142,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt32ReplyTest() {
 	QCOMPARE(funList[0].get_reply_parameters()[0].get_type(), RPCRuntimeParameterDescription::Type::array);
 	QCOMPARE(funList[0].get_reply_parameters()[0].get_parameter_position(), 1);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_type(), RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_bit_size(), 32);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_integer().is_signed, true);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::integer);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_bit_size(), 32);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_integer().is_signed, true);
 #endif
 }
 
@@ -170,12 +170,11 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInputTest() {
 	QCOMPARE(funList[0].get_request_parameters()[0].as_array().number_of_elements, 42);
 	QCOMPARE(funList[0].get_request_parameters()[0].get_parameter_position(), 1);
 
-	QCOMPARE(funList[0].get_request_parameters()[0].as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_request_parameters()[0].as_array().type->get_type(), RPCRuntimeParameterDescription::Type::character);
-	QCOMPARE(funList[0].get_request_parameters()[0].as_array().type->get_bit_size(), 8);
-	QCOMPARE(funList[0].get_request_parameters()[0].as_array().type->get_parameter_type(), "char"s);
+	QCOMPARE(funList[0].get_request_parameters()[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::character);
+	QCOMPARE(funList[0].get_request_parameters()[0].as_array().type.get_bit_size(), 8);
+	QCOMPARE(funList[0].get_request_parameters()[0].as_array().type.get_parameter_type(), "char"s);
 
-	QCOMPARE(funList[0].get_reply_parameters().empty(), false);
+	QCOMPARE(funList[0].get_reply_parameters().empty(), true);
 	QCOMPARE(funList[0].get_reply_id(), 11);
 	QCOMPARE(funList[0].get_reply_parameters().size(), 0u);
 #endif
@@ -207,26 +206,21 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcMultiArrayInputTest() {
 	QCOMPARE(pl[0].get_parameter_position(), 1);
 	QCOMPARE(pl[0].get_parameter_type(), "char [2][3][4]"s);
 
-	QCOMPARE(pl[0].as_array().number_of_elements, 1);
+	QCOMPARE(pl[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::array);
+	QCOMPARE(pl[0].as_array().type.get_bit_size(), 96);
+	QCOMPARE(pl[0].as_array().type.get_parameter_type(), "char [3][4]"s);
+	QCOMPARE(pl[0].as_array().type.as_array().number_of_elements, 3);
 
-	QCOMPARE(pl[0].as_array().type->get_type(), RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(pl[0].as_array().type->get_bit_size(), 96);
-	QCOMPARE(pl[0].as_array().type->get_parameter_type(), "char [3][4]"s);
-	QCOMPARE(pl[0].as_array().type->as_array().number_of_elements, 3);
+	QCOMPARE(pl[0].as_array().type.as_array().type.get_type(), RPCRuntimeParameterDescription::Type::array);
+	QCOMPARE(pl[0].as_array().type.as_array().type.get_bit_size(), 32);
+	QCOMPARE(pl[0].as_array().type.as_array().type.get_parameter_type(), "char [4]"s);
+	QCOMPARE(pl[0].as_array().type.as_array().type.as_array().number_of_elements, 4);
 
-	QCOMPARE(pl[0].as_array().type->as_array().number_of_elements, 1);
-	QCOMPARE(pl[0].as_array().type->as_array().type->get_type(), RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(pl[0].as_array().type->as_array().type->get_bit_size(), 32);
-	QCOMPARE(pl[0].as_array().type->as_array().type->get_parameter_type(), "char [4]"s);
-	QCOMPARE(pl[0].as_array().type->as_array().type->as_array().number_of_elements, 4);
+	QCOMPARE(pl[0].as_array().type.as_array().type.as_array().type.get_type(), RPCRuntimeParameterDescription::Type::character);
+	QCOMPARE(pl[0].as_array().type.as_array().type.as_array().type.get_bit_size(), 8);
+	QCOMPARE(pl[0].as_array().type.as_array().type.as_array().type.get_parameter_type(), "char"s);
 
-	QCOMPARE(pl[0].as_array().type->as_array().type->as_array().number_of_elements, 1);
-	QCOMPARE(pl[0].as_array().type->as_array().type->as_array().type->get_type(), RPCRuntimeParameterDescription::Type::character);
-	QCOMPARE(pl[0].as_array().type->as_array().type->as_array().type->get_bit_size(), 8);
-	QCOMPARE(pl[0].as_array().type->as_array().type->as_array().type->get_parameter_type(), "char"s);
-	QCOMPARE(pl[0].as_array().type->as_array().type->as_array().type->as_array().number_of_elements, 1);
-
-	QCOMPARE(funList[0].get_reply_parameters().empty(), false);
+	QCOMPARE(funList[0].get_reply_parameters().empty(), true);
 	QCOMPARE(funList[0].get_reply_id(), 9);
 	QCOMPARE(funList[0].get_reply_parameters().size(), 0u);
 #endif
@@ -260,37 +254,37 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest() {
 	QCOMPARE(funList[0].get_reply_parameters()[0].get_parameter_position(), 1);
 
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_type(), RPCRuntimeParameterDescription::Type::structure);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_bit_size(), 64);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_parameter_type(), "struct TestStruct"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::structure);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_bit_size(), 64);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_parameter_type(), "struct TestStruct"s);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members.size(), 4u);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_type(), RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_bit_size(), 32);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_parameter_name(), "n1"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].as_integer().is_signed, false);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_parameter_type(), "uint32_t"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_parameter_position(), 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members.size(), 4u);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_type(), RPCRuntimeParameterDescription::Type::integer);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_bit_size(), 32);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_parameter_name(), "n1"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].as_integer().is_signed, false);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_parameter_type(), "uint32_t"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_parameter_position(), 1);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_type(), RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_bit_size(), 16);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_parameter_name(), "n2"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_parameter_type(), "int16_t"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_integer().is_signed, true);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_parameter_position(), 2);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_type(), RPCRuntimeParameterDescription::Type::integer);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_bit_size(), 16);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_name(), "n2"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_type(), "int16_t"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_integer().is_signed, true);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_position(), 2);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_type(), RPCRuntimeParameterDescription::Type::character);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_bit_size(), 8);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_parameter_name(), "n3"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_parameter_type(), "char"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_parameter_position(), 3);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_type(), RPCRuntimeParameterDescription::Type::character);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_bit_size(), 8);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_parameter_name(), "n3"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_parameter_type(), "char"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_parameter_position(), 3);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[3].get_type(), RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[3].get_bit_size(), 8);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[3].get_parameter_name(), "n4"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[3].get_parameter_type(), "uint8_t"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[3].as_integer().is_signed, false);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[3].get_parameter_position(), 4);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[3].get_type(), RPCRuntimeParameterDescription::Type::integer);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[3].get_bit_size(), 8);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[3].get_parameter_name(), "n4"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[3].get_parameter_type(), "uint8_t"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[3].as_integer().is_signed, false);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[3].get_parameter_position(), 4);
 
 #endif
 }
@@ -323,72 +317,72 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
 	QCOMPARE(funList[0].get_reply_parameters()[0].get_parameter_position(), 1);
 
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_type(), RPCRuntimeParameterDescription::Type::structure);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_bit_size(), 400);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->get_parameter_type(), "TypedefTestStruct"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::structure);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_bit_size(), 400);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_parameter_type(), "TypedefTestStruct"s);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members.size(), 3u);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_type(), RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_bit_size(), 16);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_parameter_name(), "n"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].as_integer().is_signed, false);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_parameter_type(), "uint16_t"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[0].get_parameter_position(), 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members.size(), 3u);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_type(), RPCRuntimeParameterDescription::Type::integer);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_bit_size(), 16);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_parameter_name(), "n"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].as_integer().is_signed, false);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_parameter_type(), "uint16_t"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_parameter_position(), 1);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_type(), RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_bit_size(), 336);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_array().number_of_elements, 42);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_parameter_name(), "ia"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_parameter_type(), "uint8_t [42]"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].get_parameter_position(), 2);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_type(), RPCRuntimeParameterDescription::Type::array);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_bit_size(), 336);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().number_of_elements, 42);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_name(), "ia"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_type(), "uint8_t [42]"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_parameter_position(), 2);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_array().type->get_type(),
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().number_of_elements, 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.get_type(),
 			 RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_array().type->get_parameter_type(), "uint8_t"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_array().type->get_bit_size(), 8);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_array().type->as_integer().is_signed, false);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[1].as_array().type->as_array().number_of_elements, 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.get_parameter_type(), "uint8_t"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.get_bit_size(), 8);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.as_integer().is_signed, false);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().type.as_array().number_of_elements, 1);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_type(), RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_bit_size(), 48);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_parameter_name(), "iaa"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_parameter_type(), "uint8_t [1][2][3]"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].get_parameter_position(), 3);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_type(), RPCRuntimeParameterDescription::Type::array);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_bit_size(), 48);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().number_of_elements, 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_parameter_name(), "iaa"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_parameter_type(), "uint8_t [1][2][3]"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_parameter_position(), 3);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->get_type(),
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().number_of_elements, 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.get_type(),
 			 RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->get_parameter_type(), "uint8_t [2][3]"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->get_bit_size(), 48);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().number_of_elements, 2);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.get_parameter_type(), "uint8_t [2][3]"s);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.get_bit_size(), 48);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().number_of_elements, 2);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().number_of_elements, 1);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().type->get_type(),
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().number_of_elements, 1);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.get_type(),
 			 RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().type->get_parameter_type(),
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.get_parameter_type(),
 			 "uint8_t [3]"s);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().type->get_bit_size(), 24);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().type->as_array().number_of_elements,
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.get_bit_size(), 24);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().number_of_elements,
 			 3);
 
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().type->as_array().type->get_type(),
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.get_type(),
 			 RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().type->as_array().type->get_bit_size(),
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.get_bit_size(),
 			 8);
 	QCOMPARE(
-		funList[0].get_reply_parameters()[0].as_array().type->as_structure().members[2].as_array().type->as_array().type->as_array().type->get_parameter_type(),
+		funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.get_parameter_type(),
 		"uint8_t"s);
 	QCOMPARE(funList[0]
 				 .get_reply_parameters()[0]
 				 .as_array()
-				 .type->as_structure()
+				 .type.as_structure()
 				 .members[2]
 				 .as_array()
-				 .type->as_array()
-				 .type->as_array()
-				 .type->as_integer()
+				 .type.as_array()
+				 .type.as_array()
+				 .type.as_integer()
 				 .is_signed,
 			 false);
 
@@ -423,21 +417,21 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcEnumInArrayTest() {
 	QCOMPARE(pl[0].get_parameter_type(), "TypedefTestEnum [1]"s);
 
 	QCOMPARE(pl[0].as_array().number_of_elements, 1);
-	QCOMPARE(pl[0].as_array().type->get_type(), RPCRuntimeParameterDescription::Type::enumeration);
-	QCOMPARE(pl[0].as_array().type->get_bit_size(), 32);
-	QCOMPARE(pl[0].as_array().type->get_parameter_type(), "TypedefTestEnum"s);
-	QCOMPARE(pl[0].as_array().type->as_array().number_of_elements, 1);
+	QCOMPARE(pl[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::enumeration);
+	QCOMPARE(pl[0].as_array().type.get_bit_size(), 32);
+	QCOMPARE(pl[0].as_array().type.get_parameter_type(), "TypedefTestEnum"s);
+	QCOMPARE(pl[0].as_array().type.as_array().number_of_elements, 1);
 
-	QCOMPARE(pl[0].as_array().type->as_enumeration().values.size(), 3u);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values.size(), 3u);
 
-	QCOMPARE(pl[0].as_array().type->as_enumeration().values[0].first, 0);
-	QCOMPARE(pl[0].as_array().type->as_enumeration().values[0].second, "TTEa"s);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[0].first, 0);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[0].second, "TTEa"s);
 
-	QCOMPARE(pl[0].as_array().type->as_enumeration().values[1].first, 1);
-	QCOMPARE(pl[0].as_array().type->as_enumeration().values[1].second, "TTEb"s);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[1].first, 1);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[1].second, "TTEb"s);
 
-	QCOMPARE(pl[0].as_array().type->as_enumeration().values[2].first, 5);
-	QCOMPARE(pl[0].as_array().type->as_enumeration().values[2].second, "TTEc"s);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[2].first, 5);
+	QCOMPARE(pl[0].as_array().type.as_enumeration().values[2].second, "TTEc"s);
 
 #endif
 }

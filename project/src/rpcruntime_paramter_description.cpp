@@ -43,7 +43,7 @@ RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std
 
 RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(int bit_size, std::string name, std::string ctype, int position,
 															   RPCRuntimeCharacterParameter character)
-	: type(RPCRuntimeParameterDescription::Type::array)
+	: type(RPCRuntimeParameterDescription::Type::character)
 	, bit_size(bit_size)
 	, parameter_name(std::move(name))
 	, parameter_ctype(std::move(ctype))
@@ -171,11 +171,6 @@ RPCRuntimeParameterDescription::~RPCRuntimeParameterDescription() {
 	}
 }
 
-RPCRuntimeArrayParameter::RPCRuntimeArrayParameter() {}
-
-RPCRuntimeArrayParameter::RPCRuntimeArrayParameter(const RPCRuntimeArrayParameter &other) {
-	if (other.type != nullptr) {
-		type = std::make_unique<RPCRuntimeParameterDescription>(*other.type);
-		number_of_elements = other.number_of_elements;
-	}
-}
+RPCRuntimeArrayParameter::RPCRuntimeArrayParameter(RPCRuntimeParameterDescription type, int number_of_elements)
+	: type(std::move(type))
+	, number_of_elements(number_of_elements) {}

@@ -42,8 +42,8 @@ class RPCRuntimeParameterDescription {
 
 	RPCRuntimeParameterDescription(const RPCRuntimeParameterDescription &other);
 	RPCRuntimeParameterDescription(RPCRuntimeParameterDescription &&other);
-	RPCRuntimeParameterDescription &operator=(const RPCRuntimeParameterDescription &other);
-	RPCRuntimeParameterDescription &operator=(RPCRuntimeParameterDescription &&other);
+	//RPCRuntimeParameterDescription &operator=(const RPCRuntimeParameterDescription &other);
+	//RPCRuntimeParameterDescription &operator=(RPCRuntimeParameterDescription &&other);
 	~RPCRuntimeParameterDescription();
 
 	private:
@@ -74,15 +74,8 @@ struct RPCRuntimeStructureParameter {
 };
 
 struct RPCRuntimeArrayParameter {
-	RPCRuntimeArrayParameter();
-	RPCRuntimeArrayParameter(RPCRuntimeParameterDescription desc, int number_of_elements);
-	RPCRuntimeArrayParameter(const RPCRuntimeArrayParameter &other);
-	RPCRuntimeArrayParameter(RPCRuntimeArrayParameter &&other) = default;
-	RPCRuntimeArrayParameter &operator=(const RPCRuntimeArrayParameter &other);
-	RPCRuntimeArrayParameter &operator=(RPCRuntimeArrayParameter &&other) = default;
-	~RPCRuntimeArrayParameter() = default;
-
-	std::unique_ptr<RPCRuntimeParameterDescription> type; //pointer because size is unknown at this point
+	RPCRuntimeArrayParameter(RPCRuntimeParameterDescription type, int number_of_elements);
+	RPCRuntimeParameterDescription type;
 	int number_of_elements = -1;
 };
 
