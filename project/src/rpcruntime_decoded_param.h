@@ -28,6 +28,7 @@ class RPCRuntimeDecodedParam {
 
 	const RPCRuntimeParameterDescription *get_desciption() const;
 	void set_data(std::vector<unsigned char> data);
+	void set_data(const unsigned char *begin, int size);
 
 	private:
 	const RPCRuntimeParameterDescription *parameter_description;

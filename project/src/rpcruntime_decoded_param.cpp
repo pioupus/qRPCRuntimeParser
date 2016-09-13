@@ -71,7 +71,14 @@ std::vector<Decoded_struct> RPCRuntimeDecodedParam::as_struct() const
 {
 	std::vector<Decoded_struct> retval;
 	assert(parameter_description->get_type() == RPCRuntimeParameterDescription::Type::structure);
-	//TODO: actually fill retval
+	int current_data_position = 0;
+	for (auto &member : parameter_description->as_structure().members){
+		retval.push_back({member.get_parameter_name(), {member}});
+		auto data_size = member.get_bit_size() / 8;
+		retval.back().type.set_data(data.data() + current_data_position, data_size);
+		current_data_position += data_size;
+	}
+	assert(current_data_position == static_cast<int>(data.size()));
 	return retval;
 }
 
@@ -79,7 +86,10 @@ std::vector<RPCRuntimeDecodedParam> RPCRuntimeDecodedParam::as_array() const
 {
 	std::vector<RPCRuntimeDecodedParam> retval;
 	assert(parameter_description->get_type() == RPCRuntimeParameterDescription::Type::array);
-	//TODO: actually fill retval
+	for (int i = 0; i < parameter_description->as_array().number_of_elements; i++){
+		retval.emplace_back(parameter_description->as_array().type);
+		retval.back().set_data(data.data() + i * parameter_description->as_array().type.get_bit_size() / 8, parameter_description->as_array().type.get_bit_size() / 8);
+	}
 	return retval;
 }
 
@@ -108,6 +118,12 @@ const RPCRuntimeParameterDescription *RPCRuntimeDecodedParam::get_desciption() c
 
 void RPCRuntimeDecodedParam::set_data(std::vector<unsigned char> data) {
 	this->data = std::move(data);
+}
+
+void RPCRuntimeDecodedParam::set_data(const unsigned char *begin, int size)
+{
+	data.resize(size);
+	std::copy(begin, begin + size, std::begin(data));
 }
 
 std::istream &operator>>(std::istream &is, RPCRuntimeDecodedParam &param) {

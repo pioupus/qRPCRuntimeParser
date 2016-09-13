@@ -1,7 +1,7 @@
 #include "testrpcruntimeinterpreter.h"
+#include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_protocol_description.h"
-#include "rpcruntime_decoded_function_call.h"
 
 #include <QByteArray>
 #include <QPair>
@@ -363,27 +363,17 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.get_parameter_type(),
 			 "uint8_t [3]"s);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.get_bit_size(), 24);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().number_of_elements,
-			 3);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().number_of_elements, 3);
 
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.get_type(),
 			 RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.get_bit_size(),
-			 8);
+	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.get_bit_size(), 8);
 	QCOMPARE(
 		funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.get_parameter_type(),
 		"uint8_t"s);
-	QCOMPARE(funList[0]
-				 .get_reply_parameters()[0]
-				 .as_array()
-				 .type.as_structure()
-				 .members[2]
-				 .as_array()
-				 .type.as_array()
-				 .type.as_array()
-				 .type.as_integer()
-				 .is_signed,
-			 false);
+	QCOMPARE(
+		funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().type.as_array().type.as_array().type.as_integer().is_signed,
+		false);
 
 #endif
 }
@@ -506,8 +496,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int8_t() {
     const uint8_t inBinData_array[2] = {0x04, 0xF0};
     RPCRunTimeProtocolDescription rpcinterpreter;
 
-
-
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_int8_t.xml"};
 		Q_ASSERT(xmlfile);
@@ -533,8 +521,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int16_t() {
 #if RUNTEST
     const uint8_t inBinData_array[3] = {0x04, 0xF0, 0xFF};
     RPCRunTimeProtocolDescription rpcinterpreter;
-
-
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_int16_t.xml"};
@@ -562,8 +548,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_array_char() {
 	const uint8_t inBinData_array[43] = {0x06, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
-
-
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_array_char.xml"};
@@ -593,8 +577,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 									   0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x00, 0x10, 0x20, 0x01, 0x11, 0x21};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
-
-
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
@@ -632,25 +614,32 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct().size(), 3u);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[0].type.as_unsigned_integer(), 43ull);
 
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.get_desciption()->get_type(), RPCRuntimeParameterDescription::Type::array);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.get_desciption()->get_type(),
+			 RPCRuntimeParameterDescription::Type::array);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_array().size(), 42u);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_array()[0].as_unsigned_integer(), 0x48ull);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_string(),
-			 "0x48 0x61 0x6c 0x6c 0x6f 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 0x39 0x30 0x31 0x32 0x33 "
-			 "0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38"s);
+			 "\x48\x61\x6c\x6c\x6f\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x34\x38\x39\x30\x31\x32\x33"
+			 "\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38"s);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_array()[0].get_desciption()->get_type(),
 			 RPCRuntimeParameterDescription::Type::integer);
 
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array().size(), 1u);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array().size(), 2u);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[0].as_array().size(), 3u);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[0].as_array()[0].as_unsigned_integer(), 0x00ull);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[0].as_array()[1].as_unsigned_integer(), 0x10ull);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[0].as_array()[2].as_unsigned_integer(), 0x20ull);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[0].as_array()[0].as_unsigned_integer(),
+			 0x00ull);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[0].as_array()[1].as_unsigned_integer(),
+			 0x10ull);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[0].as_array()[2].as_unsigned_integer(),
+			 0x20ull);
 
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[0].as_unsigned_integer(), 0x01ull);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[1].as_unsigned_integer(), 0x11ull);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[2].as_unsigned_integer(), 0x21ull);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[0].as_unsigned_integer(),
+			 0x01ull);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[1].as_unsigned_integer(),
+			 0x11ull);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[2].as_unsigned_integer(),
+			 0x21ull);
 
 #endif
 }
