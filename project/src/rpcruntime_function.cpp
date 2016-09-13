@@ -12,11 +12,11 @@ RPCRuntimeFunction::RPCRuntimeFunction(int request_id, int reply_id, std::vector
 	, function_name(std::move(function_name))
 	, function_declaration(std::move(function_declaration)) {}
 
-std::string RPCRuntimeFunction::get_function_name() const {
+const std::string &RPCRuntimeFunction::get_function_name() const {
 	return function_name;
 }
 
-std::string RPCRuntimeFunction::get_function_declaration() const {
+const std::string &RPCRuntimeFunction::get_function_declaration() const {
 	return function_declaration;
 }
 

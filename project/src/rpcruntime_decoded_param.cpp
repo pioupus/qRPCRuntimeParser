@@ -67,6 +67,21 @@ int64_t RPCRuntimeDecodedParam::as_signed_integer() const {
 	throw std::domain_error("Invalid amount of data to parse signed integer");
 }
 
+Decoded_enum RPCRuntimeDecodedParam::as_enum() const
+{
+	int value = parse_signed_int<int>(data);
+	std::string name;
+	for (auto &enum_value : parameter_description->as_enumeration().values){
+		if (enum_value.is_int()){
+			if (enum_value.to_int() == value){
+				name = enum_value.name;
+				break;
+			}
+		}
+	}
+	return {name, value};
+}
+
 std::vector<Decoded_struct> RPCRuntimeDecodedParam::as_struct() const
 {
 	std::vector<Decoded_struct> retval;

@@ -3,6 +3,8 @@
 
 #include "rpcruntime_decoded_param.h"
 
+class RPCRuntimeFunction;
+
 #include <vector>
 
 /*
@@ -11,13 +13,17 @@
 
 class RPCRuntimeDecodedFunctionCall {
 	public:
-	RPCRuntimeDecodedFunctionCall(int id, std::vector<RPCRuntimeDecodedParam> params);
+	RPCRuntimeDecodedFunctionCall(int id, std::vector<RPCRuntimeDecodedParam> params, const RPCRuntimeFunction &function);
 	std::vector<RPCRuntimeDecodedParam> get_decoded_parameters() const;
 	int get_id() const;
+	const RPCRuntimeFunction *get_declaration() const;
+	bool is_request() const;
+	bool is_reply() const;
 
 	private:
 	int id;
 	std::vector<RPCRuntimeDecodedParam> params;
+	const RPCRuntimeFunction *function;
 };
 
 #endif //RPCRUNTIMEDECODEDFUNCTIONCALL_H

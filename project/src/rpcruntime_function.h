@@ -15,8 +15,8 @@ class RPCRuntimeFunction {
 	public:
 	RPCRuntimeFunction(int request_id, int reply_id, std::vector<RPCRuntimeParameterDescription> request_parameters,
 					   std::vector<RPCRuntimeParameterDescription> reply_parameters, std::string function_name, std::string function_declaration);
-	std::string get_function_name() const;
-	std::string get_function_declaration() const;
+	const std::string &get_function_name() const;
+	const std::string &get_function_declaration() const;
 
 	int get_request_id() const;
 	int get_reply_id() const;

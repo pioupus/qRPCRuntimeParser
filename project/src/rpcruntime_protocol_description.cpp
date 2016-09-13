@@ -287,3 +287,17 @@ int RPCRunTimeProtocolDescription::get_parameter_size_bytes(int id) const
 		return sum + param.get_bit_size() / 8;
 	});
 }
+
+const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) const
+{
+	for (auto &function : functions){
+		if (function.get_reply_id() == id){
+			return function;
+		}
+		if (function.get_request_id() == id){
+			return function;
+		}
+	}
+	//don't have a function with the appropriate ID
+	throw std::runtime_error("invalid ID for loaded functions");
+}

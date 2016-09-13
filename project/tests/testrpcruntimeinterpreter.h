@@ -28,26 +28,26 @@ private slots:
     void loadXMLFile_rpcDecodeTest_int8_t();
     void loadXMLFile_rpcDecodeTest_int16_t();
     void loadXMLFile_rpcDecodeTest_array_char();
+	void loadXMLFile_rpcDecodeTest_struct_int();
 
-    void loadXMLFile_rpcDecodeTest_struct_int();
+	//TODO: what are FieldIDs and do we need them
 #if 0
-    void loadXMLFile_rpcDecodeTest_enum();
+	void loadXMLFile_rpcDecodeTest_struct_int_testID();
+	void loadXMLFile_rpcDecodeTest_struct_int_TestByID();
+	void loadXMLFile_rpcDecodeTest_struct_int_AccessByID();
+	//TODO: figure out what watchpoints are
+	void loadXMLFile_rpcDecodeTest_struct_int_watchpoint();
+#endif
+
+	void loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport();
+#if 0
+	void loadXMLFile_rpcDecodeTest_enum();
     void loadXMLFile_rpcDecodeTest_enum_report();
     void loadXMLFile_rpcDecodeTest_struct_int_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC();
-
 	void playWithChannelEncoding();
-
-    void loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport();
-
-
-    void loadXMLFile_rpcDecodeTest_struct_int_testID();
-    void loadXMLFile_rpcDecodeTest_struct_int_AccessByID();
-    void loadXMLFile_rpcDecodeTest_struct_int_TestByID();
-    void loadXMLFile_rpcDecodeTest_struct_int_watchpoint();
-
     void loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report();
     void loadXMLFile_rpcSignedUnsingedBug();
 #endif

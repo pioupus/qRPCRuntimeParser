@@ -30,6 +30,7 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	unsigned char id;
 	ss >> id;
 
+	auto &function = protocol->get_function(data[0]);
 	auto &parameter_descriptions = protocol->get_parameters(data[0]);
 	for (auto &pd : parameter_descriptions){
 		decoded_parameters.emplace_back(pd);
@@ -37,5 +38,5 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	}
 
 	assert(ss);
-	return {id, std::move(decoded_parameters)};
+	return {id, std::move(decoded_parameters), function};
 }

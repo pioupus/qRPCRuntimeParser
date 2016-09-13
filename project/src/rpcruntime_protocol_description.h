@@ -20,6 +20,7 @@ class RPCRunTimeProtocolDescription {
 	int get_command_id_start() const;
 	const std::vector<RPCRuntimeParameterDescription> &get_parameters(int id) const;
 	int get_parameter_size_bytes(int id) const;
+	const RPCRuntimeFunction &get_function(int id) const;
 
 	private:
 	std::vector<RPCRuntimeFunction> functions;

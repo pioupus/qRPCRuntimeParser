@@ -14,13 +14,14 @@ class RPCRuntimeParameterDescription;
  */
 
 struct Decoded_struct;
+struct Decoded_enum;
 
 class RPCRuntimeDecodedParam {
 	public:
 	RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &parameter_description);
 	uint64_t as_unsigned_integer() const;
 	int64_t as_signed_integer() const;
-	std::pair<int, std::string> as_enum() const; //since we come from C we only need to support enums that have int as their underlying type
+	Decoded_enum as_enum() const; //since we come from C we only need to support enums that have int as their underlying type
 	std::vector<Decoded_struct> as_struct() const;
 	std::vector<RPCRuntimeDecodedParam> as_array() const;
 	std::string as_full_string() const;
@@ -38,6 +39,11 @@ class RPCRuntimeDecodedParam {
 struct Decoded_struct{
 	std::string name;
 	RPCRuntimeDecodedParam type;
+};
+
+struct Decoded_enum{
+	std::string name; //may be empty
+	int value;
 };
 
 std::istream &operator>>(std::istream &is, RPCRuntimeDecodedParam &param);
