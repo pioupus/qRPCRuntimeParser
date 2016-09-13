@@ -25,20 +25,20 @@ private slots:
     void loadXMLFile_rpcEnumInArrayTest();
     void loadXMLFile_rpcNegValueInEnumTest();
     void loadXMLFile_rpcDecodeTest_uint32_t();
-#if 0
     void loadXMLFile_rpcDecodeTest_int8_t();
     void loadXMLFile_rpcDecodeTest_int16_t();
     void loadXMLFile_rpcDecodeTest_array_char();
 
-
-    void playWithChannelEncoding();
     void loadXMLFile_rpcDecodeTest_struct_int();
+#if 0
     void loadXMLFile_rpcDecodeTest_enum();
     void loadXMLFile_rpcDecodeTest_enum_report();
     void loadXMLFile_rpcDecodeTest_struct_int_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC();
+
+	void playWithChannelEncoding();
 
     void loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport();
 
