@@ -1,8 +1,8 @@
 #include "testrpcruntimeinterpreter.h"
+#include "rpc_ui.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_protocol_description.h"
-#include "rpc_ui.h"
 
 #include <QByteArray>
 #include <QPair>
@@ -870,8 +870,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 
     RPCRunTimeProtocolDescription rpcinterpreter;
 
-
-
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
 		Q_ASSERT(xmlfile);
@@ -899,47 +897,51 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 	QCOMPARE(request->text(1), QString(""));
 	QCOMPARE(request->childCount(), 1);
 
-	auto array = function->child(0);
+	auto array = request->child(0);
+	qDebug() << "array: " << array->data(1, Qt::UserRole).toString();
+	QCOMPARE(array->data(0, Qt::UserRole).toString(), QString("array"));
 	QCOMPARE(array->childCount(), 1);
 	//QCOMPARE(array->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0"));
 
-	auto structure = array->child(0);	//TypedefTestStruct s_inout
+	auto structure = array->child(0); //TypedefTestStruct s_inout
+	qDebug() << "struct: " << structure->data(1, Qt::UserRole).toString();
+	QCOMPARE(structure->data(0, Qt::UserRole).toString(), QString("structure"));
 	QCOMPARE(structure->childCount(), 3);
 
 	auto parameter_n = structure->child(0);
+	qDebug() << "parameter_n: " << parameter_n->data(1, Qt::UserRole).toString();
 	QCOMPARE(parameter_n->text(0), QString("n(uint16_t)"));
 	QCOMPARE(parameter_n->text(1), QString("43"));
 	QCOMPARE(parameter_n->childCount(), 0);
-	qDebug() << parameter_n->data(0, Qt::UserRole).toString();
 
 	auto parameter_ia = structure->child(1);
+	qDebug() << "parameter_ia:" << parameter_ia->data(1, Qt::UserRole).toString();
 	QCOMPARE(parameter_ia->text(0), QString("ia(uint8_t [42])"));
-	QCOMPARE(parameter_ia->text(1).trimmed(),
-			 QString("0x48 0x61 0x6C 0x6C 0x6F 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 0x39 0x30 0x31 0x32 0x33 "
-					 "0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38")
-				 .trimmed());
+	QCOMPARE(parameter_ia->text(1), QString("0x48 0x61 0x6C 0x6C 0x6F 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 "
+											"0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38"));
 
 	auto parameter_iaa = structure->child(2);
 	QCOMPARE(parameter_iaa->childCount(), 1);
 	QCOMPARE(parameter_iaa->text(0), QString("iaa(uint8_t [1][2][3])"));
 	QCOMPARE(parameter_iaa->text(1).trimmed(), QString("").trimmed());
 
-	QCOMPARE(parameter_iaa->child(0)->childCount(), 2);
-	QCOMPARE(parameter_iaa->child(0)->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
-	QCOMPARE(parameter_iaa->child(0)->text(0), QString("[0]"));
-	QCOMPARE(parameter_iaa->child(0)->text(1).trimmed(), QString("").trimmed());
+	auto iaa_0 = parameter_iaa->child(0);
+	QCOMPARE(iaa_0->childCount(), 2);
+	//QCOMPARE(iaa_1->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
+	QCOMPARE(iaa_0->text(0), QString("[0]"));
+	QCOMPARE(iaa_0->text(1).trimmed(), QString("").trimmed());
 
-	QCOMPARE(parameter_iaa->child(0)->child(0)->childCount(), 0);
-	QCOMPARE(parameter_iaa->child(0)->child(0)->data(0, Qt::UserRole).toString(),
-			 QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
-	QCOMPARE(parameter_iaa->child(0)->child(0)->text(0), QString("[0]"));
-	QCOMPARE(parameter_iaa->child(0)->child(0)->text(1).trimmed(), QString("0x00 0x10 0x20").trimmed());
+	auto iaa_0_0 = iaa_0->child(0);
+	QCOMPARE(iaa_0_0->childCount(), 0);
+	//QCOMPARE(iaa_0_0->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
+	QCOMPARE(iaa_0_0->text(0), QString("[0]"));
+	QCOMPARE(iaa_0_0->text(1).trimmed(), QString("0x00 0x10 0x20").trimmed());
 
-	QCOMPARE(parameter_iaa->child(0)->child(1)->childCount(), 0);
-	QCOMPARE(parameter_iaa->child(0)->child(1)->data(0, Qt::UserRole).toString(),
-			 QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
-	QCOMPARE(parameter_iaa->child(0)->child(1)->text(0), QString("[1]"));
-	QCOMPARE(parameter_iaa->child(0)->child(1)->text(1).trimmed(), QString("0x01 0x11 0x21").trimmed());
+	auto iaa_0_1 = iaa_0->child(1);
+	QCOMPARE(iaa_0_1->childCount(), 0);
+	//QCOMPARE(iaa_0_1->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
+	QCOMPARE(iaa_0_1->text(0), QString("[1]"));
+	QCOMPARE(iaa_0_1->text(1).trimmed(), QString("0x01 0x11 0x21").trimmed());
 
 #endif
 }

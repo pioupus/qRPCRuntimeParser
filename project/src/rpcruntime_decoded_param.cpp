@@ -67,6 +67,16 @@ int64_t RPCRuntimeDecodedParam::as_signed_integer() const {
 	throw std::domain_error("Invalid amount of data to parse signed integer");
 }
 
+int64_t RPCRuntimeDecodedParam::as_integer() const
+{
+	assert(parameter_description->get_type() == RPCRuntimeParameterDescription::Type::integer);
+	if (parameter_description->as_integer().is_signed == true){
+		return as_signed_integer();
+	}
+	assert(parameter_description->get_bit_size() < 64); //make sure we don't have a uint64_t, because we cannot represent it fully in an int64_t
+	return as_unsigned_integer();
+}
+
 Decoded_enum RPCRuntimeDecodedParam::as_enum() const
 {
 	int value = parse_signed_int<int>(data);
