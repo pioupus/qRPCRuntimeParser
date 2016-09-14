@@ -946,7 +946,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 #endif
 }
 
-#if 0
 //
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsingedBug() {
@@ -966,13 +965,18 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsingedBug() {
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.RPCDecodeChannelCodedData(inBinData);
+	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
 
-	QCOMPARE(function_call.get_decoded_parameters().size(), 4);
-	QCOMPARE(function_call.get_decoded_parameters()[0].value, (int64_t)82);
-	QCOMPARE(function_call.get_decoded_parameters()[1].value, (int64_t)410);
-	QCOMPARE(function_call.get_decoded_parameters()[2].value, (int64_t)80);
-	QCOMPARE(function_call.get_decoded_parameters()[3].value, (int64_t)60);
+	QCOMPARE(transfer.is_complete(), true);
+	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
+
+	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
+
+	QCOMPARE(function_call.get_decoded_parameters().size(), 4u);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_integer(), 82ll);
+	QCOMPARE(function_call.get_decoded_parameters()[1].as_integer(), 410ll);
+	QCOMPARE(function_call.get_decoded_parameters()[2].as_integer(), 80ll);
+	QCOMPARE(function_call.get_decoded_parameters()[3].as_integer(), 60ll);
 
 #endif
 #endif
@@ -980,7 +984,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsingedBug() {
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum() {
 #if RUNTEST
-    const uint8_t inBinData_array[] = {0x1a, 0x01};
+	const uint8_t inBinData_array[] = {0x1a, 0x01};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
 
@@ -1002,8 +1006,8 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum() {
 	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
 
 	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
-	QCOMPARE(function_call.get_decoded_parameters()[0].string, "TEb"s);
-	QCOMPARE(function_call.get_decoded_parameters()[0].value, (int64_t)1);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_enum().name, "TEb"s);
+	QCOMPARE(function_call.get_decoded_parameters()[0].as_enum().value, 1);
 
 #endif
 }
@@ -1035,7 +1039,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_report() {
 
 	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
 
-	QStringList report = decoder.getPrintableReport();
+	QStringList report = get_report(function_call);
 
     QFile inFile("scripts/decodeTest_struct_int_report_mask.txt");
 
@@ -1045,8 +1049,8 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_report() {
 	QTextStream out(&outfile);    // we will serialize the data into the file
 	QTextStream in_mask(&inFile); // we will serialize the data into the file
 
-    QString line_mask;
     QStringList in;
+	QString line_mask;
     do {
         line_mask = in_mask.readLine();
         in.append(line_mask);
@@ -1063,6 +1067,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_report() {
 #endif
 }
 
+#if 0
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report() {
 #if RUNTEST
     const uint8_t inBinData_array[] = {0x1a, 0x01};
@@ -1086,7 +1091,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report() {
 
 	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
 
-	QStringList report = decoder.getPrintableReport();
+	QStringList report = decoder.get_report();
     QFile inFile("scripts/decodeTest_enum_report_mask.txt");
 
     QFile outfile("scripts/decodeTest_enum_report_output.txt");
@@ -1131,7 +1136,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
     RPCRuntimeDecoder decoder(rpcinterpreter);
     decoder.RPCDecodeChannelCodedData(inBinData);
 	QCOMPARE(decoder.getErrorCRCHappened(), false);
-	QStringList report = decoder.getPrintableReport();
+	QStringList report = decoder.get_report();
     QFile inFile("scripts/decodeTest_enum_report_mask.txt");
     inFile.open(QIODevice::ReadOnly);
 	QTextStream in_mask(&inFile); // we will serialize the data into the file
@@ -1174,7 +1179,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
 	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
 	QCOMPARE(decoder.getErrorCRCHappened(), false);
-	QStringList report = decoder.getPrintableReport();
+	QStringList report = decoder.get_report();
 
     QFile inFile("scripts/decodeTest_struct_int_report_mask.txt");
 

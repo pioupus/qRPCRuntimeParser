@@ -40,16 +40,16 @@ private slots:
 #endif
 
 	void loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport();
-#if 0
+	void loadXMLFile_rpcSignedUnsingedBug();
 	void loadXMLFile_rpcDecodeTest_enum();
+	void loadXMLFile_rpcDecodeTest_struct_int_report();
+#if 0
     void loadXMLFile_rpcDecodeTest_enum_report();
-    void loadXMLFile_rpcDecodeTest_struct_int_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC();
 	void playWithChannelEncoding();
     void loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report();
-    void loadXMLFile_rpcSignedUnsingedBug();
 #endif
 private:
     QString callBack_FieldID;
