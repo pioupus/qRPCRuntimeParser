@@ -48,6 +48,5 @@ struct Decoded_enum{
 };
 
 std::istream &operator>>(std::istream &is, RPCRuntimeDecodedParam &param);
-std::ostream &operator<<(std::ostream &os, const RPCRuntimeDecodedParam &param);
 
 #endif //RPCRUNTIMEDECODEDPARAM_H

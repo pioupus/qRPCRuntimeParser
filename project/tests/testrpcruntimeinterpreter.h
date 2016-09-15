@@ -54,7 +54,7 @@ private slots:
 #endif
 	void create_request_without_parameter();
 	void create_request_with_int_parameter();
-	void create_request_with_multiple_ints_parameter();
+	void create_request_with_multiple_int_parameters();
 	void create_request_with_enum_parameter();
 	void create_request_with_array_parameter();
 	void create_request_with_struct_parameter();

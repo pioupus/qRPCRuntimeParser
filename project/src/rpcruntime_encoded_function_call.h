@@ -19,6 +19,8 @@ class RPCRuntimeEncodedFunctionCall {
 	int get_parameter_count() const;
 	bool all_values_set() const;
 	std::vector<unsigned char> encode() const;
+	RPCRuntimeEncodedParam &get_parameter(int index);
+	RPCRuntimeEncodedParam &get_parameter(const std::string &name);
 
 	private:
 	std::vector<RPCRuntimeEncodedParam> params;

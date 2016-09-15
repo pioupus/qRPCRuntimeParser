@@ -1307,6 +1307,7 @@ void TestRPCRuntimeInterpreter::create_request_without_parameter()
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
 	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("emptyTest");
+
 	QVERIFY(function_call.all_values_set());
 
 	const uint8_t outBinData_array[] = {0x04};
@@ -1318,10 +1319,28 @@ void TestRPCRuntimeInterpreter::create_request_without_parameter()
 
 void TestRPCRuntimeInterpreter::create_request_with_int_parameter()
 {
-	QSKIP("not implemented");
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	{
+		std::ifstream xmlfile{"scripts/create_with_int_parameter.xml"};
+		QVERIFY(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+
+	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("intTest");
+	function_call.get_parameter(0).set_value(1234567890);
+
+	QVERIFY(function_call.all_values_set());
+
+	const uint8_t outBinData_array[] = {0x04, 0xD2, 0x02, 0x96, 0x49};
+	auto data = function_call.encode();
+
+	QCOMPARE(sizeof outBinData_array, data.size());
+	QCOMPARE(QB(outBinData_array), QB(data));
 }
 
-void TestRPCRuntimeInterpreter::create_request_with_multiple_ints_parameter()
+void TestRPCRuntimeInterpreter::create_request_with_multiple_int_parameters()
 {
 	QSKIP("not implemented");
 }

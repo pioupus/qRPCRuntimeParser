@@ -3,9 +3,14 @@
 #include "rpcruntime_function.h"
 
 #include <algorithm>
+#include <cassert>
 
 RPCRuntimeEncodedFunctionCall::RPCRuntimeEncodedFunctionCall(const RPCRuntimeFunction &function)
-	: function(&function) {}
+	: function(&function) {
+	for (auto &param : function.get_request_parameters()){
+		params.push_back(param);
+	}
+}
 
 int RPCRuntimeEncodedFunctionCall::get_parameter_count() const {
 	return params.size();
@@ -23,4 +28,11 @@ std::vector<unsigned char> RPCRuntimeEncodedFunctionCall::encode() const
 		param.encode(retval);
 	}
 	return retval;
+}
+
+RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(int index)
+{
+	assert(index >= 0);
+	assert(index < static_cast<int>(params.size()));
+	return params[index];
 }
