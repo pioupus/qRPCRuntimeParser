@@ -2,9 +2,9 @@
 #include "rpc_ui.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
-#include "rpcruntime_protocol_description.h"
-#include "rpcruntime_encoder.h"
 #include "rpcruntime_encoded_function_call.h"
+#include "rpcruntime_encoder.h"
+#include "rpcruntime_protocol_description.h"
 
 #include <QByteArray>
 #include <QPair>
@@ -990,8 +990,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum() {
 
     RPCRunTimeProtocolDescription rpcinterpreter;
 
-
-
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_enum.xml"};
 		QVERIFY(xmlfile);
@@ -1021,8 +1019,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_report() {
 									   0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x00, 0x10, 0x20, 0x01, 0x11, 0x21};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
-
-
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
@@ -1286,17 +1282,16 @@ void TestRPCRuntimeInterpreter::playWithChannelEncoding() {
 }
 #endif
 
-static QByteArray QB(const std::vector<unsigned char> data){
+static QByteArray QB(const std::vector<unsigned char> data) {
 	return {reinterpret_cast<const char *>(data.data()), static_cast<int>(data.size())};
 }
 
 template <int size>
-static QByteArray QB(const unsigned char (& data)[size]){
+static QByteArray QB(const unsigned char (&data)[size]) {
 	return {reinterpret_cast<const char *>(data), size};
 }
 
-void TestRPCRuntimeInterpreter::create_request_without_parameter()
-{
+void TestRPCRuntimeInterpreter::create_request_without_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_without_parameters.xml"};
@@ -1317,8 +1312,7 @@ void TestRPCRuntimeInterpreter::create_request_without_parameter()
 	QCOMPARE(QB(outBinData_array), QB(data));
 }
 
-void TestRPCRuntimeInterpreter::create_request_with_int_parameter()
-{
+void TestRPCRuntimeInterpreter::create_request_with_int_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_with_int_parameter.xml"};
@@ -1340,8 +1334,7 @@ void TestRPCRuntimeInterpreter::create_request_with_int_parameter()
 	QCOMPARE(QB(outBinData_array), QB(data));
 }
 
-void TestRPCRuntimeInterpreter::create_request_with_multiple_int_parameters()
-{
+void TestRPCRuntimeInterpreter::create_request_with_multiple_int_parameters() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_with_multiple_int_parameters.xml"};
@@ -1371,22 +1364,50 @@ void TestRPCRuntimeInterpreter::create_request_with_multiple_int_parameters()
 	QCOMPARE(QB(outBinData_array), QB(data));
 }
 
-void TestRPCRuntimeInterpreter::create_request_with_enum_parameter()
-{
+void TestRPCRuntimeInterpreter::create_request_with_enum_parameter() {
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	{
+		std::ifstream xmlfile{"scripts/create_with_enum_parameter.xml"};
+		QVERIFY(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+
+	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("enumTest1");
+	function_call.get_parameter("testEnum").set_value("TEb");
+
+	QVERIFY(function_call.all_values_set());
+
+	{
+		const uint8_t outBinData_array[] = {0x1A, 0x01};
+		auto data = function_call.encode();
+
+		QCOMPARE(sizeof outBinData_array, data.size());
+		QCOMPARE(QB(outBinData_array), QB(data));
+	}
+
+	function_call.get_parameter("testEnum").set_value(42);
+
+	QVERIFY(function_call.all_values_set());
+
+	{
+		const uint8_t outBinData_array[] = {0x1A, 0x2A};
+		auto data = function_call.encode();
+
+		QCOMPARE(sizeof outBinData_array, data.size());
+		QCOMPARE(QB(outBinData_array), QB(data));
+	}
+}
+
+void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
 	QSKIP("not implemented");
 }
 
-void TestRPCRuntimeInterpreter::create_request_with_array_parameter()
-{
+void TestRPCRuntimeInterpreter::create_request_with_struct_parameter() {
 	QSKIP("not implemented");
 }
 
-void TestRPCRuntimeInterpreter::create_request_with_struct_parameter()
-{
-	QSKIP("not implemented");
-}
-
-void TestRPCRuntimeInterpreter::create_request_with_complex_parameter()
-{
+void TestRPCRuntimeInterpreter::create_request_with_complex_parameter() {
 	QSKIP("not implemented");
 }

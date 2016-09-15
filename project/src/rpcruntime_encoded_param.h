@@ -20,25 +20,32 @@ class RPCRuntimeEncodedParam {
 
 	const RPCRuntimeParameterDescription *get_description() const;
 
-	template <class T>
-	void set_value(T &&t) {
+	void set_value(int64_t value) {
 		switch (description->get_type()) {
 			case RPCRuntimeParameterDescription::Type::integer:
-				set_integer_value(std::move(t));
+				set_integer_value(value);
 				break;
-		case RPCRuntimeParameterDescription::Type::array:
-			break;
-		case RPCRuntimeParameterDescription::Type::character:
-			break;
 		case RPCRuntimeParameterDescription::Type::enumeration:
+			set_enum_value(value);
 			break;
-		case RPCRuntimeParameterDescription::Type::structure:
-			break;
+		default:
+			throw std::runtime_error("improper value type for this value");
+		}
+	}
+	void set_value(const std::string &value) {
+		switch (description->get_type()) {
+			case RPCRuntimeParameterDescription::Type::enumeration:
+				set_enum_value(value);
+				break;
+		default:
+			throw std::runtime_error("improper value type for this value");
 		}
 	}
 
 	private:
-	void set_integer_value(int64_t i);
+	void set_integer_value(int64_t value);
+	void set_enum_value(int value);
+	void set_enum_value(const std::string &value);
 
 	const RPCRuntimeParameterDescription *description;
 	std::vector<unsigned char> data;

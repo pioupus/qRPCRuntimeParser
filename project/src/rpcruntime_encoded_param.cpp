@@ -17,19 +17,26 @@ const RPCRuntimeParameterDescription *RPCRuntimeEncodedParam::get_description() 
 	return description;
 }
 
-void RPCRuntimeEncodedParam::set_integer_value(int64_t i) {
+void RPCRuntimeEncodedParam::set_integer_value(int64_t value) {
 	data.clear();
-	if (description->as_integer().is_signed) {
-		for (int index = 0; index < description->get_bit_size() / 8; index++){
-			data.push_back(i);
-			i >>= 8;
+	for (int index = 0; index < description->get_bit_size() / 8; index++){
+		data.push_back(value);
+		value >>= 8;
+	}
+}
+
+void RPCRuntimeEncodedParam::set_enum_value(int value)
+{
+	set_integer_value(value);
+}
+
+void RPCRuntimeEncodedParam::set_enum_value(const std::string &value)
+{
+	for (auto &e : description->as_enumeration().values){
+		if (e.name == value){
+			set_integer_value(e.to_int());
+			return;
 		}
 	}
-	else{
-		uint64_t u = i;
-		for (int index = 0; index < description->get_bit_size() / 8; index++){
-			data.push_back(u);
-			u >>= 8;
-		}
-	}
+	throw std::runtime_error("invalid enum value " + value);
 }
