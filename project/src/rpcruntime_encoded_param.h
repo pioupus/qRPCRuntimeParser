@@ -20,35 +20,21 @@ class RPCRuntimeEncodedParam {
 
 	const RPCRuntimeParameterDescription *get_description() const;
 
-	void set_value(int64_t value) {
-		switch (description->get_type()) {
-			case RPCRuntimeParameterDescription::Type::integer:
-				set_integer_value(value);
-				break;
-		case RPCRuntimeParameterDescription::Type::enumeration:
-			set_enum_value(value);
-			break;
-		default:
-			throw std::runtime_error("improper value type for this value");
-		}
-	}
-	void set_value(const std::string &value) {
-		switch (description->get_type()) {
-			case RPCRuntimeParameterDescription::Type::enumeration:
-				set_enum_value(value);
-				break;
-		default:
-			throw std::runtime_error("improper value type for this value");
-		}
-	}
+	void set_value(int64_t value);
+	void set_value(const std::string &value);
+
+	RPCRuntimeEncodedParam &get_parameter(int index);
+	RPCRuntimeEncodedParam &get_parameter(const std::string &name);
 
 	private:
 	void set_integer_value(int64_t value);
 	void set_enum_value(int value);
 	void set_enum_value(const std::string &value);
+	void set_array_value(const std::string &array);
 
 	const RPCRuntimeParameterDescription *description;
 	std::vector<unsigned char> data;
+	std::vector<RPCRuntimeEncodedParam> child_parameters;
 };
 
 #endif //RPCRUNTIMEENCODEDPARAM_H

@@ -1401,7 +1401,37 @@ void TestRPCRuntimeInterpreter::create_request_with_enum_parameter() {
 }
 
 void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
-	QSKIP("not implemented");
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	{
+		std::ifstream xmlfile{"scripts/create_with_char_array_parameter.xml"};
+		QVERIFY(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+
+	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("arrayTest");
+
+	{
+		function_call.get_parameter("text_inout").set_value("Hello world!");
+		QVERIFY(function_call.all_values_set());
+		const uint8_t outBinData_array[43] = "\x06" "Hello world!";
+		auto data = function_call.encode();
+
+		QCOMPARE(sizeof outBinData_array, data.size());
+		QCOMPARE(QB(outBinData_array), QB(data));
+	}
+
+	{
+		function_call.get_parameter("text_inout").get_parameter(6).set_value('W');
+		function_call.get_parameter("text_inout").get_parameter(11).set_value('?');
+		QVERIFY(function_call.all_values_set());
+		const uint8_t outBinData_array[43] = "\x06" "Hello World?";
+		auto data = function_call.encode();
+
+		QCOMPARE(sizeof outBinData_array, data.size());
+		QCOMPARE(QB(outBinData_array), QB(data));
+	}
 }
 
 void TestRPCRuntimeInterpreter::create_request_with_struct_parameter() {
