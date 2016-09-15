@@ -1342,7 +1342,33 @@ void TestRPCRuntimeInterpreter::create_request_with_int_parameter()
 
 void TestRPCRuntimeInterpreter::create_request_with_multiple_int_parameters()
 {
-	QSKIP("not implemented");
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	{
+		std::ifstream xmlfile{"scripts/create_with_multiple_int_parameters.xml"};
+		QVERIFY(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+
+	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("multiIntTest");
+	function_call.get_parameter(0).set_value(1234567890);
+
+	QVERIFY(function_call.all_values_set() == false);
+
+	function_call.get_parameter("i").set_value(987654321);
+
+	QVERIFY(function_call.all_values_set() == false);
+
+	function_call.get_parameter("j").set_value(0xabcd);
+
+	QVERIFY(function_call.all_values_set());
+
+	const uint8_t outBinData_array[] = {0x10, 0xB1, 0x68, 0xDE, 0x3A, 0xCD, 0xAB};
+	auto data = function_call.encode();
+
+	QCOMPARE(sizeof outBinData_array, data.size());
+	QCOMPARE(QB(outBinData_array), QB(data));
 }
 
 void TestRPCRuntimeInterpreter::create_request_with_enum_parameter()

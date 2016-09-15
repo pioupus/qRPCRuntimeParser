@@ -36,3 +36,13 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(int index)
 	assert(index < static_cast<int>(params.size()));
 	return params[index];
 }
+
+RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(const std::string &name)
+{
+	for (auto &param : params){
+		if (param.get_description()->get_parameter_name() == name){
+			return param;
+		}
+	}
+	throw std::runtime_error("invalid name: " + name);
+}

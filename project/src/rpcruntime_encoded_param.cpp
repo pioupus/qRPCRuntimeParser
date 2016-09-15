@@ -26,6 +26,10 @@ void RPCRuntimeEncodedParam::set_integer_value(int64_t i) {
 		}
 	}
 	else{
-		assert(!"need to implement unsigned case");
+		uint64_t u = i;
+		for (int index = 0; index < description->get_bit_size() / 8; index++){
+			data.push_back(u);
+			u >>= 8;
+		}
 	}
 }
