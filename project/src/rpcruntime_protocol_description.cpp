@@ -246,7 +246,7 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(std::istream &input)
 #undef MAKESURE
 }
 
-const std::vector<RPCRuntimeFunction> RPCRunTimeProtocolDescription::get_functions() const {
+const std::vector<RPCRuntimeFunction> &RPCRunTimeProtocolDescription::get_functions() const {
 	return functions;
 }
 

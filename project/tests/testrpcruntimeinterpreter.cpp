@@ -3,6 +3,8 @@
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_protocol_description.h"
+#include "rpcruntime_encoder.h"
+#include "rpcruntime_encoded_function_call.h"
 
 #include <QByteArray>
 #include <QPair>
@@ -1284,9 +1286,34 @@ void TestRPCRuntimeInterpreter::playWithChannelEncoding() {
 }
 #endif
 
+static QByteArray QB(const std::vector<unsigned char> data){
+	return {reinterpret_cast<const char *>(data.data()), static_cast<int>(data.size())};
+}
+
+template <int size>
+static QByteArray QB(const unsigned char (& data)[size]){
+	return {reinterpret_cast<const char *>(data), size};
+}
+
 void TestRPCRuntimeInterpreter::create_request_without_parameter()
 {
-	QSKIP("not implemented");
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	{
+		std::ifstream xmlfile{"scripts/create_without_parameters.xml"};
+		QVERIFY(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+
+	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("emptyTest");
+	QVERIFY(function_call.all_values_set());
+
+	const uint8_t outBinData_array[] = {0x04};
+	auto data = function_call.encode();
+
+	QCOMPARE(sizeof outBinData_array, data.size());
+	QCOMPARE(QB(outBinData_array), QB(data));
 }
 
 void TestRPCRuntimeInterpreter::create_request_with_int_parameter()
