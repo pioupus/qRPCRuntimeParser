@@ -10,6 +10,11 @@ RPCRuntimeEncodedParam::RPCRuntimeEncodedParam(const RPCRuntimeParameterDescript
 			child_parameters.emplace_back(description->as_array().type);
 		}
 	}
+	else if (description->get_type() == RPCRuntimeParameterDescription::Type::structure) {
+		for (auto &member : description->as_structure().members) {
+			child_parameters.emplace_back(member);
+		}
+	}
 }
 
 bool RPCRuntimeEncodedParam::are_all_values_set() const {
@@ -84,6 +89,19 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(int index) {
 		default:
 			throw std::runtime_error("parameter does not have sub-parameters");
 	}
+}
+
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(const std::string &name)
+{
+	if (description->get_type() != RPCRuntimeParameterDescription::Type::structure){
+		throw std::runtime_error("parameter does not have named sub-parameters");
+	}
+	for (auto &child : child_parameters){
+		if (child.get_description()->get_parameter_name() == name){
+			return child;
+		}
+	}
+	throw std::runtime_error("invalid parameter name \"" + name + "\" for struct of type \"" + description->get_parameter_type() + "\"");
 }
 
 void RPCRuntimeEncodedParam::set_integer_value(int64_t value) {

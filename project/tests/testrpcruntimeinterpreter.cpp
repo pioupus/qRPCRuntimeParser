@@ -1435,7 +1435,33 @@ void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
 }
 
 void TestRPCRuntimeInterpreter::create_request_with_struct_parameter() {
-	QSKIP("not implemented");
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	{
+		std::ifstream xmlfile{"scripts/create_with_struct_parameter.xml"};
+		QVERIFY(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+
+	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("structInputTest");
+
+	{
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n1").set_value(1234567890);
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n2").set_value(0xABCD);
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n3").set_value(42);
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n4").set_value(15);
+		QVERIFY(function_call.all_values_set());
+		const uint8_t outBinData_array[9] = {0x16, 0xD2, 0x02, 0x96, 0x49, 0xCD, 0xAB, 0x2A, 0x0F};
+		auto data = function_call.encode();
+
+		QCOMPARE(sizeof outBinData_array, data.size());
+		QCOMPARE(QB(outBinData_array), QB(data));
+	}
 }
 
 void TestRPCRuntimeInterpreter::create_request_with_complex_parameter() {
