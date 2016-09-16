@@ -20,6 +20,7 @@ SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpc_ui.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_encoder.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_encoded_function_call.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_encoded_param.cpp
+SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/channel_codec_wrapper.cpp
 
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_decoder.h
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_function.h
@@ -33,6 +34,7 @@ HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpc_ui.h
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_encoder.h
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_encoded_function_call.h
 HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_encoded_param.h
+HEADERS += $$QPROTOCOL_INTERPRETER_PATH/src/channel_codec_wrapper.h
 
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/src/channel_codec/channel_codec.c
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/libs/RPC-ChannelCodec/src/channel_codec/crc16.c

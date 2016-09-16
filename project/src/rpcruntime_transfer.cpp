@@ -23,6 +23,11 @@ bool RPCRuntimeTransfer::is_complete() const {
 	return get_min_number_of_bytes() == static_cast<int>(data.size());
 }
 
+void RPCRuntimeTransfer::add_data(unsigned char byte)
+{
+	data.push_back(byte);
+}
+
 RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	std::vector<RPCRuntimeDecodedParam> decoded_parameters;
 	std::stringstream ss;

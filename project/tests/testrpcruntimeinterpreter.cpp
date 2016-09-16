@@ -1,4 +1,5 @@
 #include "testrpcruntimeinterpreter.h"
+#include "channel_codec_wrapper.h"
 #include "rpc_ui.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
@@ -1111,14 +1112,11 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report() {
 #endif
 }
 
-#if 0
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report() {
 #if RUNTEST
     const uint8_t inBinData_array[] = {'J', 'U', 'N', 'K', 0xff, 0xff, 0xff, 0x00, 0x1a, 0x01, 0x96, 0xe1, 'J', 'U', 'N', 'K'};
 
     RPCRunTimeProtocolDescription rpcinterpreter;
-
-
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_enum.xml"};
@@ -1127,9 +1125,15 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 		QCOMPARE(result, true);
 	}
 
-    RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.RPCDecodeChannelCodedData(inBinData);
-	QCOMPARE(decoder.getErrorCRCHappened(), false);
+	RPCRuntimeDecoder decoder(rpcinterpreter);
+	Channel_codec_wrapper cc(decoder);
+
+	cc.add_data(inBinData_array);
+
+	QVERIFY(cc.transfer_complete());
+
+	auto function_call = cc.pop();
+
 	QStringList report = get_report(function_call);
     QFile inFile("scripts/decodeTest_enum_report_mask.txt");
     inFile.open(QIODevice::ReadOnly);
@@ -1150,6 +1154,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 #endif
 }
 
+#if 0
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report() {
 #if RUNTEST
 	const uint8_t inBinData_array[] = {'J',  'U',  'N',  'K',  0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32,

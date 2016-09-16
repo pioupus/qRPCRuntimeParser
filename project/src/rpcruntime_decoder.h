@@ -16,7 +16,10 @@ struct RPCRuntimeDecoder {
 		return decode(data, size);
 	}
 
-	RPCRuntimeTransfer decode(const unsigned char *data, int size);
+	RPCRuntimeTransfer decode(const unsigned char *data, int size) const;
+
+	RPCRunTimeProtocolDescription *get_description();
+	const RPCRunTimeProtocolDescription *get_description() const;
 
 	private:
 	RPCRunTimeProtocolDescription *description;

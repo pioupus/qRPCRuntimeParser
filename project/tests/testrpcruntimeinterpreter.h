@@ -45,8 +45,8 @@ private slots:
 	void loadXMLFile_rpcDecodeTest_struct_int_report();
 	void loadXMLFile_rpcDecodeTest_enum_report();
 	//TODO: remove RPC-struff from channel codec and channel codec stuff from RPC and write some glue code
-#if 0
 	void loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report();
+#if 0
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
 	void loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report();
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC();

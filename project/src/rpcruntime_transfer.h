@@ -25,6 +25,7 @@ class RPCRuntimeTransfer {
 	void add_data(Iterator begin_it, Iterator end_it) {
 		data.insert(data.end(), begin_it, end_it);
 	}
+	void add_data(unsigned char byte);
 
 	const std::vector<unsigned char> encode() const;
 	RPCRuntimeDecodedFunctionCall decode() const;
