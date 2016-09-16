@@ -4,6 +4,7 @@
 #include "rpcruntime_paramter_description.h"
 
 #include <cinttypes>
+#include <initializer_list>
 #include <vector>
 
 /*
@@ -26,8 +27,14 @@ class RPCRuntimeEncodedParam {
 	RPCRuntimeEncodedParam &get_parameter(int index);
 	RPCRuntimeEncodedParam &get_parameter(const std::string &name);
 
-	private:
-	void set_integer_value(int64_t value);
+	RPCRuntimeEncodedParam &operator[](int index);
+	RPCRuntimeEncodedParam &operator[](const std::string &name);
+
+	RPCRuntimeEncodedParam &operator=(int64_t value);
+	RPCRuntimeEncodedParam &operator=(const std::string &name);
+	RPCRuntimeEncodedParam &operator=(std::initializer_list<int64_t> data);
+
+		private : void set_integer_value(int64_t value);
 	void set_enum_value(int value);
 	void set_enum_value(const std::string &value);
 	void set_array_value(const std::string &array);

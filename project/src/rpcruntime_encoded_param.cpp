@@ -1,7 +1,7 @@
 #include "rpcruntime_encoded_param.h"
 
 #include <algorithm>
-#include <cassert>
+#include <stdexcept>
 
 RPCRuntimeEncodedParam::RPCRuntimeEncodedParam(const RPCRuntimeParameterDescription &parameter_description)
 	: description(&parameter_description) {
@@ -104,6 +104,40 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(const std::string 
 	throw std::runtime_error("invalid parameter name \"" + name + "\" for struct of type \"" + description->get_parameter_type() + "\"");
 }
 
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator [](int index)
+{
+	return get_parameter(index);
+}
+
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator [](const std::string &name)
+{
+	return get_parameter(name);
+}
+
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator =(int64_t value)
+{
+	set_value(value);
+	return *this;
+}
+
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator =(const std::string &name)
+{
+	set_value(name);
+	return *this;
+}
+
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator=(std::initializer_list<int64_t> data)
+{
+	int index = 0;
+	if (child_parameters.size() < data.size()){
+		throw std::runtime_error("Gave " + std::to_string(data.size()) + " values to a parameter of type " + description->get_parameter_type());
+	}
+	for (auto &n : data){
+		child_parameters[index++] = n;
+	}
+	return *this;
+}
+
 void RPCRuntimeEncodedParam::set_integer_value(int64_t value) {
 	data.clear();
 	for (int index = 0; index < description->get_bit_size() / 8; index++) {
@@ -127,8 +161,12 @@ void RPCRuntimeEncodedParam::set_enum_value(const std::string &value) {
 }
 
 void RPCRuntimeEncodedParam::set_array_value(const std::string &array) {
-	assert(description->as_array().type.get_type() == RPCRuntimeParameterDescription::Type::character);
-	assert(array.size() <= child_parameters.size());
+	if (description->as_array().type.get_type() != RPCRuntimeParameterDescription::Type::character){
+		throw std::runtime_error("Assigning a string to an array is only supported for arrays of characters, but got " + description->get_parameter_type());
+	}
+	if (array.size() > child_parameters.size()){
+		throw std::runtime_error("Given string \"" + array + "\" of length " + std::to_string(array.size()) + " doesn't fit into " + description->get_parameter_type());
+	}
 	for (unsigned int i = 0; i < array.size(); i++) {
 		child_parameters[i].set_value(array[i]);
 	}

@@ -1415,7 +1415,9 @@ void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
 	{
 		function_call.get_parameter("text_inout").set_value("Hello world!");
 		QVERIFY(function_call.all_values_set());
-		const uint8_t outBinData_array[43] = "\x06" "Hello world!";
+		const uint8_t outBinData_array[43] =
+			"\x06"
+			"Hello world!";
 		auto data = function_call.encode();
 
 		QCOMPARE(sizeof outBinData_array, data.size());
@@ -1426,7 +1428,9 @@ void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
 		function_call.get_parameter("text_inout").get_parameter(6).set_value('W');
 		function_call.get_parameter("text_inout").get_parameter(11).set_value('?');
 		QVERIFY(function_call.all_values_set());
-		const uint8_t outBinData_array[43] = "\x06" "Hello World?";
+		const uint8_t outBinData_array[43] =
+			"\x06"
+			"Hello World?";
 		auto data = function_call.encode();
 
 		QCOMPARE(sizeof outBinData_array, data.size());
@@ -1465,5 +1469,44 @@ void TestRPCRuntimeInterpreter::create_request_with_struct_parameter() {
 }
 
 void TestRPCRuntimeInterpreter::create_request_with_complex_parameter() {
-	QSKIP("not implemented");
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	{
+		std::ifstream xmlfile{"scripts/RPC_UART_Server.xml"};
+		QVERIFY(xmlfile);
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QCOMPARE(result, true);
+	}
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+
+	{
+		RPCRuntimeEncodedFunctionCall function_call = encoder.encode("typedefStructTest");
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_inout")[0]["n"] = 0xABCD;
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_inout")[0]["ia"] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+														   22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42};
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_inout")[0]["iaa"][0][0] = {1, 2, 3};
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("s_inout")[0]["iaa"][0][1] = {44, 55, 66};
+		QVERIFY(function_call.all_values_set());
+		const uint8_t outBinData_array[51] = {0x18, 0xCD, 0xAB, 1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+											  24,   25,   26,   27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 1,  2,  3,  44, 55, 66};
+		auto data = function_call.encode();
+
+		QCOMPARE(sizeof outBinData_array, data.size());
+		QCOMPARE(QB(outBinData_array), QB(data));
+	}
+
+	{
+		RPCRuntimeEncodedFunctionCall function_call = encoder.encode("enumTest1");
+		QVERIFY(!function_call.all_values_set());
+		function_call.get_parameter("testEnum") = "TEb";
+		QVERIFY(function_call.all_values_set());
+		const uint8_t outBinData_array[2] = {0x1A, 1};
+		auto data = function_call.encode();
+
+		QCOMPARE(sizeof outBinData_array, data.size());
+		QCOMPARE(QB(outBinData_array), QB(data));
+	}
 }
