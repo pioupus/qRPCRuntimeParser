@@ -277,7 +277,7 @@ const std::vector<RPCRuntimeParameterDescription> &RPCRunTimeProtocolDescription
 		}
 	}
 	//don't have a function with the appropriate ID
-	throw std::runtime_error("invalid ID for loaded functions");
+	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
 }
 
 int RPCRunTimeProtocolDescription::get_parameter_size_bytes(int id) const
@@ -299,5 +299,5 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) co
 		}
 	}
 	//don't have a function with the appropriate ID
-	throw std::runtime_error("invalid ID for loaded functions");
+	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
 }
