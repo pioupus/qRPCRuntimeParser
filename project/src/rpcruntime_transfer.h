@@ -30,6 +30,9 @@ class RPCRuntimeTransfer {
 	const std::vector<unsigned char> encode() const;
 	RPCRuntimeDecodedFunctionCall decode() const;
 
+	//throw away all previously collected data
+	void reset();
+
 	private:
 	std::vector<unsigned char> data;
 	const RPCRunTimeProtocolDescription *protocol;

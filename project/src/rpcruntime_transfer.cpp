@@ -45,3 +45,8 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	assert(ss);
 	return {id, std::move(decoded_parameters), function};
 }
+
+void RPCRuntimeTransfer::reset()
+{
+	data.clear();
+}

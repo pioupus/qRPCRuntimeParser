@@ -44,12 +44,15 @@ private slots:
 	void loadXMLFile_rpcDecodeTest_enum();
 	void loadXMLFile_rpcDecodeTest_struct_int_report();
 	void loadXMLFile_rpcDecodeTest_enum_report();
-	//TODO: remove RPC-struff from channel codec and channel codec stuff from RPC and write some glue code
+
 	void loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report();
+	void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
+	//TODO: what are FieldIDs and do we need them
 #if 0
-    void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
 	void loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report();
+#endif
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC();
+#if 0
 	void playWithChannelEncoding();
 #endif
 	void create_request_without_parameter();

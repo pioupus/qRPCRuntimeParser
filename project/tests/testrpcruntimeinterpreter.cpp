@@ -1154,7 +1154,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 #endif
 }
 
-#if 0
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report() {
 #if RUNTEST
 	const uint8_t inBinData_array[] = {'J',  'U',  'N',  'K',  0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32,
@@ -1164,8 +1163,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
     RPCRunTimeProtocolDescription rpcinterpreter;
 
-
-
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
 		QVERIFY(xmlfile);
@@ -1174,10 +1171,16 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.RPCDecodeChannelCodedData(inBinData);
+	Channel_codec_wrapper cc(decoder);
+
+	cc.add_data(inBinData_array);
+
+	QVERIFY(cc.transfer_complete());
+
+	auto function_call = cc.pop();
 
 	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
-	QCOMPARE(decoder.getErrorCRCHappened(), false);
+	//QCOMPARE(decoder.getErrorCRCHappened(), false);
 	QStringList report = get_report(function_call);
 
     QFile inFile("scripts/decodeTest_struct_int_report_mask.txt");
@@ -1200,6 +1203,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 #endif
 }
 
+#if 0
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report() {
 #if RUNTEST
     RPCRunTimeProtocolDescription rpcinterpreter;
@@ -1233,6 +1237,8 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcAccessParamDescriptionByFieldID_s
 #endif
 }
 
+#endif
+
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC() {
 #if RUNTEST
 	const uint8_t inBinData_array[] = {'J',  'U',  'N',  'K',  0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32,
@@ -1242,8 +1248,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
     RPCRunTimeProtocolDescription rpcinterpreter;
 
-
-
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
 		QVERIFY(xmlfile);
@@ -1252,12 +1256,19 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.RPCDecodeChannelCodedData(inBinData);
+	Channel_codec_wrapper cc(decoder);
 
-	QCOMPARE(decoder.getErrorCRCHappened(), true);
+	cc.add_data(inBinData_array);
+
+	QVERIFY(!cc.transfer_complete());
+
+	//auto function_call = cc.pop();
+
+	//QCOMPARE(decoder.getErrorCRCHappened(), true);
 #endif
 }
 
+#if 0
 void TestRPCRuntimeInterpreter::playWithChannelEncoding() {
 #if RUNTEST
     const uint8_t inBinData_array[] = {0x1a, 0x01};

@@ -1,12 +1,13 @@
 #include "channel_codec_wrapper.h"
 #include "channel_codec/channel_codec.h"
+#include "errorlogger/generic_eeprom_errorlogger.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_transfer.h"
 
 #include <map>
 
-std::map<channel_codec_instance_t *, Channel_codec_wrapper*> wrapper_instances;
+std::map<channel_codec_instance_t *, Channel_codec_wrapper *> wrapper_instances;
 
 Channel_codec_wrapper::Channel_codec_wrapper(const RPCRuntimeDecoder &decoder)
 	: decoder(&decoder)
@@ -41,13 +42,16 @@ RPCRuntimeDecodedFunctionCall Channel_codec_wrapper::pop() {
 	return transfer.decode();
 }
 
-const RPCRuntimeDecoder *Channel_codec_wrapper::get_decoder() const
-{
+const RPCRuntimeDecoder *Channel_codec_wrapper::get_decoder() const {
 	return decoder;
 }
 
-void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size)
+void Channel_codec_wrapper::reset_current_transfer()
 {
+	transfers.back().reset();
+}
+
+void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size) {
 	for (std::size_t i = 0; i < size; i++) {
 		auto &byte = data[i];
 		auto &t = ccw.transfers.back();
@@ -90,6 +94,11 @@ EXTERNC void RPC_CHANNEL_CODEC_parse_answer(channel_codec_instance_t *instance, 
 
 EXTERNC void RPC_CHANNEL_CODEC_parse_request(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes) {
 	push_data(*wrapper_instances[instance], static_cast<const unsigned char *>(buffer), size_bytes);
+}
+
+void ChannelCodec_errorHandler(channel_codec_instance_t *instance, channelCodecErrorNum_t errNum) {
+	wrapper_instances[instance]->reset_current_transfer();
+	(void)errNum;
 }
 
 #undef EXTERNC

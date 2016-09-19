@@ -16,20 +16,6 @@
 #define EXTERNC
 #endif
 
-void ChannelCodec_errorHandler(channel_codec_instance_t *instance, channelCodecErrorNum_t errNum) {
-	//assert(sendingClassInstance);
-	assert(instance->aux.RPCRuntimeDecoderInstance);
-	(void)errNum;
-#if 0
-	RPCRuntimeDecoder *sendingClass = instance->aux.RPCRuntimeDecoderInstance;
-	if (errNum == errlog_W_CHCODEC_RX_CRC_fail) {
-		sendingClass->setErrorCRCHappened(true);
-	} else {
-		sendingClass->setErrorChannelCodecHappened(true);
-	}
-#endif
-}
-
 EXTERNC RPC_RESULT phyPushDataBuffer(channel_codec_instance_t *instance, const char *buffer, size_t length) {
 	assert(instance->aux.RPCRuntimeDecoderInstance);
 	(void)buffer;

@@ -35,6 +35,7 @@ class Channel_codec_wrapper {
 	bool transfer_complete() const;
 	RPCRuntimeDecodedFunctionCall pop();
 	const RPCRuntimeDecoder *get_decoder() const;
+	void reset_current_transfer();
 
 	private:
 	const RPCRuntimeDecoder *decoder;
