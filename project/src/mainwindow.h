@@ -1,22 +1,33 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "rpcruntime_transfer.h"
+
 #include <QMainWindow>
+#include <QtSerialPort/QSerialPort>
 
 namespace Ui {
-class MainWindow;
+	class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+	public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private:
+	public slots:
+	void refresh_comports();
+	void open_comport();
+	void close_comport();
+	private slots:
+	void received(const RPCRuntimeTransfer &transfer);
+	void poll();
+
+	private:
     Ui::MainWindow *ui;
+	QSerialPort comport;
 };
 
 #endif // MAINWINDOW_H

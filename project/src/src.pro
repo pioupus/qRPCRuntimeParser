@@ -22,7 +22,7 @@ SOURCES += mainwindow.cpp
 
 HEADERS += mainwindow.h
 
-
+QT += serialport
 
 FORMS    += mainwindow.ui
 
