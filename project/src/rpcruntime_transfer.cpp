@@ -7,9 +7,7 @@
 #include <sstream>
 
 RPCRuntimeTransfer::RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol)
-	: protocol(&protocol) {
-	// TODO: reserve space in data according to the size of the function
-}
+	: protocol(&protocol) {}
 
 int RPCRuntimeTransfer::get_min_number_of_bytes() const {
 	if (data.empty()) {
@@ -23,8 +21,7 @@ bool RPCRuntimeTransfer::is_complete() const {
 	return get_min_number_of_bytes() == static_cast<int>(data.size());
 }
 
-void RPCRuntimeTransfer::add_data(unsigned char byte)
-{
+void RPCRuntimeTransfer::add_data(unsigned char byte) {
 	data.push_back(byte);
 }
 
@@ -34,10 +31,18 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	ss.str({reinterpret_cast<const char *>(data.data()), data.size()});
 	unsigned char id;
 	ss >> id;
+	if (!ss) {
+		throw std::runtime_error("No available data to decode");
+	}
+	if (id == 0) { //special case for hash
+		static RPCRuntimeFunction rtfunction(0, 1, {}, {}, "get_hash",
+											 "void get_hash(unsigned char hash_out[16], unsigned char start_command_id_out[1], uint16_t version_out[1]);");
+		return {id, {}, rtfunction};
+	}
 
 	auto &function = protocol->get_function(data[0]);
 	auto &parameter_descriptions = protocol->get_parameters(data[0]);
-	for (auto &pd : parameter_descriptions){
+	for (auto &pd : parameter_descriptions) {
 		decoded_parameters.emplace_back(pd);
 		ss >> decoded_parameters.back();
 	}
@@ -46,7 +51,6 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	return {id, std::move(decoded_parameters), function};
 }
 
-void RPCRuntimeTransfer::reset()
-{
+void RPCRuntimeTransfer::reset() {
 	data.clear();
 }

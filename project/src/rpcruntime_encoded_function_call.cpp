@@ -12,6 +12,13 @@ RPCRuntimeEncodedFunctionCall::RPCRuntimeEncodedFunctionCall(const RPCRuntimeFun
 	}
 }
 
+RPCRuntimeEncodedFunctionCall RPCRuntimeEncodedFunctionCall::create_hash_request()
+{
+	static RPCRuntimeFunction rtfunction{
+		0, 1, {}, {}, "get_hash", "void get_hash(unsigned char hash_out[16], unsigned char start_command_id_out[1], uint16_t version_out[1]);"};
+	return {rtfunction};
+}
+
 int RPCRuntimeEncodedFunctionCall::get_parameter_count() const {
 	return params.size();
 }

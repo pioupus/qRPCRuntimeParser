@@ -1262,9 +1262,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
 	QVERIFY(!cc.transfer_complete());
 
-	//auto function_call = cc.pop();
+//auto function_call = cc.pop();
 
-	//QCOMPARE(decoder.getErrorCRCHappened(), true);
+//QCOMPARE(decoder.getErrorCRCHappened(), true);
 #endif
 }
 
@@ -1304,6 +1304,11 @@ static QByteArray QB(const std::vector<unsigned char> data) {
 
 template <int size>
 static QByteArray QB(const unsigned char (&data)[size]) {
+	return {reinterpret_cast<const char *>(data), size};
+}
+
+static QByteArray QB(const unsigned char *data, int size) {
+	(void)(QByteArray (*)(const unsigned char *data, int size))QB;
 	return {reinterpret_cast<const char *>(data), size};
 }
 
@@ -1525,4 +1530,25 @@ void TestRPCRuntimeInterpreter::create_request_with_complex_parameter() {
 		QCOMPARE(sizeof outBinData_array, data.size());
 		QCOMPARE(QB(outBinData_array), QB(data));
 	}
+}
+
+void TestRPCRuntimeInterpreter::encode_hash_request_without_protocol()
+{
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	RPCRuntimeEncoder encoder(rpcinterpreter);
+	auto data = encoder.encode(0).encode();
+	QCOMPARE(data.size(), 1u);
+	QCOMPARE(static_cast<int>(data[0]), 0);
+}
+
+void TestRPCRuntimeInterpreter::decode_hash_request_without_protocol()
+{
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	RPCRuntimeDecoder decoder(rpcinterpreter);
+	const unsigned char data[] = {0};
+	RPCRuntimeTransfer transfer = decoder.decode(data);
+	QVERIFY(transfer.is_complete());
+	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
+	QCOMPARE(function_call.get_id(), 0);
+	QCOMPARE(function_call.get_decoded_parameters().size(), 0u);
 }

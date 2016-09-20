@@ -7,7 +7,6 @@ CONFIG += c++14
 
 QPROTOCOL_INTERPRETER_PATH = $$QPROTOCOL_INTERPRETER_PATH/project
 
-SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/channel_codec_impl.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_decoder.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_function.cpp
 SOURCES += $$QPROTOCOL_INTERPRETER_PATH/src/rpcruntime_protocol_description.cpp

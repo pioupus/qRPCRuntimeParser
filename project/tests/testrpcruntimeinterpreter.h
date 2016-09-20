@@ -62,6 +62,8 @@ private slots:
 	void create_request_with_array_parameter();
 	void create_request_with_struct_parameter();
 	void create_request_with_complex_parameter();
+	void encode_hash_request_without_protocol();
+	void decode_hash_request_without_protocol();
 private:
     QString callBack_FieldID;
     QString callBack_humanReadableName;

@@ -1,10 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "rpcruntime_transfer.h"
-
 #include <QMainWindow>
 #include <QtSerialPort/QSerialPort>
+
+class RPCRuntimeTransfer;
 
 namespace Ui {
 	class MainWindow;
