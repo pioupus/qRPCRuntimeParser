@@ -12,6 +12,8 @@
 
 class RPCRunTimeProtocolDescription {
 	public:
+	RPCRunTimeProtocolDescription();
+	RPCRunTimeProtocolDescription(std::istream &input);
 	bool openProtocolDescription(std::istream &input);
 	const std::vector<RPCRuntimeFunction> &get_functions() const;
 	const std::string &get_hash() const;
@@ -23,6 +25,7 @@ class RPCRunTimeProtocolDescription {
 	const RPCRuntimeFunction &get_function(int id) const;
 
 	private:
+	void reset();
 	std::vector<RPCRuntimeFunction> functions;
 	std::string hash;
 	std::string project_name;

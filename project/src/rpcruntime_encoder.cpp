@@ -6,9 +6,6 @@ RPCRuntimeEncoder::RPCRuntimeEncoder(const RPCRunTimeProtocolDescription &descri
 	: description(&description) {}
 
 RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(int id) {
-	if (id == 0) { //special case for get hash function
-		return RPCRuntimeEncodedFunctionCall::create_hash_request();
-	}
 	for (auto &function : description->get_functions()) {
 		if (function.get_request_id() == id) {
 			return {function};

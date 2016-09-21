@@ -34,11 +34,6 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	if (!ss) {
 		throw std::runtime_error("No available data to decode");
 	}
-	if (id == 0) { //special case for hash
-		static RPCRuntimeFunction rtfunction(0, 1, {}, {}, "get_hash",
-											 "void get_hash(unsigned char hash_out[16], unsigned char start_command_id_out[1], uint16_t version_out[1]);");
-		return {id, {}, rtfunction};
-	}
 
 	auto &function = protocol->get_function(data[0]);
 	auto &parameter_descriptions = protocol->get_parameters(data[0]);

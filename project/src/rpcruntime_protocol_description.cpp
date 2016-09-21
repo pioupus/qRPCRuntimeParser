@@ -4,6 +4,7 @@
 #include <QXmlStreamReader>
 #include <cassert>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 struct Common_parameter_attributes {
@@ -209,6 +210,40 @@ static RPCRuntimeFunction parse_function(QXmlStreamReader &xml_reader) {
 	return {request_id, reply_id, std::move(request_parameters), std::move(reply_parameters), std::move(function_name), std::move(function_declaration)};
 }
 
+RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription() {
+	//if we have no protocol description just load a dummy that contains only the hash function
+	std::istringstream iss(R"(<?xml version='1.0' encoding='utf-8'?>
+	<RPC>
+		<function name="get_hash">
+			<declaration>RPC_RESULT get_hash(unsigned char hash_out[16], unsigned char start_command_id_out[1], uint16_t version_out[1]);</declaration>
+			<request ID="0" />
+			<reply ID="1">
+				<parameter bits="128" ctype="unsigned char [16]" name="hash_out" position="1" type="array">
+					<array bits="8" ctype="unsigned char" elements="16" type="integer">
+						<integer signed="False" />
+					</array>
+				</parameter>
+				<parameter bits="8" ctype="unsigned char [1]" name="start_command_id_out" position="2" type="array">
+					<array bits="8" ctype="unsigned char" elements="1" type="integer">
+						<integer signed="False" />
+					</array>
+				</parameter>
+				<parameter bits="16" ctype="uint16_t [1]" name="version_out" position="3" type="array">
+					<array bits="16" ctype="uint16_t" elements="1" type="integer">
+						<integer signed="False" />
+					</array>
+				</parameter>
+			</reply>
+		</function>
+	</RPC>)");
+	auto success = openProtocolDescription(iss);
+	assert(success);
+}
+
+RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription(std::istream &input) {
+	openProtocolDescription(input);
+}
+
 bool RPCRunTimeProtocolDescription::openProtocolDescription(std::istream &input) {
 #define MAKESURE(X)                                                                                                                                            \
 	do {                                                                                                                                                       \
@@ -216,6 +251,7 @@ bool RPCRunTimeProtocolDescription::openProtocolDescription(std::istream &input)
 			return false;                                                                                                                                      \
 		}                                                                                                                                                      \
 	} while (0)
+	reset();
 	QXmlStreamReader xml_reader;
 	xml_reader.setNamespaceProcessing(false);
 	for (std::string line; std::getline(input, line);) {
@@ -280,9 +316,6 @@ int RPCRunTimeProtocolDescription::get_parameter_size_bytes(int id) const {
 }
 
 const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) const {
-	if (id == 0 || id == 1) { //we want the hash function, which needs to be available without any protocol loaded
-		//TODO
-	}
 	for (auto &function : functions) {
 		if (function.get_reply_id() == id) {
 			return function;
@@ -293,4 +326,13 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) co
 	}
 	//don't have a function with the appropriate ID
 	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
+}
+
+void RPCRunTimeProtocolDescription::reset()
+{
+	functions.clear();
+	hash.clear();
+	project_name.clear();
+	version_number = -1;
+	command_id_start = -1;
 }
