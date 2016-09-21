@@ -3,6 +3,7 @@
 
 #include "channel_codec_wrapper.h"
 #include "global.h"
+#include "rpc_ui.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_encoded_function_call.h"
@@ -88,7 +89,7 @@ void MainWindow::open_comport() {
 				comport.setBaudRate(QSerialPort::BaudRate::Baud115200);
 				ui->open_comport->hide();
 				ui->close_button->show();
-				write_all_data(comport, global::channel_codec.encode(RPCRuntimeEncodedFunctionCall::create_hash_request()));
+				write_all_data(comport, global::channel_codec.encode(global::encoder.encode(0)));
 				QTimer::singleShot(0, this, &MainWindow::poll);
 			}
 			return;
@@ -124,10 +125,8 @@ void MainWindow::poll() {
 	const auto &data = comport.readAll();
 	global::channel_codec.add_data(reinterpret_cast<const unsigned char *>(data.data()), data.size());
 	if (global::channel_codec.transfer_complete()) {
-		auto transfer = global::channel_codec.pop();
-		auto item = new QTreeWidgetItem;
-		item->setText(0, transfer.get_declaration()->get_function_declaration().c_str());
-		ui->replies->addTopLevelItem(item);
+		RPCRuntimeDecodedFunctionCall function_call = global::channel_codec.pop();
+		ui->replies->addTopLevelItem(getTreeWidgetReport(function_call).release());
 	}
 
 	ui->log->insertPlainText(data);

@@ -1,6 +1,7 @@
 #include "channel_codec_wrapper.h"
 #include "channel_codec/channel_codec.h"
 #include "errorlogger/generic_eeprom_errorlogger.h"
+#include "global.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_encoded_function_call.h"
@@ -9,23 +10,15 @@
 #include <iterator>
 #include <map>
 
-namespace global {
-	namespace detail {
-		static std::map<channel_codec_instance_t *, Channel_codec_wrapper *> &get_wrapper_instances() {
-			//prevent static initialization order fiasco at the cost of a mutex
-			static std::map<channel_codec_instance_t *, Channel_codec_wrapper *> retval;
-			return retval;
-		}
-	}
-	static auto &&wrapper_instances = detail::get_wrapper_instances();
-}
+using Wrapper_instances = std::map<channel_codec_instance_t *, Channel_codec_wrapper *>;
+GLOBAL(Wrapper_instances, wrapper_instances)
 
 Channel_codec_wrapper::Channel_codec_wrapper(const RPCRuntimeDecoder &decoder)
 	: decoder(&decoder)
 	, cci(std::make_unique<channel_codec_instance_t>()) {
 	transfers.emplace_back(*decoder.get_description());
 	channel_init_instance(cci.get(), input_buffer, sizeof input_buffer, output_buffer, sizeof output_buffer);
-	global::wrapper_instances[cci.get()] = this;
+	global::detail::getwrapper_instances()[cci.get()] = this;
 }
 
 Channel_codec_wrapper::~Channel_codec_wrapper() {
@@ -67,7 +60,9 @@ void Channel_codec_wrapper::reset_current_transfer() {
 
 std::vector<unsigned char> Channel_codec_wrapper::encode(const RPCRuntimeEncodedFunctionCall &call) {
 	encoded_data.clear();
-	for (auto &byte : call.encode()) {
+	const auto &data = call.encode();
+	channel_start_message_from_RPC(cci.get(), data.size());
+	for (auto &byte : data) {
 		channel_push_byte_from_RPC(cci.get(), byte);
 	}
 	channel_commit_from_RPC(cci.get());

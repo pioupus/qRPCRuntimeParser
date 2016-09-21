@@ -15,7 +15,6 @@ class RPCRuntimeFunction;
 class RPCRuntimeEncodedFunctionCall {
 	public:
 	RPCRuntimeEncodedFunctionCall(const RPCRuntimeFunction &function);
-	static RPCRuntimeEncodedFunctionCall create_hash_request();
 
 	int get_parameter_count() const;
 	bool all_values_set() const;
