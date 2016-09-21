@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "channel_codec_wrapper.h"
+#include "global.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_encoded_function_call.h"
@@ -23,13 +24,13 @@
 #include <cassert>
 #include <fstream>
 
-static RPCRunTimeProtocolDescription protocol;
-static RPCRuntimeEncoder encoder{protocol};
-static RPCRuntimeDecoder decoder{protocol};
-static Channel_codec_wrapper channel_codec{decoder};
+GLOBAL(RPCRunTimeProtocolDescription, protocol)
+GLOBAL(RPCRuntimeEncoder, encoder, global::protocol)
+GLOBAL(RPCRuntimeDecoder, decoder, global::protocol)
+GLOBAL(Channel_codec_wrapper, channel_codec, global::decoder)
 
 static void write_all_data(QSerialPort &comport, const char *data, int size) {
-	if (size == 0){
+	if (size == 0) {
 		return;
 	}
 	qDebug() << std::string(data, data + size).c_str();
@@ -49,7 +50,7 @@ static void load_protocol_description(QWidget *parent, const std::string &hex_ha
 		QMessageBox::warning(parent, "Invalid Hash", ("The file " + xml_path + " was not found.").c_str());
 		return;
 	}
-	if (protocol.openProtocolDescription(xml_file) == false) {
+	if (global::protocol.openProtocolDescription(xml_file) == false) {
 		QMessageBox::warning(parent, "Parsing error", ("The file " + xml_path + " is not a valid protocol description.").c_str());
 	}
 }
@@ -87,7 +88,7 @@ void MainWindow::open_comport() {
 				comport.setBaudRate(QSerialPort::BaudRate::Baud115200);
 				ui->open_comport->hide();
 				ui->close_button->show();
-				write_all_data(comport, channel_codec.encode(RPCRuntimeEncodedFunctionCall::create_hash_request()));
+				write_all_data(comport, global::channel_codec.encode(RPCRuntimeEncodedFunctionCall::create_hash_request()));
 				QTimer::singleShot(0, this, &MainWindow::poll);
 			}
 			return;
@@ -121,9 +122,9 @@ void MainWindow::poll() {
 	new_cursor.movePosition(QTextCursor::End);
 	ui->log->setTextCursor(new_cursor);
 	const auto &data = comport.readAll();
-	channel_codec.add_data(reinterpret_cast<const unsigned char *>(data.data()), data.size());
-	if (channel_codec.transfer_complete()) {
-		auto transfer = channel_codec.pop();
+	global::channel_codec.add_data(reinterpret_cast<const unsigned char *>(data.data()), data.size());
+	if (global::channel_codec.transfer_complete()) {
+		auto transfer = global::channel_codec.pop();
 		auto item = new QTreeWidgetItem;
 		item->setText(0, transfer.get_declaration()->get_function_declaration().c_str());
 		ui->replies->addTopLevelItem(item);

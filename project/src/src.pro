@@ -17,10 +17,12 @@ TEMPLATE = lib
 
 DEFINES += EXPORT_LIBRARY
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    global.cpp
 SOURCES += mainwindow.cpp
 
-HEADERS += mainwindow.h
+HEADERS += mainwindow.h \
+    global.h
 
 QT += serialport
 

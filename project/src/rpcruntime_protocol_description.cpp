@@ -266,35 +266,28 @@ int RPCRunTimeProtocolDescription::get_command_id_start() const {
 	return command_id_start;
 }
 
-const std::vector<RPCRuntimeParameterDescription> &RPCRunTimeProtocolDescription::get_parameters(int id) const
-{
-	for (auto &function : functions){
-		if (function.get_reply_id() == id){
-			return function.get_reply_parameters();
-		}
-		if (function.get_request_id() == id){
-			return function.get_request_parameters();
-		}
+const std::vector<RPCRuntimeParameterDescription> &RPCRunTimeProtocolDescription::get_parameters(int id) const {
+	if (id % 2) {
+		return get_function(id).get_reply_parameters();
 	}
-	//don't have a function with the appropriate ID
-	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
+	return get_function(id).get_request_parameters();
 }
 
-int RPCRunTimeProtocolDescription::get_parameter_size_bytes(int id) const
-{
+int RPCRunTimeProtocolDescription::get_parameter_size_bytes(int id) const {
 	auto &parameters = get_parameters(id);
-	return std::accumulate(std::begin(parameters), std::end(parameters), 1, [](int sum, const RPCRuntimeParameterDescription &param){
-		return sum + param.get_bit_size() / 8;
-	});
+	return std::accumulate(std::begin(parameters), std::end(parameters), 1,
+						   [](int sum, const RPCRuntimeParameterDescription &param) { return sum + param.get_bit_size() / 8; });
 }
 
-const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) const
-{
-	for (auto &function : functions){
-		if (function.get_reply_id() == id){
+const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) const {
+	if (id == 0 || id == 1) { //we want the hash function, which needs to be available without any protocol loaded
+		//TODO
+	}
+	for (auto &function : functions) {
+		if (function.get_reply_id() == id) {
 			return function;
 		}
-		if (function.get_request_id() == id){
+		if (function.get_request_id() == id) {
 			return function;
 		}
 	}
