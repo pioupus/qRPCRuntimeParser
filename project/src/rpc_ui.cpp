@@ -1,5 +1,9 @@
 #include "rpc_ui.h"
 
+#include "rpcruntime_decoded_function_call.h"
+#include "rpcruntime_decoded_param.h"
+#include "rpcruntime_encoded_function_call.h"
+#include "rpcruntime_encoded_param.h"
 #include "rpcruntime_function.h"
 #include "rpcruntime_paramter_description.h"
 
@@ -68,7 +72,7 @@ void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam 
 	enumeration->setData(0, Qt::UserRole, "enumeration");
 	enumeration->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
 
-	enumeration->setText(0, (param.get_desciption()->get_parameter_name() +  "(" + param.get_desciption()->get_parameter_type() + ")").c_str());
+	enumeration->setText(0, (param.get_desciption()->get_parameter_name() + "(" + param.get_desciption()->get_parameter_type() + ")").c_str());
 	enumeration->setText(1, param.as_enum().name.c_str());
 }
 
@@ -132,40 +136,39 @@ void add_to_report(QTreeWidgetItem *item, QStringList &list, int depth = 0) {
 	//This is horrible code to get the right whitespaces at the end of the right lines.
 	//We should just drop the whitespace requirements instead of implementing them.
 
-	enum {named_array, unnamed_array, structure, other} our_type = other;
+	enum { named_array, unnamed_array, structure, other } our_type = other;
 
 	auto type = item->text(0);
-	if (type.contains('[')){ //could be array or struct
-		if (item->text(0).contains("(")){
+	if (type.contains('[')) { //could be array or struct
+		if (item->text(0).contains("(")) {
 			our_type = named_array;
-		}
-		else{
+		} else {
 			our_type = unnamed_array;
 		}
 	}
 
 	switch (our_type) {
-	case named_array:
-		line += item->text(0) + ":\t";
-		if (!item->text(1).isEmpty()){
-			list.append(std::move(line));
-			line = QString{depth + 1, '\t'};
-			line += item->text(1) + " ";
-		}
-		break;
-	case unnamed_array:
-		line += item->text(0) + ":";
-		if (!item->text(1).isEmpty()){
-			list.append(std::move(line));
-			line = QString{depth + 1, '\t'};
-			line += item->text(1) + " ";
-		}
-		break;
-	case structure:
-		line += item->text(0) + ":\t";
-		break;
-	case other:
-		line += item->text(0) + ":\t" + item->text(1) + " ";
+		case named_array:
+			line += item->text(0) + ":\t";
+			if (!item->text(1).isEmpty()) {
+				list.append(std::move(line));
+				line = QString{depth + 1, '\t'};
+				line += item->text(1) + " ";
+			}
+			break;
+		case unnamed_array:
+			line += item->text(0) + ":";
+			if (!item->text(1).isEmpty()) {
+				list.append(std::move(line));
+				line = QString{depth + 1, '\t'};
+				line += item->text(1) + " ";
+			}
+			break;
+		case structure:
+			line += item->text(0) + ":\t";
+			break;
+		case other:
+			line += item->text(0) + ":\t" + item->text(1) + " ";
 	}
 	list.append(std::move(line));
 	for (int index = 0; index < item->childCount(); index++) { //stupid Qt doesn't support range based for loops
@@ -182,4 +185,20 @@ QStringList get_report(const RPCRuntimeDecodedFunctionCall &function) {
 	retval.append("");
 	add_to_report(func->child(0), retval);
 	return retval;
+}
+
+static void add_param_to_item(QTreeWidgetItem *parent, const RPCRuntimeEncodedParam &param){
+	auto item = std::make_unique<QTreeWidgetItem>();
+	item->setText(0, param.get_description()->get_parameter_name().c_str());
+	parent->addChild(item.release());
+}
+
+std::unique_ptr<QTreeWidgetItem> getTreeWidgetReport(const RPCRuntimeEncodedFunctionCall &function) {
+	std::unique_ptr<QTreeWidgetItem> item = std::make_unique<QTreeWidgetItem>();
+	item->setText(0, function.get_description()->get_function_name().c_str());
+	for (int param_index = 0; param_index < function.get_parameter_count(); param_index++) {
+		auto &param = function.get_parameter(param_index);
+		add_param_to_item(item.get(), param);
+	}
+	return item;
 }

@@ -37,6 +37,11 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(int index)
 	return params[index];
 }
 
+const RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(int index) const
+{
+	return params[index];
+}
+
 RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(const std::string &name)
 {
 	for (auto &param : params){
@@ -45,4 +50,9 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(const std::
 		}
 	}
 	throw std::runtime_error("invalid name: " + name);
+}
+
+const RPCRuntimeFunction *RPCRuntimeEncodedFunctionCall::get_description() const
+{
+	return function;
 }

@@ -25,6 +25,7 @@ class RPCRunTimeProtocolDescription {
 	const RPCRuntimeFunction &get_function(int id) const;
 
 	private:
+	bool open_description(std::istream &input);
 	void reset();
 	std::vector<RPCRuntimeFunction> functions;
 	std::string hash;

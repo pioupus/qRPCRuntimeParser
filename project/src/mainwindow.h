@@ -21,6 +21,7 @@ class MainWindow : public QMainWindow {
 	void refresh_comports();
 	void open_comport();
 	void close_comport();
+	void send_request();
 	private slots:
 	void received(const RPCRuntimeTransfer &transfer);
 	void poll();

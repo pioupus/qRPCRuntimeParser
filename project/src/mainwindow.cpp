@@ -13,6 +13,7 @@
 #include "rpcruntime_transfer.h"
 
 #include <QDebug>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QSettings>
 #include <QTextCursor>
@@ -106,12 +107,40 @@ void MainWindow::close_comport() {
 	ui->refresh_port_list->click();
 }
 
+void MainWindow::send_request() {
+	auto item = ui->requests->currentItem();
+	if (item == nullptr) {
+		return;
+	}
+	while (item->parent() != nullptr){
+		item = item->parent();
+	}
+	const auto &function_name = item->text(0).toStdString();
+	RPCRuntimeEncodedFunctionCall function_call = global::encoder.encode(function_name);
+	if (function_call.all_values_set()) {
+		const auto &data = global::channel_codec.encode(function_call);
+		write_all_data(comport, data);
+	} else {
+		QMessageBox::information(this, "RPC Error", "Required parameters for the request " +
+														QString::fromStdString(function_call.get_description()->get_function_name()) + " were not set");
+	}
+}
+
 void MainWindow::received(const RPCRuntimeTransfer &transfer) {
 	assert(transfer.is_complete()); //should only call this function with complete transfers
 	auto call = transfer.decode();
 	QTreeWidgetItem w;
 	w.setText(0, QString::fromStdString(call.get_declaration()->get_function_name()));
 	ui->replies->addTopLevelItem(new QTreeWidgetItem(std::move(w)));
+}
+
+static char to_hex_char(int character) {
+	assert(character >= 0);
+	assert(character < 16);
+	if (character < 10) {
+		return character + '0';
+	}
+	return character - 10 + 'A';
 }
 
 void MainWindow::poll() {
@@ -127,6 +156,28 @@ void MainWindow::poll() {
 	if (global::channel_codec.transfer_complete()) {
 		RPCRuntimeDecodedFunctionCall function_call = global::channel_codec.pop();
 		ui->replies->addTopLevelItem(getTreeWidgetReport(function_call).release());
+		if (function_call.get_declaration()->get_reply_id() == 1) { //got a hash reply
+			const auto &hash_array = function_call.get_decoded_parameters()[0].as_array();
+			assert(hash_array.size() == 16);
+			std::string hash;
+			for (auto &byte : hash_array) {
+				int byte_value = byte.as_integer();
+				hash += to_hex_char(byte_value >> 4);
+				hash += to_hex_char(byte_value & 0x0F);
+			}
+			std::ifstream f("../../protocols/" + hash + ".xml");
+			if (global::protocol.openProtocolDescription(f)) { //successfully loaded protocol
+				ui->requests->clear();
+				for (auto &f : global::protocol.get_functions()) {
+					ui->requests->addTopLevelItem(getTreeWidgetReport(global::encoder.encode(f.get_request_id())).release());
+				}
+				ui->requests->header()->resizeSections(QHeaderView::ResizeMode::ResizeToContents);
+			} else { //failed loading protocol
+				QMessageBox::critical(this, "Protocol Error", "The file " +
+																  QFileInfo("../../protocols/" + QString::fromStdString(hash) + ".xml").absoluteFilePath() +
+																  " could not be loaded.");
+			}
+		}
 	}
 
 	ui->log->insertPlainText(data);

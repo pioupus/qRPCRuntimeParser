@@ -236,50 +236,23 @@ RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription() {
 			</reply>
 		</function>
 	</RPC>)");
-	auto success = openProtocolDescription(iss);
+	auto success = open_description(iss);
 	assert(success);
 }
 
 RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription(std::istream &input) {
-	openProtocolDescription(input);
+	if (!open_description(input)){
+		reset();
+	}
 }
 
 bool RPCRunTimeProtocolDescription::openProtocolDescription(std::istream &input) {
-#define MAKESURE(X)                                                                                                                                            \
-	do {                                                                                                                                                       \
-		if (!(X)) {                                                                                                                                            \
-			return false;                                                                                                                                      \
-		}                                                                                                                                                      \
-	} while (0)
-	reset();
-	QXmlStreamReader xml_reader;
-	xml_reader.setNamespaceProcessing(false);
-	for (std::string line; std::getline(input, line);) {
-		xml_reader.addData(line.data());
-	}
-
-	MAKESURE(xml_reader.readNextStartElement());
-	MAKESURE(xml_reader.name() == "RPC");
-
-	const auto &rpc_attributes = xml_reader.attributes();
-
-	hash = rpc_attributes.value("hash").toString().toStdString();
-	project_name = rpc_attributes.value("hash").toString().toStdString();
-	version_number = rpc_attributes.value("version_number").toInt();
-	command_id_start = rpc_attributes.value("command_id_start").toInt();
-
-	while (xml_reader.readNextStartElement()) {
-		functions.push_back(parse_function(xml_reader));
-	}
-
-	if (xml_reader.hasError()) { // if openProtocolDescription returns false put a
-								 // breakpoint here to see the error message
-		auto error = xml_reader.errorString();
-		(void)error;
+	RPCRunTimeProtocolDescription other(input);
+	if (other.get_functions().empty()){ //failed loading
 		return false;
 	}
+	*this = std::move(other);
 	return true;
-#undef MAKESURE
 }
 
 const std::vector<RPCRuntimeFunction> &RPCRunTimeProtocolDescription::get_functions() const {
@@ -326,6 +299,45 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) co
 	}
 	//don't have a function with the appropriate ID
 	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
+}
+
+bool RPCRunTimeProtocolDescription::open_description(std::istream &input)
+{
+#define MAKESURE(X)                                                                                                                                            \
+	do {                                                                                                                                                       \
+		if (!(X)) {                                                                                                                                            \
+			return false;                                                                                                                                      \
+		}                                                                                                                                                      \
+	} while (0)
+	reset();
+	QXmlStreamReader xml_reader;
+	xml_reader.setNamespaceProcessing(false);
+	for (std::string line; std::getline(input, line);) {
+		xml_reader.addData(line.data());
+	}
+
+	MAKESURE(xml_reader.readNextStartElement());
+	MAKESURE(xml_reader.name() == "RPC");
+
+	const auto &rpc_attributes = xml_reader.attributes();
+
+	hash = rpc_attributes.value("hash").toString().toStdString();
+	project_name = rpc_attributes.value("hash").toString().toStdString();
+	version_number = rpc_attributes.value("version_number").toInt();
+	command_id_start = rpc_attributes.value("command_id_start").toInt();
+
+	while (xml_reader.readNextStartElement()) {
+		functions.push_back(parse_function(xml_reader));
+	}
+
+	if (xml_reader.hasError()) { // if openProtocolDescription returns false put a
+								 // breakpoint here to see the error message
+		auto error = xml_reader.errorString();
+		(void)error;
+		return false;
+	}
+	return true;
+#undef MAKESURE
 }
 
 void RPCRunTimeProtocolDescription::reset()
