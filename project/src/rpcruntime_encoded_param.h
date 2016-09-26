@@ -34,7 +34,8 @@ class RPCRuntimeEncodedParam {
 	RPCRuntimeEncodedParam &operator=(const std::string &name);
 	RPCRuntimeEncodedParam &operator=(std::initializer_list<int64_t> data);
 
-		private : void set_integer_value(int64_t value);
+	private:
+	void set_integer_value(int64_t value);
 	void set_enum_value(int value);
 	void set_enum_value(const std::string &value);
 	void set_array_value(const std::string &array);

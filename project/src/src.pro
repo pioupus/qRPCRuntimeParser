@@ -17,17 +17,6 @@ TEMPLATE = lib
 
 DEFINES += EXPORT_LIBRARY
 
-SOURCES += main.cpp \
-    global.cpp
-SOURCES += mainwindow.cpp
-
-HEADERS += mainwindow.h \
-    global.h
-
-QT += serialport
-
-FORMS    += mainwindow.ui
-
 #INCLUDEPATH += $$(PYTHON_PATH)/include
 
 #exists( $$(PYTHON_PATH)/include/python.h ) {
