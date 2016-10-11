@@ -5,9 +5,10 @@ class RPCRuntimeDecoder;
 class RPCRuntimeDecodedFunctionCall;
 class RPCRuntimeEncodedFunctionCall;
 
-struct channel_codec_instance_t;
+
 
 #include "rpcruntime_transfer.h"
+#include "channel_codec/channel_codec_types.h"
 
 #include <cinttypes>
 #include <deque>
@@ -19,6 +20,8 @@ struct channel_codec_instance_t;
 #else
 #define EXTERNC
 #endif
+
+//EXTERNC struct channel_codec_instance_t;
 
 class Channel_codec_wrapper {
 	public:

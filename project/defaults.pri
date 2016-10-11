@@ -16,8 +16,8 @@ CONFIG += warn
 #CONFIG += c++11
 CONFIG += c++1y
 
-#INCLUDEPATH += $$PWD/libs/include/
-#INCLUDEPATH += $$PWD/libs/RPC-ChannelCodec/include
+INCLUDEPATH += $$PWD/libs/include/
+INCLUDEPATH += $$PWD/libs/RPC-ChannelCodec/include
 
 
 #exists( $$PWD/libs/PythonQt3.0/src/PythonQt.h ) {

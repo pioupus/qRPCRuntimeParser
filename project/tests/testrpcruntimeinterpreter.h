@@ -31,7 +31,7 @@ private slots:
 	void loadXMLFile_rpcDecodeTest_struct_int();
 
 	//TODO: what are FieldIDs and do we need them
-#if 0
+#if 1
 	void loadXMLFile_rpcDecodeTest_struct_int_testID();
 	void loadXMLFile_rpcDecodeTest_struct_int_TestByID();
 	void loadXMLFile_rpcDecodeTest_struct_int_AccessByID();
