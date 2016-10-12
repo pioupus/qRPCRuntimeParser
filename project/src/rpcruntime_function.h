@@ -3,6 +3,9 @@
 
 #include "rpcruntime_paramter_description.h"
 
+class RPCRuntimeDecodedFunctionCall;
+
+#include <functional>
 #include <string>
 #include <vector>
 

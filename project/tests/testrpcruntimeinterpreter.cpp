@@ -1313,13 +1313,15 @@ void TestRPCRuntimeInterpreter::create_callback() {
 	decoder.set_reply_callback(rpcinterpreter.get_function("simpleTest"), [&value](const RPCRuntimeDecodedFunctionCall &reply){
 		const auto &parameters = reply.get_decoded_parameters();
 		QCOMPARE(parameters.size(), 1u);
-		value = parameters[0].as_array()[0].as_integer();
+		value = parameters[0].as_integer();
 	});
 
 	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
 
 	QCOMPARE(transfer.is_complete(), true);
 	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
+
+	transfer.decode(); //without decoding the function is not called
 
 	QCOMPARE(value, -16);
 

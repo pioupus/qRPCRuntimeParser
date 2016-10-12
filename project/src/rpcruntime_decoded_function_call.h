@@ -5,6 +5,7 @@
 
 class RPCRuntimeFunction;
 
+#include <functional>
 #include <vector>
 
 /*
