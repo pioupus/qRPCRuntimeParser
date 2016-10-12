@@ -19,3 +19,9 @@ const RPCRunTimeProtocolDescription *RPCRuntimeDecoder::get_description() const
 {
 	return description;
 }
+
+void RPCRuntimeDecoder::set_reply_callback(const RPCRuntimeFunction &parameter, std::function<void (const RPCRuntimeDecodedFunctionCall &)> callback_function)
+{
+	(void)parameter;
+	(void)callback_function;
+}
