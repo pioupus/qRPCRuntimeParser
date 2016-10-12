@@ -733,7 +733,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 }
 
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsingedBug() {
-#if 0
+#if 1
 #if RUNTEST || 1
 	const uint8_t inBinData_array[] = {0xFF, 0xFF, 0xFF, 0x04, 0x02, 0x52, 0x00, 0x9A, 0x00, 0x50, 0x00, 0x3C, 0x00, 0xE3, 0x4D};
 

@@ -8,14 +8,16 @@ SRC_DIR = $$PWD
 
 INCLUDEPATH += $$PWD/src
 
-QMAKE_CXXFLAGS += -std=c++11
+#QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++1y
 QMAKE_CXXFLAGS += -Werror
 
 CONFIG += warn
-CONFIG += c++11
+#CONFIG += c++11
+CONFIG += c++1y
 
-#INCLUDEPATH += $$PWD/libs/include/
-#INCLUDEPATH += $$PWD/libs/RPC-ChannelCodec/include
+INCLUDEPATH += $$PWD/libs/include/
+INCLUDEPATH += $$PWD/libs/RPC-ChannelCodec/include
 
 
 #exists( $$PWD/libs/PythonQt3.0/src/PythonQt.h ) {

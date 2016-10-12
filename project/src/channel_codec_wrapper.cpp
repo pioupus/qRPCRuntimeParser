@@ -1,5 +1,6 @@
-#include "channel_codec_wrapper.h"
+
 #include "channel_codec/channel_codec.h"
+#include "channel_codec_wrapper.h"
 #include "errorlogger/generic_eeprom_errorlogger.h"
 #include "global.h"
 #include "rpcruntime_decoded_function_call.h"
