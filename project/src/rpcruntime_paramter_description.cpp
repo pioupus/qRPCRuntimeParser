@@ -196,5 +196,5 @@ bool RPCRuntimeEnumerationParameter::Enum_value::is_int() const
 {
 	int retval = 0;
 	std::stringstream ss(value);
-	return ss >> retval;
+	return static_cast<bool>(ss >> retval);
 }
