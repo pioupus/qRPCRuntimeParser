@@ -36,3 +36,5 @@ Makefile*
 builds/*
 /project/libs/build/build
 /project/libs/build/googletest
+
+channel_codec_tests.txt
