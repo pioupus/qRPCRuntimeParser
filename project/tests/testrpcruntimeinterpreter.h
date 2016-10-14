@@ -29,16 +29,6 @@ private slots:
     void loadXMLFile_rpcDecodeTest_int16_t();
     void loadXMLFile_rpcDecodeTest_array_char();
 	void loadXMLFile_rpcDecodeTest_struct_int();
-
-	//TODO: what are FieldIDs and do we need them
-#if 1
-	void loadXMLFile_rpcDecodeTest_struct_int_testID();
-	void loadXMLFile_rpcDecodeTest_struct_int_TestByID();
-	void loadXMLFile_rpcDecodeTest_struct_int_AccessByID();
-	//TODO: figure out what watchpoints are
-	void loadXMLFile_rpcDecodeTest_struct_int_watchpoint();
-#endif
-
 	void loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport();
 	void loadXMLFile_rpcSignedUnsingedBug();
 	void loadXMLFile_rpcDecodeTest_enum();
@@ -47,10 +37,6 @@ private slots:
 
 	void loadXMLFile_rpcDecodeTestFromChannelEncodedData_enum_report();
 	void loadXMLFile_rpcDecodeTestFromChannelEncodedData_struct_int_report();
-	//TODO: what are FieldIDs and do we need them
-#if 0
-	void loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report();
-#endif
     void loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC();
 #if 0
 	void playWithChannelEncoding();
@@ -64,6 +50,8 @@ private slots:
 	void create_request_with_complex_parameter();
 	void encode_hash_request_without_protocol();
 	void decode_hash_request_without_protocol();
+
+	void create_callback();
 private:
     QString callBack_FieldID;
     QString callBack_humanReadableName;

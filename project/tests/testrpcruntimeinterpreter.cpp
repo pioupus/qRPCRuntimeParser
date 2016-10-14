@@ -33,9 +33,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt16EnumTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/rpcInt16EnumTest.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -99,9 +99,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsignedTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/rpcSignedUnsignedTest.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -122,9 +122,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcInt32ReplyTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/rpcInt32ReplyTest.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -159,9 +159,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInputTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/arrayInputTest.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -191,9 +191,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcMultiArrayInputTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/multiArrayInputTest.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -237,9 +237,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcStructInputTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/structInputTest.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -300,9 +300,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcArrayInStructTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/arrayInStructTest.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -388,9 +388,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcEnumInArrayTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/enumInArray.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -437,9 +437,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcNegValueInEnumTest() {
 
 	{
 		std::ifstream xmlfile{"scripts/negValueInEnum.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	auto &funList = rpcinterpreter.get_functions();
@@ -476,9 +476,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_uint32_t() {
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_uint32_t.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -502,9 +502,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int8_t() {
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_int8_t.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -528,9 +528,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_int16_t() {
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_int16_t.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -555,9 +555,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_array_char() {
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_array_char.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -584,9 +584,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -648,223 +648,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 #endif
 }
 
-#if 1
-void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_testID() {
-#if RUNTEST
-	const uint8_t inBinData_array[] = {0x18, 0x2b, 0x00, 0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31,
-									   0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x34, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-									   0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x00, 0x10, 0x20, 0x01, 0x11, 0x21};
-
-    RPCRunTimeProtocolDescription rpcinterpreter;
-
-
-
-	{
-		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
-		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
-	}
-
-    RPCRuntimeDecoder decoder(rpcinterpreter);
-	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
-	QCOMPARE(transfer.is_complete(), true);
-	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
-
-	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
-
-	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array().size(), 1u);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct().size(), 3u);
-	//TODO: What is a FieldID? Do we need that?
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[0].FieldID, "scripts/decodeTest_struct_int.xml?24?0?0?0"s);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].FieldID, "scripts/decodeTest_struct_int.xml?24?0?0?1"s);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].FieldID, "scripts/decodeTest_struct_int.xml?24?0?0?2"s);
-	qDebug() << function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.get_desciption()->get_parameter_type().c_str();
-	qDebug() << function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].name.c_str();
-
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array().size(), 1u);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].FieldID, "scripts/decodeTest_struct_int.xml?24?0?0?2?0"s);
-
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].subParams[0].FieldID, "scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"s);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].subParams[1].FieldID, "scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"s);
-	qDebug() << function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].get_desciption()->get_parameter_type().c_str();
-	qDebug() << function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].get_desciption()->get_parameter_name().c_str();
-
-#endif
-}
-
-void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_TestByID() {
-#if RUNTEST
-	const uint8_t inBinData_array[] = {0x18, 0x2b, 0x00, 0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31,
-									   0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x34, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-									   0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x00, 0x10, 0x20, 0x01, 0x11, 0x21};
-
-    RPCRunTimeProtocolDescription rpcinterpreter;
-
-
-
-	{
-		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
-		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
-	}
-
-    RPCRuntimeDecoder decoder(rpcinterpreter);
-	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
-	QCOMPARE(transfer.is_complete(), true);
-	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
-
-	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
-	(void)function_call;
-
-	//TODO: what does this do? Do we need it?
-	QCOMPARE(decoder.fieldExists("scripts/fail.xml?25?0?0?2?0?1"), false);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?25?0?0?2?0?1"), false);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"), true);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?2"), false);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0"), true);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1?0?0"), false);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?0"), true);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?1"), true);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?2"), true);
-	QCOMPARE(decoder.fieldExists("scripts/decodeTest_struct_int.xml?24?0?0?3"), false);
-#endif
-}
-
-void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_AccessByID() {
-#if RUNTEST || 0
-	const uint8_t inBinData_array[] = {0x18, 0x2b, 0x00, 0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31,
-									   0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x34, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-									   0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x00, 0x10, 0x20, 0x01, 0x11, 0x21};
-
-    RPCRunTimeProtocolDescription rpcinterpreter;
-
-
-
-	{
-		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
-		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
-	}
-
-    RPCRuntimeDecoder decoder(rpcinterpreter);
-	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
-	QCOMPARE(transfer.is_complete(), true);
-	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
-
-	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
-
-	RPCRuntimeDecodedParam decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1");
-	QCOMPARE(decParam.isNull(), false);
-	QCOMPARE(decParam.getParamDescription().name, ""s);
-	QCOMPARE(decParam.getParamDescription().typeName, "uint8_t [3]"s);
-	QCOMPARE(decParam.string, "0x01 0x11 0x21"s);
-
-    decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0");
-	QCOMPARE(decParam.isNull(), false);
-	QCOMPARE(decParam.getParamDescription().name, ""s);
-	QCOMPARE(decParam.getParamDescription().typeName, "uint8_t [3]"s);
-	QCOMPARE(decParam.string, "0x00 0x10 0x20"s);
-
-    decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?2?0?2");
-	QCOMPARE(decParam.isNull(), true);
-
-    decParam = decoder.getDecodedParamByFieldID("scripts/decodeTest_struct_int.xml?24?0");
-	QCOMPARE(decParam.isNull(), false);
-	QCOMPARE(decParam.getParamDescription().name, "s_inout"s);
-	QCOMPARE(decParam.getParamDescription().typeName, "TypedefTestStruct [1]"s);
-	QCOMPARE(decParam.string, ""s);
-	QCOMPARE(decParam.subParams.count(), 1);
-	QCOMPARE(decParam.subParams[0].subParams.count(), 3);
-
-    RPCRuntimeTransfer decTransfer = decoder.getDecodedTransferByFieldID("scripts/decodeTest_struct_int.xml?24");
-	QCOMPARE(decTransfer.isNull(), false);
-	QCOMPARE(decTransfer.isReply(), false);
-	QCOMPARE(decTransfer.getName(), "typedefStructTest"s);
-
-#endif
-}
-
-void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback(QString FieldID, QString humanReadableName, QPair<int, int> plotIndex,
-																						 QDateTime timestamp, int64_t value) {
-    callBack_FieldID = FieldID;
-    callBack_humanReadableName = humanReadableName;
-    callBack_plotIndex = plotIndex;
-    callBack_timestamp = timestamp;
-    callBack_value = value;
-}
-
-void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint()
-
-{
-#if RUNTEST || 0
-	const uint8_t inBinData_array[] = {0x18, 0x2b, 0x00, 0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31,
-									   0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x34, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-									   0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x00, 0x10, 0x20, 0x01, 0x11, 0x21};
-
-    RPCRunTimeProtocolDescription rpcinterpreter;
-
-
-
-	{
-		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
-		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
-	}
-
-	QPair<int, int> testPlotIndex(0, 1);
-    QDateTime timeStamp = QDateTime(QDateTime::currentDateTime());
-
-    RPCRuntimeDecoder decoder(rpcinterpreter);
-    decoder.addWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0", "humanReadableName", testPlotIndex,
-						  std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,
-									std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
-    decoder.setTimeStamp(timeStamp);
-    initTestCase();
-	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
-
-	QCOMPARE(transfer.is_complete(), true);
-	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
-
-	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
-
-	QCOMPARE(callBack_FieldID, "scripts/decodeTest_struct_int.xml?24?0?0?0"s);
-	QCOMPARE(callBack_humanReadableName, "humanReadableName"s);
-	QCOMPARE(callBack_plotIndex, testPlotIndex);
-	QCOMPARE(callBack_timestamp, timeStamp);
-	QCOMPARE(callBack_value, (int64_t)43);
-
-    decoder.removeWatchPoint("scripts/decodeTest_struct_int.xml?24?0?0?0");
-    initTestCase();
-	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
-	QCOMPARE(transfer.is_complete(), true);
-	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
-
-	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
-
-	QCOMPARE(callBack_value, (int64_t)0);
-
-    decoder.addWatchPoint("scripts/decodeTest_struct_int.xml?24?30?0?0", "humanReadableName", testPlotIndex,
-						  std::bind(&TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_watchpoint_callback, this, std::placeholders::_1,
-									std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
-
-    initTestCase();
-	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
-	QCOMPARE(transfer.is_complete(), true);
-	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
-
-	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
-
-	QCOMPARE(callBack_value, (int64_t)0);
-
-#endif
-}
-#endif
-
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport() {
 #if RUNTEST
 	const uint8_t inBinData_array[] = {0x18, 0x2b, 0x00, 0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31,
@@ -875,9 +658,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -949,10 +732,8 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 #endif
 }
 
-//
-
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsingedBug() {
-#if 1
+#if 0
 #if RUNTEST || 1
 	const uint8_t inBinData_array[] = {0xFF, 0xFF, 0xFF, 0x04, 0x02, 0x52, 0x00, 0x9A, 0x00, 0x50, 0x00, 0x3C, 0x00, 0xE3, 0x4D};
 
@@ -962,9 +743,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcSignedUnsingedBug() {
 
 	{
 		std::ifstream xmlfile{"scripts/rpcSignedUnsingedBug.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -993,9 +774,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum() {
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_enum.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -1023,9 +804,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_report() {
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -1073,9 +854,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_enum_report() {
     RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_enum.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
     RPCRuntimeDecoder decoder(rpcinterpreter);
 	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
@@ -1120,9 +901,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_enum.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
 	RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -1165,9 +946,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -1203,42 +984,6 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 #endif
 }
 
-#if 1
-void TestRPCRuntimeInterpreter::loadXMLFile_rpcAccessParamDescriptionByFieldID_struct_int_report() {
-#if RUNTEST
-    RPCRunTimeProtocolDescription rpcinterpreter;
-
-	{
-		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
-		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
-	}
-
-	RPCRuntimeParameterDescription paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?0");
-
-	QCOMPARE(paramDesc.get_parameter_type(), RPCRuntimeParameterDescription::Type::integer);
-
-    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?25");
-
-	QCOMPARE(paramDesc.rpcParamType, RPCParamType_t::param_none);
-
-    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?1?0?0");
-
-	QCOMPARE(paramDesc.rpcParamType, RPCParamType_t::param_none);
-
-    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?1?0");
-
-	QCOMPARE(paramDesc.rpcParamType, RPCParamType_t::param_none);
-
-    paramDesc = rpcinterpreter.getParamDescriptionByFieldID("scripts/decodeTest_struct_int.xml?24?0?0?1");
-
-	QCOMPARE(paramDesc.get_parameter_type(), RPCRuntimeParameterDescription::Type::array);
-#endif
-}
-
-#endif
-
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_WrongCRC() {
 #if RUNTEST
 	const uint8_t inBinData_array[] = {'J',  'U',  'N',  'K',  0xff, 0xff, 0xff, 0x74, 0x18, 0x2b, 0x00, 0x48, 0x60, 0x6c, 0x6c, 0x6f, 0x32,
@@ -1250,9 +995,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTestFromChannelEncodedData_
 
 	{
 		std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 
     RPCRuntimeDecoder decoder(rpcinterpreter);
@@ -1316,9 +1061,9 @@ void TestRPCRuntimeInterpreter::create_request_without_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_without_parameters.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
@@ -1337,9 +1082,9 @@ void TestRPCRuntimeInterpreter::create_request_with_int_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_with_int_parameter.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
@@ -1359,9 +1104,9 @@ void TestRPCRuntimeInterpreter::create_request_with_multiple_int_parameters() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_with_multiple_int_parameters.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
@@ -1389,9 +1134,9 @@ void TestRPCRuntimeInterpreter::create_request_with_enum_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_with_enum_parameter.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
@@ -1425,9 +1170,9 @@ void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_with_char_array_parameter.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
@@ -1463,9 +1208,9 @@ void TestRPCRuntimeInterpreter::create_request_with_struct_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/create_with_struct_parameter.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
@@ -1493,9 +1238,9 @@ void TestRPCRuntimeInterpreter::create_request_with_complex_parameter() {
 	RPCRunTimeProtocolDescription rpcinterpreter;
 	{
 		std::ifstream xmlfile{"scripts/RPC_UART_Server.xml"};
-		QVERIFY(xmlfile);
+		QVERIFY(static_cast<bool>(xmlfile));
 		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
-		QCOMPARE(result, true);
+		QVERIFY(result);
 	}
 	RPCRuntimeEncoder encoder(rpcinterpreter);
 
@@ -1549,4 +1294,35 @@ void TestRPCRuntimeInterpreter::decode_hash_request_without_protocol() {
 	RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
 	QCOMPARE(function_call.get_id(), 0);
 	QCOMPARE(function_call.get_decoded_parameters().size(), 0u);
+}
+
+void TestRPCRuntimeInterpreter::create_callback() {
+	const uint8_t inBinData_array[3] = {0x04, 0xF0, 0xFF};
+	RPCRunTimeProtocolDescription rpcinterpreter;
+
+	{
+		std::ifstream xmlfile{"scripts/decodeTest_int16_t.xml"};
+		QVERIFY(static_cast<bool>(xmlfile));
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QVERIFY(result);
+	}
+
+	RPCRuntimeDecoder decoder(rpcinterpreter);
+
+	int value = -1;
+	decoder.set_reply_callback(rpcinterpreter.get_function("simpleTest"), [&value](const RPCRuntimeDecodedFunctionCall &reply){
+		const auto &parameters = reply.get_decoded_parameters();
+		QCOMPARE(parameters.size(), 1u);
+		value = parameters[0].as_integer();
+	});
+
+	RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
+
+	QCOMPARE(transfer.is_complete(), true);
+	QCOMPARE(transfer.get_min_number_of_bytes(), static_cast<int>(sizeof inBinData_array));
+
+	transfer.decode(); //without decoding the function is not called
+
+	QCOMPARE(value, -16);
+
 }

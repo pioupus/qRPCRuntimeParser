@@ -3,16 +3,19 @@
 
 #include "rpcruntime_protocol_description.h"
 #include "rpcruntime_transfer.h"
-//class RPCRuntimeTransfer;
+
+#include <functional>
+#include <map>
 
 /*
  * The RPCRuntimeDecoder decodes binary data into scrip-understandable Function calls and encodes the reply
  */
 
-struct RPCRuntimeDecoder {
+class RPCRuntimeDecoder {
+	public:
 	RPCRuntimeDecoder(RPCRunTimeProtocolDescription &description);
-	template<std::size_t size>
-	RPCRuntimeTransfer decode(const unsigned char (&data)[size]){
+	template <std::size_t size>
+	RPCRuntimeTransfer decode(const unsigned char (&data)[size]) {
 		return decode(data, size);
 	}
 
@@ -22,9 +25,12 @@ struct RPCRuntimeDecoder {
 
 	RPCRunTimeProtocolDescription *get_description();
 	const RPCRunTimeProtocolDescription *get_description() const;
+	void set_reply_callback(const RPCRuntimeFunction &rpc_function, std::function<void(const RPCRuntimeDecodedFunctionCall &)> callback_function);
 
 	private:
 	RPCRunTimeProtocolDescription *description;
+	friend class RPCRuntimeTransfer;
+	std::map<const RPCRuntimeFunction *, std::vector<std::function<void(const RPCRuntimeDecodedFunctionCall &)>>> callbacks;
 };
 
 #endif // RPCRUNTIMEDECODERESULT_H

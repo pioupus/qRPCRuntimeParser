@@ -1,13 +1,15 @@
 #include "rpcruntime_transfer.h"
 #include "rpcruntime_decoded_function_call.h"
+#include "rpcruntime_decoder.h"
 #include "rpcruntime_protocol_description.h"
 
 #include <algorithm>
 #include <cassert>
 #include <sstream>
 
-RPCRuntimeTransfer::RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol)
-	: protocol(&protocol) {}
+RPCRuntimeTransfer::RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol, const RPCRuntimeDecoder *decoder)
+	: protocol(&protocol)
+	, decoder(decoder) {}
 
 int RPCRuntimeTransfer::get_min_number_of_bytes() const {
 	if (data.empty()) {
@@ -43,7 +45,14 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	}
 
 	assert(ss);
-	return {id, std::move(decoded_parameters), function};
+	RPCRuntimeDecodedFunctionCall retval{id, std::move(decoded_parameters), function};
+	auto callbacks_it = decoder->callbacks.find(&function);
+	if (callbacks_it != std::end(decoder->callbacks)){
+		for (auto &callback : callbacks_it->second) {
+			callback(retval);
+		}
+	}
+	return retval;
 }
 
 void RPCRuntimeTransfer::reset() {

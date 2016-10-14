@@ -23,6 +23,7 @@ class RPCRunTimeProtocolDescription {
 	const std::vector<RPCRuntimeParameterDescription> &get_parameters(int id) const;
 	int get_parameter_size_bytes(int id) const;
 	const RPCRuntimeFunction &get_function(int id) const;
+	const RPCRuntimeFunction &get_function(const std::string &name) const;
 
 	private:
 	bool open_description(std::istream &input);

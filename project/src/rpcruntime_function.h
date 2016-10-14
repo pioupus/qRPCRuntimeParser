@@ -3,6 +3,9 @@
 
 #include "rpcruntime_paramter_description.h"
 
+class RPCRuntimeDecodedFunctionCall;
+
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -22,6 +25,7 @@ class RPCRuntimeFunction {
 	int get_reply_id() const;
 	const std::vector<RPCRuntimeParameterDescription> &get_request_parameters() const;
 	const std::vector<RPCRuntimeParameterDescription> &get_reply_parameters() const;
+	const RPCRuntimeParameterDescription &get_reply_parameter(const std::string &name) const;
 	int get_request_size() const;
 	int get_reply_size() const;
 

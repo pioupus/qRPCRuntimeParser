@@ -301,6 +301,17 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) co
 	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
 }
 
+const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(const std::string &name) const
+{
+	for (auto &function : functions) {
+		if (function.get_function_name() == name) {
+			return function;
+		}
+	}
+	//don't have a function with the appropriate name
+	throw std::runtime_error("\"" + name + "\" is not a valid function name");
+}
+
 bool RPCRunTimeProtocolDescription::open_description(std::istream &input)
 {
 #define MAKESURE(X)                                                                                                                                            \
