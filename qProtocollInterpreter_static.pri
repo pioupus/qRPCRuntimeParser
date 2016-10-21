@@ -3,9 +3,10 @@ DEFINES += CHANNEL_CODEC_RUNS_IN_CPP_CLASS_ENVIRONMENT
 
 QT += xml
 
-CONFIG += c++14
+#CONFIG += c++14
 #CONFIG += c++1y
 #QMAKE_CXXFLAGS += -std=c++1y
+#should be set in the central project files like defaults.pri
 
 QPROTOCOL_INTERPRETER_PATH = $$QPROTOCOL_INTERPRETER_PATH/project
 
