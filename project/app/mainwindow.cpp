@@ -117,7 +117,7 @@ void MainWindow::send_request() {
 	}
 	const auto &function_name = item->text(0).toStdString();
 	RPCRuntimeEncodedFunctionCall function_call = global::encoder.encode(function_name);
-	if (function_call.is_all_values_set()) {
+	if (function_call.are_all_values_set()) {
 		const auto &data = global::channel_codec.encode(function_call);
 		write_all_data(comport, data);
 	} else {

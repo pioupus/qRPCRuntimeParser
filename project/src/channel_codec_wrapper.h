@@ -5,23 +5,13 @@ class RPCRuntimeDecoder;
 class RPCRuntimeDecodedFunctionCall;
 class RPCRuntimeEncodedFunctionCall;
 
-
-
-#include "rpcruntime_transfer.h"
 #include "channel_codec/channel_codec_types.h"
+#include "rpcruntime_transfer.h"
 
 #include <cinttypes>
 #include <deque>
 #include <memory>
 #include <vector>
-
-#ifdef __cplusplus
-#define EXTERNC extern "C"
-#else
-#define EXTERNC
-#endif
-
-//EXTERNC struct channel_codec_instance_t;
 
 class Channel_codec_wrapper {
 	public:
@@ -51,7 +41,5 @@ class Channel_codec_wrapper {
 	friend void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size);
 	friend void set_output(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size);
 };
-
-#undef EXTERNC
 
 #endif //CHANNEL_CODEC_WRAPPER_H

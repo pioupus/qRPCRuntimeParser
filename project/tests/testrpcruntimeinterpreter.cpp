@@ -1069,7 +1069,7 @@ void TestRPCRuntimeInterpreter::create_request_without_parameter() {
 
 	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("emptyTest");
 
-	QVERIFY(function_call.is_all_values_set());
+	QVERIFY(function_call.are_all_values_set());
 
 	const uint8_t outBinData_array[] = {0x04};
 	auto data = function_call.encode();
@@ -1091,7 +1091,7 @@ void TestRPCRuntimeInterpreter::create_request_with_int_parameter() {
 	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("intTest");
 	function_call.get_parameter(0).set_value(1234567890);
 
-	QVERIFY(function_call.is_all_values_set());
+	QVERIFY(function_call.are_all_values_set());
 
 	const uint8_t outBinData_array[] = {0x04, 0xD2, 0x02, 0x96, 0x49};
 	auto data = function_call.encode();
@@ -1113,15 +1113,15 @@ void TestRPCRuntimeInterpreter::create_request_with_multiple_int_parameters() {
 	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("multiIntTest");
 	function_call.get_parameter(0).set_value(1234567890);
 
-	QVERIFY(function_call.is_all_values_set() == false);
+	QVERIFY(function_call.are_all_values_set() == false);
 
 	function_call.get_parameter("i").set_value(987654321);
 
-	QVERIFY(function_call.is_all_values_set() == false);
+	QVERIFY(function_call.are_all_values_set() == false);
 
 	function_call.get_parameter("j").set_value(0xabcd);
 
-	QVERIFY(function_call.is_all_values_set());
+	QVERIFY(function_call.are_all_values_set());
 
 	const uint8_t outBinData_array[] = {0x10, 0xB1, 0x68, 0xDE, 0x3A, 0xCD, 0xAB};
 	auto data = function_call.encode();
@@ -1143,7 +1143,7 @@ void TestRPCRuntimeInterpreter::create_request_with_enum_parameter() {
 	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("enumTest1");
 	function_call.get_parameter("testEnum").set_value("TEb");
 
-	QVERIFY(function_call.is_all_values_set());
+	QVERIFY(function_call.are_all_values_set());
 
 	{
 		const uint8_t outBinData_array[] = {0x1A, 0x01};
@@ -1155,7 +1155,7 @@ void TestRPCRuntimeInterpreter::create_request_with_enum_parameter() {
 
 	function_call.get_parameter("testEnum").set_value(42);
 
-	QVERIFY(function_call.is_all_values_set());
+	QVERIFY(function_call.are_all_values_set());
 
 	{
 		const uint8_t outBinData_array[] = {0x1A, 0x2A};
@@ -1180,7 +1180,7 @@ void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
 
 	{
 		function_call.get_parameter("text_inout").set_value("Hello world!");
-		QVERIFY(function_call.is_all_values_set());
+		QVERIFY(function_call.are_all_values_set());
 		const uint8_t outBinData_array[43] =
 			"\x06"
 			"Hello world!";
@@ -1193,7 +1193,7 @@ void TestRPCRuntimeInterpreter::create_request_with_array_parameter() {
 	{
 		function_call.get_parameter("text_inout").get_parameter(6).set_value('W');
 		function_call.get_parameter("text_inout").get_parameter(11).set_value('?');
-		QVERIFY(function_call.is_all_values_set());
+		QVERIFY(function_call.are_all_values_set());
 		const uint8_t outBinData_array[43] =
 			"\x06"
 			"Hello World?";
@@ -1217,15 +1217,15 @@ void TestRPCRuntimeInterpreter::create_request_with_struct_parameter() {
 	RPCRuntimeEncodedFunctionCall function_call = encoder.encode("structInputTest");
 
 	{
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n1").set_value(1234567890);
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n2").set_value(0xABCD);
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n3").set_value(42);
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_in").get_parameter(0).get_parameter("n4").set_value(15);
-		QVERIFY(function_call.is_all_values_set());
+		QVERIFY(function_call.are_all_values_set());
 		const uint8_t outBinData_array[9] = {0x16, 0xD2, 0x02, 0x96, 0x49, 0xCD, 0xAB, 0x2A, 0x0F};
 		auto data = function_call.encode();
 
@@ -1246,16 +1246,16 @@ void TestRPCRuntimeInterpreter::create_request_with_complex_parameter() {
 
 	{
 		RPCRuntimeEncodedFunctionCall function_call = encoder.encode("typedefStructTest");
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_inout")[0]["n"] = 0xABCD;
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_inout")[0]["ia"] = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
 														   22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42};
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_inout")[0]["iaa"][0][0] = {1, 2, 3};
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("s_inout")[0]["iaa"][0][1] = {44, 55, 66};
-		QVERIFY(function_call.is_all_values_set());
+		QVERIFY(function_call.are_all_values_set());
 		const uint8_t outBinData_array[51] = {0x18, 0xCD, 0xAB, 1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
 											  24,   25,   26,   27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 1,  2,  3,  44, 55, 66};
 		auto data = function_call.encode();
@@ -1266,9 +1266,9 @@ void TestRPCRuntimeInterpreter::create_request_with_complex_parameter() {
 
 	{
 		RPCRuntimeEncodedFunctionCall function_call = encoder.encode("enumTest1");
-		QVERIFY(!function_call.is_all_values_set());
+		QVERIFY(!function_call.are_all_values_set());
 		function_call.get_parameter("testEnum") = "TEb";
-		QVERIFY(function_call.is_all_values_set());
+		QVERIFY(function_call.are_all_values_set());
 		const uint8_t outBinData_array[2] = {0x1A, 1};
 		auto data = function_call.encode();
 
