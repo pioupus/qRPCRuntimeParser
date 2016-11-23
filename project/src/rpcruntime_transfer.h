@@ -34,6 +34,7 @@ class RPCRuntimeTransfer {
 
 	//throw away all previously collected data
 	void reset();
+	const std::vector<unsigned char> &get_raw_data() const;
 
 	private:
 	std::vector<unsigned char> data;

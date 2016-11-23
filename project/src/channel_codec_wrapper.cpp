@@ -27,8 +27,6 @@ Channel_codec_wrapper::~Channel_codec_wrapper() {
 }
 
 void Channel_codec_wrapper::add_data(const std::vector<unsigned char> &buffer) {
-	//TODO: add channel codec here, so it decodes the data before we feed it to the RPCRuntimeTransfer
-
 	for (auto &c : buffer) {
 		channel_push_byte_to_RPC(cci.get(), c);
 	}
@@ -43,12 +41,17 @@ bool Channel_codec_wrapper::transfer_complete() const {
 }
 
 RPCRuntimeDecodedFunctionCall Channel_codec_wrapper::pop() {
+	return pop_completed_transfer().decode();
+}
+
+RPCRuntimeTransfer Channel_codec_wrapper::pop_completed_transfer()
+{
 	if (transfers.front().is_complete() == false) {
 		throw std::runtime_error("Tried to pop from an incomplete transfer");
 	}
 	auto transfer = std::move(transfers.front());
 	transfers.pop_front();
-	return transfer.decode();
+	return transfer;
 }
 
 const RPCRuntimeDecoder *Channel_codec_wrapper::get_decoder() const {

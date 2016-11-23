@@ -4,6 +4,7 @@
 class RPCRuntimeDecoder;
 class RPCRuntimeDecodedFunctionCall;
 class RPCRuntimeEncodedFunctionCall;
+class RPCRuntimeTransfer;
 
 #include "channel_codec/channel_codec_types.h"
 #include "rpcruntime_transfer.h"
@@ -27,6 +28,7 @@ class Channel_codec_wrapper {
 
 	bool transfer_complete() const;
 	RPCRuntimeDecodedFunctionCall pop();
+	RPCRuntimeTransfer pop_completed_transfer();
 	const RPCRuntimeDecoder *get_decoder() const;
 	void reset_current_transfer();
 	std::vector<unsigned char> encode(const RPCRuntimeEncodedFunctionCall &call);

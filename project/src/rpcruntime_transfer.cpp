@@ -58,3 +58,8 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 void RPCRuntimeTransfer::reset() {
 	data.clear();
 }
+
+const std::vector<unsigned char> &RPCRuntimeTransfer::get_raw_data() const
+{
+	return data;
+}
