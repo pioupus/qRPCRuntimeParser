@@ -7,18 +7,18 @@
 #include "rpcruntime_function.h"
 #include "rpcruntime_paramter_description.h"
 
-void fill_array_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
-void fill_character_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
-void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
-void fill_integer_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
-void fill_structure_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
-void fill_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
+static void fill_array_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
+static void fill_character_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
+static void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
+static void fill_integer_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
+static void fill_structure_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
+static void fill_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
 
-QTreeWidgetItem *get_last_child(QTreeWidgetItem *item) {
+static QTreeWidgetItem *get_last_child(QTreeWidgetItem *item) {
 	return item->child(item->childCount() - 1);
 }
 
-QString to_hex_view(int64_t integer, int octets) {
+static QString to_hex_view(int64_t integer, int octets) {
 	auto str = QString::number(integer, 16).toUpper();
 	while (str.size() < octets) {
 		str = "0" + str;
@@ -26,7 +26,7 @@ QString to_hex_view(int64_t integer, int octets) {
 	return "0x" + str;
 }
 
-void fill_array_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
+static void fill_array_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
 	item->addChild(new QTreeWidgetItem);
 	auto array = get_last_child(item);
 	array->setData(0, Qt::UserRole, "array");
@@ -59,14 +59,14 @@ void fill_array_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param
 	}
 }
 
-void fill_character_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
+static void fill_character_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
 	item->addChild(new QTreeWidgetItem);
 	auto character = get_last_child(item);
 	character->setData(0, Qt::UserRole, "character");
 	character->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
 }
 
-void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
+static void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
 	item->addChild(new QTreeWidgetItem);
 	auto enumeration = get_last_child(item);
 	enumeration->setData(0, Qt::UserRole, "enumeration");
@@ -76,16 +76,16 @@ void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam 
 	enumeration->setText(1, param.as_enum().name.c_str());
 }
 
-void fill_integer_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
+static void fill_integer_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
 	item->addChild(new QTreeWidgetItem);
 	auto integer = get_last_child(item);
-	integer->setData(0, Qt::UserRole, "enumeration");
+	integer->setData(0, Qt::UserRole, "integer");
 	integer->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
 	integer->setText(0, (param.get_desciption()->get_parameter_name() + "(" + param.get_desciption()->get_parameter_type() + ")").c_str());
 	integer->setText(1, QString::number(param.as_integer()));
 }
 
-void fill_structure_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
+static void fill_structure_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
 	item->addChild(new QTreeWidgetItem);
 	auto structure = get_last_child(item);
 	structure->setData(0, Qt::UserRole, "structure");
@@ -95,7 +95,7 @@ void fill_structure_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &p
 	}
 }
 
-void fill_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
+static void fill_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
 	switch (param.get_desciption()->get_type()) {
 		case RPCRuntimeParameterDescription::Type::array:
 			fill_array_child(item, param);
@@ -130,7 +130,7 @@ std::unique_ptr<QTreeWidgetItem> getTreeWidgetReport(const RPCRuntimeDecodedFunc
 	return retval;
 }
 
-void add_to_report(QTreeWidgetItem *item, QStringList &list, int depth = 0) {
+static void add_to_report(QTreeWidgetItem *item, QStringList &list, int depth = 0) {
 	QString line{depth, '\t'};
 
 	//This is horrible code to get the right whitespaces at the end of the right lines.

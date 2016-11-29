@@ -18,6 +18,7 @@ class Channel_codec_wrapper {
 	public:
 	Channel_codec_wrapper(const RPCRuntimeDecoder &decoder);
 	Channel_codec_wrapper(const Channel_codec_wrapper &) = delete;
+	Channel_codec_wrapper(Channel_codec_wrapper &&) = default;
 	~Channel_codec_wrapper();
 	void add_data(const std::vector<unsigned char> &buffer);
 	template <std::size_t size>
