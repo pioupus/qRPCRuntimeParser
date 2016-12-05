@@ -23,7 +23,9 @@ Channel_codec_wrapper::Channel_codec_wrapper(const RPCRuntimeDecoder &decoder)
 }
 
 Channel_codec_wrapper::~Channel_codec_wrapper() {
-	channel_uninit_instance(cci.get());
+	if (cci != nullptr) {
+		channel_uninit_instance(cci.get());
+	}
 }
 
 void Channel_codec_wrapper::add_data(const std::vector<unsigned char> &buffer) {
@@ -44,8 +46,7 @@ RPCRuntimeDecodedFunctionCall Channel_codec_wrapper::pop() {
 	return pop_completed_transfer().decode();
 }
 
-RPCRuntimeTransfer Channel_codec_wrapper::pop_completed_transfer()
-{
+RPCRuntimeTransfer Channel_codec_wrapper::pop_completed_transfer() {
 	if (transfers.front().is_complete() == false) {
 		throw std::runtime_error("Tried to pop from an incomplete transfer");
 	}
