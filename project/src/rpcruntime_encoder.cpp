@@ -22,3 +22,7 @@ RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(const std::string &funct
 	}
 	throw std::runtime_error("unknown function name: " + function_name);
 }
+
+void RPCRuntimeEncoder::set_description(const RPCRunTimeProtocolDescription &description) {
+	this->description = &description;
+}

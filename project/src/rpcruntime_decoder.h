@@ -25,8 +25,10 @@ class RPCRuntimeDecoder {
 	const RPCRunTimeProtocolDescription *get_description() const;
 	void set_reply_callback(const RPCRuntimeFunction &rpc_function, std::function<void(const RPCRuntimeDecodedFunctionCall &)> callback_function);
 
+	void set_description(RPCRunTimeProtocolDescription &description);
+
 	private:
-	RPCRunTimeProtocolDescription *description;
+	RPCRunTimeProtocolDescription *description = nullptr;
 	friend class RPCRuntimeTransfer;
 	std::map<const RPCRuntimeFunction *, std::vector<std::function<void(const RPCRuntimeDecodedFunctionCall &)>>> callbacks;
 };
