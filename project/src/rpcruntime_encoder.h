@@ -13,8 +13,8 @@ class RPCRunTimeProtocolDescription;
 struct RPCRuntimeEncoder {
 	RPCRuntimeEncoder(const RPCRunTimeProtocolDescription &description);
 
-	RPCRuntimeEncodedFunctionCall encode(int id);
-	RPCRuntimeEncodedFunctionCall encode(const std::string &function_name);
+	RPCRuntimeEncodedFunctionCall encode(int id) const;
+	RPCRuntimeEncodedFunctionCall encode(const std::string &function_name) const;
 
 	private:
 	const RPCRunTimeProtocolDescription *description;
