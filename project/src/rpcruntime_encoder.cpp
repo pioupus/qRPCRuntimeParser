@@ -20,5 +20,5 @@ RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(const std::string &funct
 			return {function};
 		}
 	}
-	throw std::runtime_error("unknown function name");
+	throw std::runtime_error("unknown function name: " + function_name);
 }
