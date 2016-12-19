@@ -5,7 +5,7 @@ RPCRuntimeDecoder::RPCRuntimeDecoder(RPCRunTimeProtocolDescription &description)
 	: description(&description) {}
 
 RPCRuntimeTransfer RPCRuntimeDecoder::decode(const unsigned char *data, int size) const {
-	RPCRuntimeTransfer retval(*description, this);
+	RPCRuntimeTransfer retval(*description, *this);
 	retval.add_data(data, data + size);
 	return retval;
 }

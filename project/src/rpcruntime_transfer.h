@@ -16,7 +16,7 @@ class RPCRuntimeDecoder;
 class RPCRuntimeTransfer {
 	public:
 	//Note: The passed in RPCRunTimeProtocolDescription must stay valid during the life-time of a RPCRuntimeTransfer
-	RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol, const RPCRuntimeDecoder *decoder);
+	RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol, const RPCRuntimeDecoder &decoder);
 
 	//number of bytes that are at least required to make a complete message
 	int get_min_number_of_bytes() const;
