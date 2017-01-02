@@ -1,4 +1,3 @@
-
 #include "channel_codec_wrapper.h"
 #include "channel_codec/channel_codec.h"
 #include "errorlogger/generic_eeprom_errorlogger.h"
@@ -74,6 +73,11 @@ std::vector<unsigned char> Channel_codec_wrapper::encode(const RPCRuntimeEncoded
 	return std::move(encoded_data);
 }
 
+const channel_codec_instance_t *Channel_codec_wrapper::debug_get_instance() const
+{
+	return cci.get();
+}
+
 void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size) {
 	for (std::size_t i = 0; i < size; i++) {
 		auto &byte = data[i];
@@ -134,3 +138,19 @@ EXTERNC RPC_RESULT phyPushDataBuffer(channel_codec_instance_t *instance, const c
 }
 
 #undef EXTERNC
+
+std::ostream &operator<<(std::ostream &os, channel_codec_channel_state_t state) {
+	switch (state) {
+		case csNone:
+			return os << "None";
+		case csFoundPreamble:
+			return os << "Found Preamble";
+		case csLoadingPayload:
+			return os << "Loading Payload";
+		case csPayloadComplete:
+			return os << "Payload Complete";
+		case csCRCAndPackageComplete:
+			return os << "CRC and Package Complete";
+	}
+	return os << "Invalid";
+}
