@@ -52,6 +52,8 @@ private slots:
 	void decode_hash_request_without_protocol();
 
 	void create_callback();
+
+	void decode_bug_replay();
 private:
     QString callBack_FieldID;
     QString callBack_humanReadableName;

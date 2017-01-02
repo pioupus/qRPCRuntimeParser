@@ -14,6 +14,7 @@
 #include <QTreeWidgetItem>
 #include <fstream>
 #include <functional>
+#include <vector>
 
 using namespace std::string_literals;
 
@@ -1310,7 +1311,7 @@ void TestRPCRuntimeInterpreter::create_callback() {
 	RPCRuntimeDecoder decoder(rpcinterpreter);
 
 	int value = -1;
-	decoder.set_reply_callback(rpcinterpreter.get_function("simpleTest"), [&value](const RPCRuntimeDecodedFunctionCall &reply){
+	decoder.set_reply_callback(rpcinterpreter.get_function("simpleTest"), [&value](const RPCRuntimeDecodedFunctionCall &reply) {
 		const auto &parameters = reply.get_decoded_parameters();
 		QCOMPARE(parameters.size(), 1u);
 		value = parameters[0].as_integer();
@@ -1324,5 +1325,45 @@ void TestRPCRuntimeInterpreter::create_callback() {
 	transfer.decode(); //without decoding the function is not called
 
 	QCOMPARE(value, -16);
+}
 
+void TestRPCRuntimeInterpreter::decode_bug_replay() {
+	std::ifstream f{"scripts/buggylog.dat", std::ios::binary};
+	std::vector<unsigned char> inData;
+	Q_ASSERT(f);
+	while (f) {
+		inData.push_back(f.get());
+	}
+	inData.pop_back();
+	RPCRunTimeProtocolDescription rpcinterpreter;
+
+	{
+		std::ifstream xmlfile{"scripts/buggylog.xml"};
+		QVERIFY(static_cast<bool>(xmlfile));
+		bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+		QVERIFY(result);
+	}
+
+	RPCRuntimeDecoder decoder(rpcinterpreter);
+	Channel_codec_wrapper cc(decoder);
+
+	std::vector<int> counts;
+
+	decoder.set_reply_callback(rpcinterpreter.get_function("await_cps"), [&counts](const RPCRuntimeDecodedFunctionCall &reply) {
+		const auto &parameters = reply.get_decoded_parameters();
+		QCOMPARE(parameters.size(), 1u);
+		counts.push_back(parameters[0].as_array()[0].as_integer());
+	});
+
+	cc.add_data(inData);
+
+	std::vector<std::string> called_functions;
+
+	while (cc.transfer_complete()) {
+		called_functions.push_back(cc.pop().get_declaration()->get_function_name());
+	}
+	for (auto &f : called_functions) {
+		QWARN(f.c_str());
+	}
+	QCOMPARE(counts.size(), 1u);
 }

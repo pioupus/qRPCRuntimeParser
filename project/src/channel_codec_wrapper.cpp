@@ -15,7 +15,8 @@ GLOBAL(Wrapper_instances, wrapper_instances)
 
 Channel_codec_wrapper::Channel_codec_wrapper(const RPCRuntimeDecoder &decoder)
 	: decoder(&decoder)
-	, cci(std::make_unique<channel_codec_instance_t>()) {
+	, cci(std::make_unique<channel_codec_instance_t>())
+	, log("log.dat", std::ios::binary) {
 	transfers.emplace_back(*decoder.get_description(), decoder);
 	channel_init_instance(cci.get(), input_buffer, sizeof input_buffer, output_buffer, sizeof output_buffer);
 	global::detail::getwrapper_instances()[cci.get()] = this;
@@ -29,6 +30,7 @@ Channel_codec_wrapper::~Channel_codec_wrapper() {
 
 void Channel_codec_wrapper::add_data(const std::vector<unsigned char> &buffer) {
 	for (auto &c : buffer) {
+		log.put(c);
 		channel_push_byte_to_RPC(cci.get(), c);
 	}
 }
@@ -73,8 +75,7 @@ std::vector<unsigned char> Channel_codec_wrapper::encode(const RPCRuntimeEncoded
 	return std::move(encoded_data);
 }
 
-const channel_codec_instance_t *Channel_codec_wrapper::debug_get_instance() const
-{
+const channel_codec_instance_t *Channel_codec_wrapper::debug_get_instance() const {
 	return cci.get();
 }
 

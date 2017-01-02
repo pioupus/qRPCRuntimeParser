@@ -11,6 +11,8 @@ class RPCRuntimeTransfer;
 
 #include <cinttypes>
 #include <deque>
+#include <fstream>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -41,6 +43,7 @@ class Channel_codec_wrapper {
 	std::vector<unsigned char> encoded_data;
 	friend void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size);
 	friend void set_output(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size);
+	std::ofstream log;
 };
 
 std::ostream &operator<<(std::ostream &os, channel_codec_channel_state_t state);
