@@ -16,7 +16,7 @@ int RPCRuntimeEncodedFunctionCall::get_parameter_count() const {
 	return params.size();
 }
 
-bool RPCRuntimeEncodedFunctionCall::is_all_values_set() const {
+bool RPCRuntimeEncodedFunctionCall::are_all_values_set() const {
 	return std::all_of(std::begin(params), std::end(params), [](const RPCRuntimeEncodedParam &param) { return param.are_all_values_set(); });
 }
 

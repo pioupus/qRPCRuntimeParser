@@ -17,6 +17,8 @@ class RPCRuntimeEncodedParam {
 
 	bool are_all_values_set() const;
 
+	bool is_integral_type() const;
+
 	void encode(std::vector<unsigned char> &buffer) const;
 
 	const RPCRuntimeParameterDescription *get_description() const;

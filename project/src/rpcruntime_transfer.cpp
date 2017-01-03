@@ -7,9 +7,9 @@
 #include <cassert>
 #include <sstream>
 
-RPCRuntimeTransfer::RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol, const RPCRuntimeDecoder *decoder)
+RPCRuntimeTransfer::RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol, const RPCRuntimeDecoder &decoder)
 	: protocol(&protocol)
-	, decoder(decoder) {}
+	, decoder(&decoder) {}
 
 int RPCRuntimeTransfer::get_min_number_of_bytes() const {
 	if (data.empty()) {
@@ -57,4 +57,9 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 
 void RPCRuntimeTransfer::reset() {
 	data.clear();
+}
+
+const std::vector<unsigned char> &RPCRuntimeTransfer::get_raw_data() const
+{
+	return data;
 }

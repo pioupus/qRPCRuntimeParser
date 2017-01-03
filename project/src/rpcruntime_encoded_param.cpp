@@ -9,8 +9,7 @@ RPCRuntimeEncodedParam::RPCRuntimeEncodedParam(const RPCRuntimeParameterDescript
 		for (int i = 0; i < description->as_array().number_of_elements; i++) {
 			child_parameters.emplace_back(description->as_array().type);
 		}
-	}
-	else if (description->get_type() == RPCRuntimeParameterDescription::Type::structure) {
+	} else if (description->get_type() == RPCRuntimeParameterDescription::Type::structure) {
 		for (auto &member : description->as_structure().members) {
 			child_parameters.emplace_back(member);
 		}
@@ -23,6 +22,12 @@ bool RPCRuntimeEncodedParam::are_all_values_set() const {
 	}
 	return std::all_of(std::begin(child_parameters), std::end(child_parameters),
 					   [](const RPCRuntimeEncodedParam &param) { return param.are_all_values_set(); });
+}
+
+bool RPCRuntimeEncodedParam::is_integral_type() const {
+	auto type = description->get_type();
+	return type == RPCRuntimeParameterDescription::Type::integer || type == RPCRuntimeParameterDescription::Type::enumeration ||
+		   type == RPCRuntimeParameterDescription::Type::character;
 }
 
 void RPCRuntimeEncodedParam::encode(std::vector<unsigned char> &buffer) const {
@@ -91,48 +96,42 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(int index) {
 	}
 }
 
-RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(const std::string &name)
-{
-	if (description->get_type() != RPCRuntimeParameterDescription::Type::structure){
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(const std::string &name) {
+	if (description->get_type() != RPCRuntimeParameterDescription::Type::structure) {
 		throw std::runtime_error("parameter does not have named sub-parameters");
 	}
-	for (auto &child : child_parameters){
-		if (child.get_description()->get_parameter_name() == name){
+	for (auto &child : child_parameters) {
+		if (child.get_description()->get_parameter_name() == name) {
 			return child;
 		}
 	}
 	throw std::runtime_error("invalid parameter name \"" + name + "\" for struct of type \"" + description->get_parameter_type() + "\"");
 }
 
-RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator [](int index)
-{
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator[](int index) {
 	return get_parameter(index);
 }
 
-RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator [](const std::string &name)
-{
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator[](const std::string &name) {
 	return get_parameter(name);
 }
 
-RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator =(int64_t value)
-{
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator=(int64_t value) {
 	set_value(value);
 	return *this;
 }
 
-RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator =(const std::string &name)
-{
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator=(const std::string &name) {
 	set_value(name);
 	return *this;
 }
 
-RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator=(std::initializer_list<int64_t> data)
-{
+RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator=(std::initializer_list<int64_t> data) {
 	int index = 0;
-	if (child_parameters.size() < data.size()){
+	if (child_parameters.size() < data.size()) {
 		throw std::runtime_error("Gave " + std::to_string(data.size()) + " values to a parameter of type " + description->get_parameter_type());
 	}
-	for (auto &n : data){
+	for (auto &n : data) {
 		child_parameters[index++] = n;
 	}
 	return *this;
@@ -161,11 +160,12 @@ void RPCRuntimeEncodedParam::set_enum_value(const std::string &value) {
 }
 
 void RPCRuntimeEncodedParam::set_array_value(const std::string &array) {
-	if (description->as_array().type.get_type() != RPCRuntimeParameterDescription::Type::character){
+	if (description->as_array().type.get_type() != RPCRuntimeParameterDescription::Type::character) {
 		throw std::runtime_error("Assigning a string to an array is only supported for arrays of characters, but got " + description->get_parameter_type());
 	}
-	if (array.size() > child_parameters.size()){
-		throw std::runtime_error("Given string \"" + array + "\" of length " + std::to_string(array.size()) + " doesn't fit into " + description->get_parameter_type());
+	if (array.size() > child_parameters.size()) {
+		throw std::runtime_error("Given string \"" + array + "\" of length " + std::to_string(array.size()) + " doesn't fit into " +
+								 description->get_parameter_type());
 	}
 	for (unsigned int i = 0; i < array.size(); i++) {
 		child_parameters[i].set_value(array[i]);

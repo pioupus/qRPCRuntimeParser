@@ -241,14 +241,14 @@ RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription() {
 }
 
 RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription(std::istream &input) {
-	if (!open_description(input)){
+	if (!open_description(input)) {
 		reset();
 	}
 }
 
 bool RPCRunTimeProtocolDescription::openProtocolDescription(std::istream &input) {
 	RPCRunTimeProtocolDescription other(input);
-	if (other.get_functions().empty()){ //failed loading
+	if (other.get_functions().empty()) { //failed loading
 		return false;
 	}
 	*this = std::move(other);
@@ -301,8 +301,7 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) co
 	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
 }
 
-const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(const std::string &name) const
-{
+const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(const std::string &name) const {
 	for (auto &function : functions) {
 		if (function.get_function_name() == name) {
 			return function;
@@ -312,8 +311,16 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(const std:
 	throw std::runtime_error("\"" + name + "\" is not a valid function name");
 }
 
-bool RPCRunTimeProtocolDescription::open_description(std::istream &input)
-{
+bool RPCRunTimeProtocolDescription::has_function(const std::string &name) const {
+	for (auto &function : functions) {
+		if (function.get_function_name() == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool RPCRunTimeProtocolDescription::open_description(std::istream &input) {
 #define MAKESURE(X)                                                                                                                                            \
 	do {                                                                                                                                                       \
 		if (!(X)) {                                                                                                                                            \
@@ -351,8 +358,7 @@ bool RPCRunTimeProtocolDescription::open_description(std::istream &input)
 #undef MAKESURE
 }
 
-void RPCRunTimeProtocolDescription::reset()
-{
+void RPCRunTimeProtocolDescription::reset() {
 	functions.clear();
 	hash.clear();
 	project_name.clear();

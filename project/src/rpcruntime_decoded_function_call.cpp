@@ -10,6 +10,16 @@ std::vector<RPCRuntimeDecodedParam> RPCRuntimeDecodedFunctionCall::get_decoded_p
 	return params;
 }
 
+const RPCRuntimeDecodedParam *RPCRuntimeDecodedFunctionCall::get_parameter_by_name(const std::string &name) const
+{
+	for (auto &param : params){
+		if (param.get_desciption()->get_parameter_name() == name){
+			return &param;
+		}
+	}
+	return nullptr;
+}
+
 int RPCRuntimeDecodedFunctionCall::get_id() const {
 	return id;
 }
