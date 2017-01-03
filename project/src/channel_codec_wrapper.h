@@ -33,6 +33,7 @@ class Channel_codec_wrapper {
 	void reset_current_transfer();
 	std::vector<unsigned char> encode(const RPCRuntimeEncodedFunctionCall &call);
 	const channel_codec_instance_t *debug_get_instance() const;
+	const RPCRuntimeTransfer &current_transfer() const;
 
 	private:
 	const RPCRuntimeDecoder *decoder;
