@@ -19,7 +19,7 @@ struct Decoded_enum;
 class RPCRuntimeDecodedParam {
 	public:
     RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &parameter_description, std::string field_id);
-	uint64_t as_unsigned_integer() const;
+    uint64_t as_unsigned_integer() const;
 	int64_t as_signed_integer() const;
 	int64_t as_integer() const; //works for all integers except uint64_t
 	Decoded_enum as_enum() const; //since we come from C we only need to support enums that have int as their underlying type

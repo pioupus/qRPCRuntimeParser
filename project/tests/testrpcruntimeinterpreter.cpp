@@ -655,6 +655,41 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 #endif
 }
 
+
+void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_access_by_field_id() {
+#if RUNTEST
+    const uint8_t inBinData_array[] = {0x18, 0x2b, 0x00, 0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31,
+                                       0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x34, 0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+                                       0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x00, 0x10, 0x20, 0x01, 0x11, 0x21};
+
+    RPCRunTimeProtocolDescription rpcinterpreter;
+
+    {
+        std::ifstream xmlfile{"scripts/decodeTest_struct_int.xml"};
+        QVERIFY(static_cast<bool>(xmlfile));
+        bool result = rpcinterpreter.openProtocolDescription(xmlfile);
+        QVERIFY(result);
+    }
+
+    RPCRuntimeDecoder decoder(rpcinterpreter);
+    RPCRuntimeTransfer transfer = decoder.decode(inBinData_array);
+
+    QCOMPARE(transfer.is_complete(), true);
+
+    RPCRuntimeDecodedFunctionCall function_call = transfer.decode();
+    QVERIFY(function_call.get_param_by_field_id("24.s_inout.0.iaa.0.1.2").get());
+    QCOMPARE(function_call.get_param_by_field_id("24.s_inout.0.iaa.0.1.2")->as_unsigned_integer(),       0x21ull);
+    QVERIFY(!function_call.get_param_by_field_id("24.s_inout.0.ia_.0.1.2").get());
+    QVERIFY(!function_call.get_param_by_field_id("30.s_inout.0.ia_.0.1.2").get());
+    QVERIFY(!function_call.get_param_by_field_id("24.s_inout_.0.ia_.0.1.2").get());
+    QVERIFY(!function_call.get_param_by_field_id("24.s_inout.1.ia_.0.1.2").get());
+    QVERIFY(!function_call.get_param_by_field_id("24.s_inout.1_.ia_.0.1.2").get());
+    QVERIFY(!function_call.get_param_by_field_id("24.s_inout.1_.iaa.0.1.2").get());
+    QVERIFY(!function_call.get_param_by_field_id("24.s_inout._1_.iaa.0.1.2").get());
+#endif
+}
+
+
 void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport() {
 #if RUNTEST
 	const uint8_t inBinData_array[] = {0x18, 0x2b, 0x00, 0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30, 0x31,

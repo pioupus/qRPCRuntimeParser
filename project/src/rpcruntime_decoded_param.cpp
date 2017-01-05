@@ -32,6 +32,7 @@ RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(const RPCRuntimeParameterDescript
     this->field_id = field_id;
 }
 
+
 template <class T>
 T parse_signed_int(const std::vector<unsigned char> &data) {
 	T retval = 0;
@@ -119,6 +120,8 @@ std::vector<RPCRuntimeDecodedParam> RPCRuntimeDecodedParam::as_array() const
 	}
 	return retval;
 }
+
+
 
 std::string RPCRuntimeDecodedParam::as_full_string() const {
 	std::string retval;

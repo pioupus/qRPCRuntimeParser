@@ -7,6 +7,7 @@ class RPCRuntimeFunction;
 
 #include <functional>
 #include <vector>
+#include <memory>
 
 /*
  * A RPCRuntimeDecodedFunctionCall represents function call made by the RPC-System, including parameters sent and their values and types
@@ -21,7 +22,7 @@ class RPCRuntimeDecodedFunctionCall {
 	const RPCRuntimeFunction *get_declaration() const;
 	bool is_request() const;
 	bool is_reply() const;
-
+    std::unique_ptr<RPCRuntimeDecodedParam> get_param_by_field_id(const std::string &field_id) ;
 	private:
 	int id;
 	std::vector<RPCRuntimeDecodedParam> params;

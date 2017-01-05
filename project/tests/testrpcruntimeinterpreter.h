@@ -29,6 +29,7 @@ private slots:
     void loadXMLFile_rpcDecodeTest_int16_t();
     void loadXMLFile_rpcDecodeTest_array_char();
 	void loadXMLFile_rpcDecodeTest_struct_int();
+    void loadXMLFile_rpcDecodeTest_struct_int_access_by_field_id();
 	void loadXMLFile_rpcDecodeTest_struct_int_treewidgetreport();
 	void loadXMLFile_rpcSignedUnsingedBug();
 	void loadXMLFile_rpcDecodeTest_enum();
@@ -53,7 +54,8 @@ private slots:
 
 	void create_callback();
 
-	void decode_bug_replay();
+    void decode_bug_replay();
+
 private:
     QString callBack_FieldID;
     QString callBack_humanReadableName;
