@@ -41,6 +41,7 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	auto &parameter_descriptions = protocol->get_parameters(data[0]);
 	for (auto &pd : parameter_descriptions) {
 		decoded_parameters.emplace_back(pd);
+        decoded_parameters.back().set_field_id(std::to_string(id)+"."+pd.get_parameter_name());
 		ss >> decoded_parameters.back();
 	}
 

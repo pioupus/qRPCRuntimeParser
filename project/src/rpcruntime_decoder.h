@@ -29,6 +29,7 @@ class RPCRuntimeDecoder {
 
 	void set_description(RPCRunTimeProtocolDescription &description);
 
+    bool has_callbacks();
 	private:
 	RPCRunTimeProtocolDescription *description = nullptr;
 	friend class RPCRuntimeTransfer;

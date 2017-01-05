@@ -102,7 +102,7 @@ RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(const RPCRuntimeP
 	, bit_size(other.bit_size)
 	, parameter_name(other.parameter_name)
 	, parameter_ctype(other.parameter_ctype)
-	, parameter_position(other.parameter_position) {
+    , parameter_position(other.parameter_position)  {
 	switch (type) {
 		case Type::array:
 			type_dependent_values.array = new RPCRuntimeArrayParameter(*other.type_dependent_values.array);
@@ -127,7 +127,7 @@ RPCRuntimeParameterDescription::RPCRuntimeParameterDescription(RPCRuntimeParamet
 	, bit_size(other.bit_size)
 	, parameter_name(std::move(other.parameter_name))
 	, parameter_ctype(std::move(other.parameter_ctype))
-	, parameter_position(other.parameter_position) {
+    , parameter_position(other.parameter_position)   {
 	switch (type) {
 		case Type::array:
 			type_dependent_values.array = other.type_dependent_values.array;
@@ -179,8 +179,8 @@ void RPCRuntimeParameterDescription::fix_array_bit_byte_bug()
 }
 
 RPCRuntimeArrayParameter::RPCRuntimeArrayParameter(RPCRuntimeParameterDescription type, int number_of_elements)
-	: type(std::move(type))
-	, number_of_elements(number_of_elements) {}
+    : type(std::move(type))
+    , number_of_elements(number_of_elements) {}
 
 int RPCRuntimeEnumerationParameter::Enum_value::to_int() const
 {

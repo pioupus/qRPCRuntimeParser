@@ -30,5 +30,10 @@ void RPCRuntimeDecoder::set_reply_callback(const RPCRuntimeFunction &rpc_functio
 }
 
 void RPCRuntimeDecoder::set_description(RPCRunTimeProtocolDescription &description) {
-	this->description = &description;
+    this->description = &description;
+}
+
+bool RPCRuntimeDecoder::has_callbacks()
+{
+    return callbacks.size() > 0;
 }

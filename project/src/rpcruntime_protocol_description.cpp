@@ -55,8 +55,10 @@ static RPCRuntimeParameterDescription parse_integer_parameter(QXmlStreamReader &
 	xml_reader.skipCurrentElement(); //integer
 
 	xml_reader.skipCurrentElement(); //parameter
-	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
-			common_attributes.parameter_position, std::move(integer_parameter)};
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(integer_parameter)};
+    //retval.set_field_id(parent_field_id+"."+retval.get_parameter_name());
+    return retval;
 }
 
 static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml_reader) {
@@ -75,8 +77,10 @@ static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml
 		xml_reader.skipCurrentElement(); //enum
 	}
 
-	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
-			common_attributes.parameter_position, std::move(enumeration)};
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(enumeration)};
+    //retval.set_field_id(parent_field_id+"."+retval.get_parameter_name());
+    return retval;
 }
 
 static RPCRuntimeParameterDescription parse_character_parameter(QXmlStreamReader &xml_reader) {
@@ -85,14 +89,17 @@ static RPCRuntimeParameterDescription parse_character_parameter(QXmlStreamReader
 
 	xml_reader.skipCurrentElement();
 
-	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
-			common_attributes.parameter_position, std::move(character)};
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(character)};
+    //retval.set_field_id(parent_field_id+"."+retval.get_parameter_name());
+    return retval;
 }
 
 static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader);
 
 static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xml_reader) {
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+
 
 	const auto &parameter_attributes = xml_reader.attributes();
 	assert(parameter_attributes.value("type") == "array");
@@ -108,7 +115,7 @@ static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xm
 	int number_of_elements = array_attributes.value("elements").toInt();
 	assert(number_of_elements);
 
-	auto type = parse_parameter(xml_reader);
+    auto type = parse_parameter(xml_reader);
 	if (type.get_type() == RPCRuntimeParameterDescription::Type::structure) {
 		type.fix_array_bit_byte_bug();
 	}
@@ -116,21 +123,28 @@ static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xm
 	//array.type.bit_size = bit_size:
 	xml_reader.skipCurrentElement();
 
-	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
-			common_attributes.parameter_position, std::move(array)};
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(array)};
+
+    //retval.set_field_id(field_id);
+    return retval;
 }
 
 static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader) {
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
 	RPCRuntimeStructureParameter structure;
 
+
 	while (xml_reader.readNextStartElement()) {
 		assert(xml_reader.name() == "parameter");
-		structure.members.push_back(parse_parameter(xml_reader));
+        structure.members.push_back(parse_parameter(xml_reader));
 	}
 
-	return {common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
-			common_attributes.parameter_position, std::move(structure)};
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(structure)};
+
+    //retval.set_field_id(field_id);
+    return retval;
 }
 
 static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader) {
@@ -138,15 +152,15 @@ static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_read
 	const auto &parameter_attributes = xml_reader.attributes();
 	const auto &type_name = parameter_attributes.value("type");
 	if (type_name == "integer") {
-		return parse_integer_parameter(xml_reader);
+       return parse_integer_parameter(xml_reader);
 	} else if (type_name == "enum") {
-		return parse_enum_parameter(xml_reader);
+        return parse_enum_parameter(xml_reader);
 	} else if (type_name == "struct") {
-		return parse_struct_parameter(xml_reader);
+        return parse_struct_parameter(xml_reader);
 	} else if (type_name == "array") {
-		return parse_array_parameter(xml_reader);
+        return parse_array_parameter(xml_reader);
 	} else if (type_name == "character") {
-		return parse_character_parameter(xml_reader);
+        return parse_character_parameter(xml_reader);
 	}
 	//unknown type
 	qDebug() << "unknown parameter type" << type_name;
@@ -163,7 +177,7 @@ static std::vector<RPCRuntimeParameterDescription> parse_parameters(QXmlStreamRe
 		//const auto &parameter_attributes = xml_reader.attributes();
 		//debugoutput << "parameter name: " << parameter_attributes.value("name").toString().toStdString() << '\n';
 		//xml_reader.skipCurrentElement();
-		retval.push_back(parse_parameter(xml_reader));
+        retval.push_back(parse_parameter(xml_reader));
 	}
 	return retval;
 }
@@ -193,14 +207,14 @@ static RPCRuntimeFunction parse_function(QXmlStreamReader &xml_reader) {
 			if (!ok) {
 				request_id = -1;
 			}
-			request_parameters = parse_parameters(xml_reader);
+            request_parameters = parse_parameters(xml_reader);
 		} else if (xml_reader.name() == "reply") {
 			bool ok;
 			reply_id = xml_reader.attributes().value("ID").toInt(&ok);
 			if (!ok) {
 				reply_id = -1;
 			}
-			reply_parameters = parse_parameters(xml_reader);
+            reply_parameters = parse_parameters(xml_reader);
 		} else {
 			qDebug() << "unknown function attribute" << xml_reader.name();
 			xml_reader.skipCurrentElement();

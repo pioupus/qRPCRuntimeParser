@@ -28,7 +28,8 @@ Reverse_container<Container> reverse_view(Container &container) {
 }
 
 RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &parameter_description)
-	: parameter_description(&parameter_description) {}
+    : parameter_description(&parameter_description) {
+}
 
 template <class T>
 T parse_signed_int(const std::vector<unsigned char> &data) {
@@ -101,6 +102,7 @@ std::vector<Decoded_struct> RPCRuntimeDecodedParam::as_struct() const
 		retval.push_back({member.get_parameter_name(), {member}});
 		auto data_size = member.get_bit_size() / 8;
 		retval.back().type.set_data(data.data() + current_data_position, data_size);
+        retval.back().type.set_field_id(field_id+"."+member.get_parameter_name());
 		current_data_position += data_size;
 	}
 	assert(current_data_position == static_cast<int>(data.size()));
@@ -114,6 +116,7 @@ std::vector<RPCRuntimeDecodedParam> RPCRuntimeDecodedParam::as_array() const
 	for (int i = 0; i < parameter_description->as_array().number_of_elements; i++){
 		retval.emplace_back(parameter_description->as_array().type);
 		retval.back().set_data(data.data() + i * parameter_description->as_array().type.get_bit_size() / 8, parameter_description->as_array().type.get_bit_size() / 8);
+        retval.back().set_field_id(field_id+"."+std::to_string(i));
 	}
 	return retval;
 }
@@ -134,8 +137,20 @@ std::string RPCRuntimeDecodedParam::as_string() const {
 		}
 		retval.push_back(c);
 	}
-	return retval;
+    return retval;
 }
+
+std::string RPCRuntimeDecodedParam::get_field_id() const
+{
+    return field_id;
+}
+
+void RPCRuntimeDecodedParam::set_field_id(const std::string &value)
+{
+    field_id = value;
+}
+
+
 
 const RPCRuntimeParameterDescription *RPCRuntimeDecodedParam::get_desciption() const {
 	return parameter_description;
@@ -152,8 +167,8 @@ void RPCRuntimeDecodedParam::set_data(const unsigned char *begin, int size)
 }
 
 std::istream &operator>>(std::istream &is, RPCRuntimeDecodedParam &param) {
-	auto byte_size = param.get_desciption()->get_bit_size() / 8;
-	std::vector<unsigned char> data;
+    auto byte_size = param.get_desciption()->get_bit_size() / 8;
+    std::vector<unsigned char> data;
 	data.resize(byte_size);
 	is.read(reinterpret_cast<char *>(data.data()), byte_size);
 	if (is) {

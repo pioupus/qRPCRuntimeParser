@@ -571,6 +571,7 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_array_char() {
 
 	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_string(), "Hello World!"s);
+    QCOMPARE(QString::fromStdString(function_call.get_decoded_parameters()[0].get_field_id()), QString("6.text_inout"));
 
 #endif
 }
@@ -607,12 +608,14 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().number_of_elements, 1);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.get_type(), RPCRuntimeParameterDescription::Type::structure);
 
+
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members.size(), 3u);
 	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[0].get_type(), RPCRuntimeParameterDescription::Type::integer);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_type(), RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().number_of_elements, 42);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_type(), RPCRuntimeParameterDescription::Type::array);
-	QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().number_of_elements, 1);
+    QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].get_type(), RPCRuntimeParameterDescription::Type::array);
+    QCOMPARE(                       funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[1].as_array().number_of_elements, 42);
+    QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].get_type(), RPCRuntimeParameterDescription::Type::array);
+
+    QCOMPARE(funList[0].get_reply_parameters()[0].as_array().type.as_structure().members[2].as_array().number_of_elements, 1);
 
 	QCOMPARE(function_call.get_decoded_parameters().size(), 1u);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array().size(), 1u);
@@ -623,9 +626,12 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 			 RPCRuntimeParameterDescription::Type::array);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_array().size(), 42u);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_array()[0].as_unsigned_integer(), 0x48ull);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_string(),
+    QCOMPARE(                       function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_string(),
 			 "\x48\x61\x6c\x6c\x6f\x33\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x34\x38\x39\x30\x31\x32\x33"
 			 "\x34\x35\x36\x37\x38\x39\x30\x31\x32\x33\x34\x35\x36\x37\x38"s);
+
+    QCOMPARE(QString::fromStdString(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.get_field_id()), QString("24.s_inout.0.ia"));
+
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[1].type.as_array()[0].get_desciption()->get_type(),
 			 RPCRuntimeParameterDescription::Type::integer);
 
@@ -643,9 +649,9 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int() {
 			 0x01ull);
 	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[1].as_unsigned_integer(),
 			 0x11ull);
-	QCOMPARE(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[2].as_unsigned_integer(),
+    QCOMPARE(                       function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[2].as_unsigned_integer(),
 			 0x21ull);
-
+    QCOMPARE(QString::fromStdString(function_call.get_decoded_parameters()[0].as_array()[0].as_struct()[2].type.as_array()[0].as_array()[1].as_array()[2].get_field_id()), QString("24.s_inout.0.iaa.0.1.2"));
 #endif
 }
 
@@ -687,45 +693,53 @@ void TestRPCRuntimeInterpreter::loadXMLFile_rpcDecodeTest_struct_int_treewidgetr
 	auto array = request->child(0);
 	qDebug() << "array: " << array->data(1, Qt::UserRole).toString();
 	QCOMPARE(array->data(0, Qt::UserRole).toString(), QString("array"));
+    QCOMPARE(array->data(2, Qt::UserRole).toString(), QString("24.s_inout"));
 	QCOMPARE(array->childCount(), 1);
 	//QCOMPARE(array->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0"));
 
 	auto structure = array->child(0); //TypedefTestStruct s_inout
 	qDebug() << "struct: " << structure->data(1, Qt::UserRole).toString();
 	QCOMPARE(structure->data(0, Qt::UserRole).toString(), QString("structure"));
+    QCOMPARE(structure->data(2, Qt::UserRole).toString(), QString("24.s_inout.0"));
 	QCOMPARE(structure->childCount(), 3);
 
 	auto parameter_n = structure->child(0);
 	qDebug() << "parameter_n: " << parameter_n->data(1, Qt::UserRole).toString();
+    QCOMPARE(parameter_n->data(2, Qt::UserRole).toString(), QString("24.s_inout.0.n"));
 	QCOMPARE(parameter_n->text(0), QString("n(uint16_t)"));
 	QCOMPARE(parameter_n->text(1), QString("43"));
 	QCOMPARE(parameter_n->childCount(), 0);
 
 	auto parameter_ia = structure->child(1);
 	qDebug() << "parameter_ia:" << parameter_ia->data(1, Qt::UserRole).toString();
+    QCOMPARE(parameter_ia->data(2, Qt::UserRole).toString(), QString("24.s_inout.0.ia"));
 	QCOMPARE(parameter_ia->text(0), QString("ia(uint8_t [42])"));
 	QCOMPARE(parameter_ia->text(1), QString("0x48 0x61 0x6C 0x6C 0x6F 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x34 0x38 "
 											"0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38 0x39 0x30 0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38"));
 
 	auto parameter_iaa = structure->child(2);
+    QCOMPARE(parameter_iaa->data(2, Qt::UserRole).toString(), QString("24.s_inout.0.iaa"));
 	QCOMPARE(parameter_iaa->childCount(), 1);
 	QCOMPARE(parameter_iaa->text(0), QString("iaa(uint8_t [1][2][3])"));
 	QCOMPARE(parameter_iaa->text(1).trimmed(), QString("").trimmed());
 
 	auto iaa_0 = parameter_iaa->child(0);
 	QCOMPARE(iaa_0->childCount(), 2);
+    QCOMPARE(iaa_0->data(2, Qt::UserRole).toString(), QString("24.s_inout.0.iaa.0"));
 	//QCOMPARE(iaa_1->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0"));
 	QCOMPARE(iaa_0->text(0), QString("[0]"));
 	QCOMPARE(iaa_0->text(1).trimmed(), QString("").trimmed());
 
 	auto iaa_0_0 = iaa_0->child(0);
 	QCOMPARE(iaa_0_0->childCount(), 0);
+    QCOMPARE(iaa_0_0->data(2, Qt::UserRole).toString(), QString("24.s_inout.0.iaa.0.0"));
 	//QCOMPARE(iaa_0_0->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?0"));
 	QCOMPARE(iaa_0_0->text(0), QString("[0]"));
 	QCOMPARE(iaa_0_0->text(1).trimmed(), QString("0x00 0x10 0x20").trimmed());
 
 	auto iaa_0_1 = iaa_0->child(1);
 	QCOMPARE(iaa_0_1->childCount(), 0);
+    QCOMPARE(iaa_0_1->data(2, Qt::UserRole).toString(), QString("24.s_inout.0.iaa.0.1"));
 	//QCOMPARE(iaa_0_1->data(0, Qt::UserRole).toString(), QString("scripts/decodeTest_struct_int.xml?24?0?0?2?0?1"));
 	QCOMPARE(iaa_0_1->text(0), QString("[1]"));
 	QCOMPARE(iaa_0_1->text(1).trimmed(), QString("0x01 0x11 0x21").trimmed());
@@ -1328,6 +1342,7 @@ void TestRPCRuntimeInterpreter::create_callback() {
 }
 
 void TestRPCRuntimeInterpreter::decode_bug_replay() {
+#if 0
 	std::ifstream f{"scripts/buggylog.dat", std::ios::binary};
 	std::vector<unsigned char> inData;
 	Q_ASSERT(f);
@@ -1366,4 +1381,5 @@ void TestRPCRuntimeInterpreter::decode_bug_replay() {
 		QWARN(f.c_str());
 	}
 	QCOMPARE(counts.size(), 1u);
+#endif
 }

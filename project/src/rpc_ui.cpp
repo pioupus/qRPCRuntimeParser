@@ -31,6 +31,7 @@ static void fill_array_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam
 	auto array = get_last_child(item);
 	array->setData(0, Qt::UserRole, "array");
 	array->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
+    array->setData(2, Qt::UserRole, param.get_field_id().c_str());
 
 	array->setText(0, (param.get_desciption()->get_parameter_name() + "(" + param.get_desciption()->get_parameter_type() + ")").c_str());
 
@@ -64,6 +65,7 @@ static void fill_character_child(QTreeWidgetItem *item, const RPCRuntimeDecodedP
 	auto character = get_last_child(item);
 	character->setData(0, Qt::UserRole, "character");
 	character->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
+    character->setData(2, Qt::UserRole, param.get_field_id().c_str());
 }
 
 static void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param) {
@@ -71,6 +73,7 @@ static void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecode
 	auto enumeration = get_last_child(item);
 	enumeration->setData(0, Qt::UserRole, "enumeration");
 	enumeration->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
+    enumeration->setData(2, Qt::UserRole, param.get_field_id().c_str());
 
 	enumeration->setText(0, (param.get_desciption()->get_parameter_name() + "(" + param.get_desciption()->get_parameter_type() + ")").c_str());
 	enumeration->setText(1, param.as_enum().name.c_str());
@@ -81,6 +84,8 @@ static void fill_integer_child(QTreeWidgetItem *item, const RPCRuntimeDecodedPar
 	auto integer = get_last_child(item);
 	integer->setData(0, Qt::UserRole, "integer");
 	integer->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
+    integer->setData(2, Qt::UserRole, param.get_field_id().c_str());
+
 	integer->setText(0, (param.get_desciption()->get_parameter_name() + "(" + param.get_desciption()->get_parameter_type() + ")").c_str());
 	integer->setText(1, QString::number(param.as_integer()));
 }
@@ -90,6 +95,8 @@ static void fill_structure_child(QTreeWidgetItem *item, const RPCRuntimeDecodedP
 	auto structure = get_last_child(item);
 	structure->setData(0, Qt::UserRole, "structure");
 	structure->setData(1, Qt::UserRole, (param.get_desciption()->get_parameter_name() + ": " + param.get_desciption()->get_parameter_type()).c_str());
+    structure->setData(2, Qt::UserRole, param.get_field_id().c_str());
+   // structure->setData(2, Qt::UserRole, param.get_field_id());
 	for (auto &member : param.as_struct()) {
 		fill_child(structure, member.type);
 	}
@@ -116,6 +123,7 @@ static void fill_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &para
 }
 
 std::unique_ptr<QTreeWidgetItem> getTreeWidgetReport(const RPCRuntimeDecodedFunctionCall &function) {
+
 	auto retval = std::make_unique<QTreeWidgetItem>();
 	retval->setText(0, function.get_declaration()->get_function_name().c_str());
 	retval->setText(1, function.get_declaration()->get_function_declaration().c_str());
@@ -187,9 +195,11 @@ QStringList get_report(const RPCRuntimeDecodedFunctionCall &function) {
 	return retval;
 }
 
+#if 1
 static void add_param_to_item(QTreeWidgetItem *parent, const RPCRuntimeEncodedParam &param){
 	auto item = std::make_unique<QTreeWidgetItem>();
 	item->setText(0, param.get_description()->get_parameter_name().c_str());
+   // item->setData(Qt::UserRole,)
 	parent->addChild(item.release());
 }
 
@@ -202,3 +212,4 @@ std::unique_ptr<QTreeWidgetItem> getTreeWidgetReport(const RPCRuntimeEncodedFunc
 	}
 	return item;
 }
+#endif

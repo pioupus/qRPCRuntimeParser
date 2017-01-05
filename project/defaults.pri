@@ -8,7 +8,9 @@ INCLUDEPATH += $$PWD/src
 
 QMAKE_CXXFLAGS += -Werror
 CONFIG += warn
-CONFIG += c++14
+#CONFIG += c++14
+#CONFIG += c++11
+QMAKE_CXXFLAGS += -std=c++1y
 
 INCLUDEPATH += $$PWD/libs/include/
 INCLUDEPATH += $$PWD/libs/RPC-ChannelCodec/include

@@ -34,6 +34,7 @@ class RPCRuntimeParameterDescription {
 	const std::string &get_parameter_type() const;
 	int get_parameter_position() const;
 
+
 	const RPCRuntimeIntegerParameter &as_integer() const;
 	const RPCRuntimeEnumerationParameter &as_enumeration() const;
 	const RPCRuntimeStructureParameter &as_structure() const;
@@ -48,11 +49,13 @@ class RPCRuntimeParameterDescription {
 
 	void fix_array_bit_byte_bug();
 
-	private:
-	Type type;
-	int bit_size;
-	std::string parameter_name;
-	std::string parameter_ctype;
+
+
+private:
+    Type type;
+    int bit_size;
+    std::string parameter_name;
+    std::string parameter_ctype;
 	int parameter_position;
 	struct Type_dependent_values { //this could be a union, but the implementation difficulty is not justified by a couple of bytes
 		RPCRuntimeIntegerParameter *integer;
@@ -64,7 +67,7 @@ class RPCRuntimeParameterDescription {
 };
 
 struct RPCRuntimeIntegerParameter {
-	bool is_signed;
+    bool is_signed;
 };
 
 struct RPCRuntimeEnumerationParameter {
@@ -79,13 +82,13 @@ struct RPCRuntimeEnumerationParameter {
 };
 
 struct RPCRuntimeStructureParameter {
-	std::vector<RPCRuntimeParameterDescription> members;
+    std::vector<RPCRuntimeParameterDescription> members;
 };
 
 struct RPCRuntimeArrayParameter {
 	RPCRuntimeArrayParameter(RPCRuntimeParameterDescription type, int number_of_elements);
-	RPCRuntimeParameterDescription type;
-	int number_of_elements = -1;
+    RPCRuntimeParameterDescription type;
+    int number_of_elements = -1;
 };
 
 struct RPCRuntimeCharacterParameter {};

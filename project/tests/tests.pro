@@ -50,7 +50,8 @@ CONFIG( debug, debug|release ) {
 
 }
 
-COPY_DIR = "$$(UNIXTOOLS)cp -r"
+COPY_DIR = "$$(UNIXTOOLS)\\cp -r"
+#COPY_DIR = "C:\\Program Files\\Git\\usr\\bin\\cp -r"
 
 #message($$COPY_DIR)
 #message($$OUT_PWD/)

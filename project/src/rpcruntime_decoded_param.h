@@ -27,14 +27,19 @@ class RPCRuntimeDecodedParam {
 	std::vector<RPCRuntimeDecodedParam> as_array() const;
 	std::string as_full_string() const;
 	std::string as_string() const;
-
+    std::string get_field_id() const;
+    void set_field_id(const std::string &value);
+   // void set_field_id_parent(const std::string &value);
 	const RPCRuntimeParameterDescription *get_desciption() const;
 	void set_data(std::vector<unsigned char> data);
 	void set_data(const unsigned char *begin, int size);
 
-	private:
-	const RPCRuntimeParameterDescription *parameter_description;
+
+
+private:
+    const RPCRuntimeParameterDescription *parameter_description;
 	std::vector<unsigned char> data;
+    std::string field_id;
 };
 
 struct Decoded_struct{
