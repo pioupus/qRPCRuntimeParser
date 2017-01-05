@@ -27,8 +27,9 @@ Reverse_container<Container> reverse_view(Container &container) {
 	return {container};
 }
 
-RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &parameter_description)
+RPCRuntimeDecodedParam::RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &parameter_description, std::string field_id)
     : parameter_description(&parameter_description) {
+    this->field_id = field_id;
 }
 
 template <class T>
@@ -99,10 +100,9 @@ std::vector<Decoded_struct> RPCRuntimeDecodedParam::as_struct() const
 	assert(parameter_description->get_type() == RPCRuntimeParameterDescription::Type::structure);
 	int current_data_position = 0;
 	for (auto &member : parameter_description->as_structure().members){
-		retval.push_back({member.get_parameter_name(), {member}});
+        retval.push_back({member.get_parameter_name(), {member,field_id+"."+member.get_parameter_name()}});
 		auto data_size = member.get_bit_size() / 8;
 		retval.back().type.set_data(data.data() + current_data_position, data_size);
-        retval.back().type.set_field_id(field_id+"."+member.get_parameter_name());
 		current_data_position += data_size;
 	}
 	assert(current_data_position == static_cast<int>(data.size()));
@@ -114,9 +114,8 @@ std::vector<RPCRuntimeDecodedParam> RPCRuntimeDecodedParam::as_array() const
 	std::vector<RPCRuntimeDecodedParam> retval;
 	assert(parameter_description->get_type() == RPCRuntimeParameterDescription::Type::array);
 	for (int i = 0; i < parameter_description->as_array().number_of_elements; i++){
-		retval.emplace_back(parameter_description->as_array().type);
+        retval.emplace_back(parameter_description->as_array().type, field_id+"."+std::to_string(i));
 		retval.back().set_data(data.data() + i * parameter_description->as_array().type.get_bit_size() / 8, parameter_description->as_array().type.get_bit_size() / 8);
-        retval.back().set_field_id(field_id+"."+std::to_string(i));
 	}
 	return retval;
 }
@@ -144,13 +143,6 @@ std::string RPCRuntimeDecodedParam::get_field_id() const
 {
     return field_id;
 }
-
-void RPCRuntimeDecodedParam::set_field_id(const std::string &value)
-{
-    field_id = value;
-}
-
-
 
 const RPCRuntimeParameterDescription *RPCRuntimeDecodedParam::get_desciption() const {
 	return parameter_description;

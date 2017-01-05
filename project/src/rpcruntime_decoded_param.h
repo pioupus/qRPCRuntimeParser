@@ -18,7 +18,7 @@ struct Decoded_enum;
 
 class RPCRuntimeDecodedParam {
 	public:
-	RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &parameter_description);
+    RPCRuntimeDecodedParam(const RPCRuntimeParameterDescription &parameter_description, std::string field_id);
 	uint64_t as_unsigned_integer() const;
 	int64_t as_signed_integer() const;
 	int64_t as_integer() const; //works for all integers except uint64_t
@@ -28,8 +28,6 @@ class RPCRuntimeDecodedParam {
 	std::string as_full_string() const;
 	std::string as_string() const;
     std::string get_field_id() const;
-    void set_field_id(const std::string &value);
-   // void set_field_id_parent(const std::string &value);
 	const RPCRuntimeParameterDescription *get_desciption() const;
 	void set_data(std::vector<unsigned char> data);
 	void set_data(const unsigned char *begin, int size);
