@@ -86,13 +86,13 @@ const RPCRuntimeTransfer &Channel_codec_wrapper::current_transfer() const
 }
 
 void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size) {
-	qDebug() << "ChannelCodec received" << size << "bytes";
+	//qDebug() << "ChannelCodec received" << size << "bytes";
 	for (std::size_t i = 0; i < size; i++) {
 		auto &byte = data[i];
 		auto &t = ccw.transfers.back();
 		t.add_data(byte);
 		if (t.is_complete()) {
-			qDebug() << "ChannelCodecWrapper Transfer complete";
+			//qDebug() << "ChannelCodecWrapper Transfer complete";
 			ccw.transfers.emplace_back(*ccw.decoder->get_description(), *ccw.decoder);
 		}
 	}
