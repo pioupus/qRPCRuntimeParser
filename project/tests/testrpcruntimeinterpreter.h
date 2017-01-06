@@ -51,10 +51,7 @@ private slots:
 	void create_request_with_complex_parameter();
 	void encode_hash_request_without_protocol();
 	void decode_hash_request_without_protocol();
-
 	void create_callback();
-
-    void decode_bug_replay();
 
 private:
     QString callBack_FieldID;
