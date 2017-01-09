@@ -1,180 +1,381 @@
 #include "rpcruntime_protocol_description.h"
 
-#include <QtXml>
-#include <QFile>
 #include <QDebug>
-#include <QString>
-#include <functional>
+#include <QXmlStreamReader>
+#include <cassert>
+#include <fstream>
+#include <sstream>
+#include <string>
 
-RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription()
-{
+struct Common_parameter_attributes {
+	int bit_size;
+	std::string parameter_name;
+	std::string parameter_ctype;
+	int parameter_position;
+};
 
+static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader);
+
+static Common_parameter_attributes parse_common_parameter_attributes(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes retval;
+	const auto &parameter_attributes = xml_reader.attributes();
+
+	retval.bit_size = parameter_attributes.value("bits").toInt();
+	assert(retval.bit_size != 0); //this fails if bit_size doesn't exist or could not be parsed or has an invalid value
+
+	retval.parameter_name = parameter_attributes.value("name").toString().toStdString();
+
+	retval.parameter_ctype = parameter_attributes.value("ctype").toString().toStdString();
+
+	retval.parameter_position = parameter_attributes.value("position").toInt();
+	if (retval.parameter_position == 0) {
+		retval.parameter_position = parameter_attributes.value("memberpos").toInt();
+	}
+
+	return retval;
 }
 
-RPCRunTimeProtocolDescription::~RPCRunTimeProtocolDescription()
-{
+static RPCRuntimeParameterDescription parse_integer_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeIntegerParameter integer_parameter;
 
+	const auto &parameter_attributes = xml_reader.attributes();
+	assert(parameter_attributes.value("type") == "integer");
+
+	xml_reader.readNextStartElement();
+	assert(xml_reader.name() == "integer");
+	auto signed_string = xml_reader.attributes().value("signed");
+	if (signed_string == "True" || signed_string == "true") {
+		integer_parameter.is_signed = true;
+	} else if (signed_string == "False" || signed_string == "false") {
+		integer_parameter.is_signed = false;
+	} else {
+		throw std::runtime_error("Integer parameter has no propper signed attribute");
+	}
+	xml_reader.skipCurrentElement(); //integer
+
+	xml_reader.skipCurrentElement(); //parameter
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(integer_parameter)};
+    //retval.set_field_id(parent_field_id+"."+retval.get_parameter_name());
+    return retval;
 }
 
-bool RPCRunTimeProtocolDescription::openProtocolDescription(QString filename)
-{
-    QDomDocument xmlBOM;
-    this->fileName = filename;
-    QFile f(filename);
-    if (!f.open(QIODevice::ReadOnly ))
-    {
-        qCritical() << "Error while loading file";
-        return false;
-    }
+static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeEnumerationParameter enumeration;
 
-    xmlBOM.setContent(&f);
-    f.close();
-    QDomElement root=xmlBOM.documentElement();
-    QString Type=root.tagName();
-    if (root.tagName() != "RPC"){
-        qCritical() << "not a RPC description file";
-        return false;
-    }
+	while (xml_reader.readNextStartElement()) {
+		assert(xml_reader.name() == "enum");
+		const auto &enum_attributes = xml_reader.attributes();
+		RPCRuntimeEnumerationParameter::Enum_value ev;
+		ev.value = enum_attributes.value("value").toString().toStdString();
+		ev.name = enum_attributes.value("name").toString().toStdString();
 
-    QDomElement function=root.firstChild().toElement();
-    functionList.clear();
-    while(!function.isNull()){
-        if (function.tagName()=="function"){
-            bool ok;
-            RPCRuntimeFunction runtimefunction;
-            runtimefunction.name = function.attribute("name","");
-            if (runtimefunction.name == ""){
-                qCritical() << "found RPC Function without name";
-                return false;
-            }
-            QDomElement declaration=function.firstChildElement("declaration");
-            QDomElement request=function.firstChildElement("request");
-            QDomElement reply = function.firstChildElement("reply");
+		enumeration.values.push_back(std::move(ev));
 
-            if (declaration.isNull()){
-                qCritical() << "didnt found declaration in function: " << runtimefunction.name;
-                return false;
-            }
+		xml_reader.skipCurrentElement(); //enum
+	}
 
-            if (request.isNull()){
-                qCritical() << "didnt found request in function: " << runtimefunction.name;
-                return false;
-            }
-            runtimefunction.request.ID = request.attribute("ID","").toInt(&ok);
-            if (!ok){
-                qCritical() << "didnt found ID in function: " << runtimefunction.name;
-                return false;
-            }
-
-            runtimefunction.declaration = declaration.text();
-            runtimefunction.request.setIsNull(request.isNull());
-            runtimefunction.request.setReply(false);
-            runtimefunction.request.setName(runtimefunction.name);
-            runtimefunction.reply.setIsNull(reply.isNull());
-            runtimefunction.reply.ID = reply.attribute("ID","").toInt(&ok);
-            runtimefunction.reply.setReply(true);
-            runtimefunction.reply.setName(runtimefunction.name);
-
-            if (!runtimefunction.request.loadParamListFromXML(request.firstChild().toElement())){
-                return false;
-            }
-
-            if (!runtimefunction.reply.loadParamListFromXML(reply.firstChild().toElement())){
-                return false;
-            }
-
-            functionList.append(runtimefunction);
-        }
-        function = function.nextSibling().toElement();
-    }
-    return true;
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(enumeration)};
+    //retval.set_field_id(parent_field_id+"."+retval.get_parameter_name());
+    return retval;
 }
 
-QList<RPCRuntimeFunction> RPCRunTimeProtocolDescription::getFunctionList()
-{
-    return functionList;
+static RPCRuntimeParameterDescription parse_character_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeCharacterParameter character;
+
+	xml_reader.skipCurrentElement();
+
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(character)};
+    //retval.set_field_id(parent_field_id+"."+retval.get_parameter_name());
+    return retval;
 }
 
-RPCRuntimeTransfer RPCRunTimeProtocolDescription::getTransferByID(int ID)
-{
-    RPCRuntimeTransfer result_none;
-    for ( RPCRuntimeFunction func:functionList){
-        if(func.reply.ID == ID){
-            return func.reply;
-        }else if(func.request.ID == ID){
-            return func.request;
-        }
-    }
-    return  result_none;
+static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader);
+
+static RPCRuntimeParameterDescription parse_array_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+
+
+	const auto &parameter_attributes = xml_reader.attributes();
+	assert(parameter_attributes.value("type") == "array");
+
+	int bit_size = parameter_attributes.value("bits").toInt();
+	(void)bit_size;
+
+	xml_reader.readNextStartElement();
+
+	const auto &array_attributes = xml_reader.attributes();
+	assert(xml_reader.name() == "array");
+
+	int number_of_elements = array_attributes.value("elements").toInt();
+	assert(number_of_elements);
+
+    auto type = parse_parameter(xml_reader);
+	if (type.get_type() == RPCRuntimeParameterDescription::Type::structure) {
+		type.fix_array_bit_byte_bug();
+	}
+	RPCRuntimeArrayParameter array{std::move(type), number_of_elements};
+	//array.type.bit_size = bit_size:
+	xml_reader.skipCurrentElement();
+
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(array)};
+
+    //retval.set_field_id(field_id);
+    return retval;
 }
 
-RPCRuntimeParamterDescription RPCRunTimeProtocolDescription::getParameterDescriptionByFieldIDToken(QList<RPCRuntimeParamterDescription> &paramList, QStringList &IDToken, int index, bool isArray, int arrayElementCount)
-{
-    RPCRuntimeParamterDescription result_none;
-    bool ok;
-    int FieldID_token = IDToken[index].toInt(&ok);
-    if (ok){
-        if (paramList.count() > FieldID_token){
-            return paramList.at(FieldID_token);
-        }else if (isArray){
-            if (FieldID_token < arrayElementCount){
-                return paramList.at(0);
-            }else{
-                return result_none;
-            }
-        }
-    }
-    return result_none;
+static RPCRuntimeParameterDescription parse_struct_parameter(QXmlStreamReader &xml_reader) {
+	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
+	RPCRuntimeStructureParameter structure;
+
+
+	while (xml_reader.readNextStartElement()) {
+		assert(xml_reader.name() == "parameter");
+        structure.members.push_back(parse_parameter(xml_reader));
+	}
+
+    RPCRuntimeParameterDescription retval{common_attributes.bit_size, std::move(common_attributes.parameter_name), std::move(common_attributes.parameter_ctype),
+                common_attributes.parameter_position, std::move(structure)};
+
+    //retval.set_field_id(field_id);
+    return retval;
 }
 
-RPCRuntimeParamterDescription RPCRunTimeProtocolDescription::getParamDescriptionByFieldID(QString FieldID)
-{
-    RPCRuntimeParamterDescription result;
-    RPCRuntimeParamterDescription result_none;
-
-
-    QStringList IDToken = FieldID.split("?");
-    if (IDToken.count() < 3){
-        return result_none;
-    }
-    if (IDToken[0] != getFileName()){
-        return result_none;
-    }
-    RPCRuntimeTransfer transfer = getTransferByID(IDToken[1].toInt());
-
-    if (!transfer.isNull()){
-
-
-
-        int tokenIndex=2;
-        bool wasArray = false;
-        int arrayElementCount = 0;
-        QList<RPCRuntimeParamterDescription>  paramList =  transfer.paramList;
-        while (tokenIndex < IDToken.count()){
-
-            result = getParameterDescriptionByFieldIDToken(paramList,IDToken,tokenIndex,wasArray, arrayElementCount);
-            if (result.rpcParamType == RPCParamType_t::param_array){
-                wasArray = true;
-            }else{
-                wasArray = false;
-            }
-
-            if (result.rpcParamType == RPCParamType_t::param_none){
-                return result_none;
-            }
-            arrayElementCount = result.elementCount;
-            paramList = result.subParameters;
-            tokenIndex++;
-        }
-    }
-    return result;
-
+static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_reader) {
+	assert(xml_reader.name() == "parameter" || xml_reader.name() == "array");
+	const auto &parameter_attributes = xml_reader.attributes();
+	const auto &type_name = parameter_attributes.value("type");
+	if (type_name == "integer") {
+       return parse_integer_parameter(xml_reader);
+	} else if (type_name == "enum") {
+        return parse_enum_parameter(xml_reader);
+	} else if (type_name == "struct") {
+        return parse_struct_parameter(xml_reader);
+	} else if (type_name == "array") {
+        return parse_array_parameter(xml_reader);
+	} else if (type_name == "character") {
+        return parse_character_parameter(xml_reader);
+	}
+	//unknown type
+	qDebug() << "unknown parameter type" << type_name;
+	throw std::runtime_error("unknown parameter type: " + type_name.toString().toStdString());
 }
 
-QString RPCRunTimeProtocolDescription::getFileName()
-{
-    return fileName;
+static std::vector<RPCRuntimeParameterDescription> parse_parameters(QXmlStreamReader &xml_reader) {
+	std::vector<RPCRuntimeParameterDescription> retval;
+	while (xml_reader.readNextStartElement()) {
+		if (xml_reader.name() != "parameter") {
+			qDebug() << "next element should be \"parameter\" but is " << xml_reader.name() << "instead";
+		}
+		assert(xml_reader.name() == "parameter");
+		//const auto &parameter_attributes = xml_reader.attributes();
+		//debugoutput << "parameter name: " << parameter_attributes.value("name").toString().toStdString() << '\n';
+		//xml_reader.skipCurrentElement();
+        retval.push_back(parse_parameter(xml_reader));
+	}
+	return retval;
 }
 
+static RPCRuntimeFunction parse_function(QXmlStreamReader &xml_reader) {
+	int request_id = -1;
+	int reply_id = -1;
+	std::vector<RPCRuntimeParameterDescription> request_parameters;
+	std::vector<RPCRuntimeParameterDescription> reply_parameters;
+	std::string function_name;
+	std::string function_declaration;
 
+	const auto &function_attributes = xml_reader.attributes();
+	if (xml_reader.name() != "function") {
+		qDebug() << "next element should be \"function\" but is " << xml_reader.name() << "instead";
+	}
 
+	assert(xml_reader.name() == "function");
+	function_name = function_attributes.value("name").toString().toStdString();
+
+	while (xml_reader.readNextStartElement()) {
+		if (xml_reader.name() == "declaration") {
+			function_declaration = xml_reader.readElementText().toStdString();
+		} else if (xml_reader.name() == "request") {
+			bool ok;
+			request_id = xml_reader.attributes().value("ID").toInt(&ok);
+			if (!ok) {
+				request_id = -1;
+			}
+            request_parameters = parse_parameters(xml_reader);
+		} else if (xml_reader.name() == "reply") {
+			bool ok;
+			reply_id = xml_reader.attributes().value("ID").toInt(&ok);
+			if (!ok) {
+				reply_id = -1;
+			}
+            reply_parameters = parse_parameters(xml_reader);
+		} else {
+			qDebug() << "unknown function attribute" << xml_reader.name();
+			xml_reader.skipCurrentElement();
+		}
+	}
+
+	return {request_id, reply_id, std::move(request_parameters), std::move(reply_parameters), std::move(function_name), std::move(function_declaration)};
+}
+
+RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription() {
+	//if we have no protocol description just load a dummy that contains only the hash function
+	std::istringstream iss(R"(<?xml version='1.0' encoding='utf-8'?>
+	<RPC>
+		<function name="get_hash">
+			<declaration>RPC_RESULT get_hash(unsigned char hash_out[16], unsigned char start_command_id_out[1], uint16_t version_out[1]);</declaration>
+			<request ID="0" />
+			<reply ID="1">
+				<parameter bits="128" ctype="unsigned char [16]" name="hash_out" position="1" type="array">
+					<array bits="8" ctype="unsigned char" elements="16" type="integer">
+						<integer signed="False" />
+					</array>
+				</parameter>
+				<parameter bits="8" ctype="unsigned char [1]" name="start_command_id_out" position="2" type="array">
+					<array bits="8" ctype="unsigned char" elements="1" type="integer">
+						<integer signed="False" />
+					</array>
+				</parameter>
+				<parameter bits="16" ctype="uint16_t [1]" name="version_out" position="3" type="array">
+					<array bits="16" ctype="uint16_t" elements="1" type="integer">
+						<integer signed="False" />
+					</array>
+				</parameter>
+			</reply>
+		</function>
+	</RPC>)");
+	auto success = open_description(iss);
+	assert(success);
+}
+
+RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription(std::istream &input) {
+	if (!open_description(input)) {
+		reset();
+	}
+}
+
+bool RPCRunTimeProtocolDescription::openProtocolDescription(std::istream &input) {
+	RPCRunTimeProtocolDescription other(input);
+	if (other.get_functions().empty()) { //failed loading
+		return false;
+	}
+	*this = std::move(other);
+	return true;
+}
+
+const std::vector<RPCRuntimeFunction> &RPCRunTimeProtocolDescription::get_functions() const {
+	return functions;
+}
+
+const std::string &RPCRunTimeProtocolDescription::get_hash() const {
+	return hash;
+}
+
+const std::string &RPCRunTimeProtocolDescription::get_project_name() const {
+	return project_name;
+}
+
+int RPCRunTimeProtocolDescription::get_version_number() const {
+	return version_number;
+}
+
+int RPCRunTimeProtocolDescription::get_command_id_start() const {
+	return command_id_start;
+}
+
+const std::vector<RPCRuntimeParameterDescription> &RPCRunTimeProtocolDescription::get_parameters(int id) const {
+	if (id % 2) {
+		return get_function(id).get_reply_parameters();
+	}
+	return get_function(id).get_request_parameters();
+}
+
+int RPCRunTimeProtocolDescription::get_parameter_size_bytes(int id) const {
+	auto &parameters = get_parameters(id);
+	return std::accumulate(std::begin(parameters), std::end(parameters), 1,
+						   [](int sum, const RPCRuntimeParameterDescription &param) { return sum + param.get_bit_size() / 8; });
+}
+
+const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) const {
+	for (auto &function : functions) {
+		if (function.get_reply_id() == id) {
+			return function;
+		}
+		if (function.get_request_id() == id) {
+			return function;
+		}
+	}
+	//don't have a function with the appropriate ID
+	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
+}
+
+const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(const std::string &name) const {
+	for (auto &function : functions) {
+		if (function.get_function_name() == name) {
+			return function;
+		}
+	}
+	//don't have a function with the appropriate name
+	throw std::runtime_error("\"" + name + "\" is not a valid function name");
+}
+
+bool RPCRunTimeProtocolDescription::has_function(const std::string &name) const {
+	for (auto &function : functions) {
+		if (function.get_function_name() == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool RPCRunTimeProtocolDescription::open_description(std::istream &input) {
+#define MAKESURE(X)                                                                                                                                            \
+	do {                                                                                                                                                       \
+		if (!(X)) {                                                                                                                                            \
+			return false;                                                                                                                                      \
+		}                                                                                                                                                      \
+	} while (0)
+	reset();
+	QXmlStreamReader xml_reader;
+	xml_reader.setNamespaceProcessing(false);
+	for (std::string line; std::getline(input, line);) {
+		xml_reader.addData(line.data());
+	}
+
+	MAKESURE(xml_reader.readNextStartElement());
+	MAKESURE(xml_reader.name() == "RPC");
+
+	const auto &rpc_attributes = xml_reader.attributes();
+
+	hash = rpc_attributes.value("hash").toString().toStdString();
+	project_name = rpc_attributes.value("hash").toString().toStdString();
+	version_number = rpc_attributes.value("version_number").toInt();
+	command_id_start = rpc_attributes.value("command_id_start").toInt();
+
+	while (xml_reader.readNextStartElement()) {
+		functions.push_back(parse_function(xml_reader));
+	}
+
+	if (xml_reader.hasError()) { // if openProtocolDescription returns false put a
+								 // breakpoint here to see the error message
+		auto error = xml_reader.errorString();
+		(void)error;
+		return false;
+	}
+	return true;
+#undef MAKESURE
+}
+
+void RPCRunTimeProtocolDescription::reset() {
+	functions.clear();
+	hash.clear();
+	project_name.clear();
+	version_number = -1;
+	command_id_start = -1;
+}

@@ -25,6 +25,10 @@ ui_*.h
 Makefile*
 *-build-*
 
+*/CMakeLists.txt.user
+
+.directory
+
 # QtCreator
 
 *.autosave
@@ -34,3 +38,7 @@ Makefile*
 *.qmlproject.user.*
 
 builds/*
+/project/libs/build/build
+/project/libs/build/googletest
+
+channel_codec_tests.txt

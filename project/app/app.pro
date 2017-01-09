@@ -4,6 +4,13 @@ TEMPLATE = app
 
 
 SOURCES +=  main.cpp
+SOURCES += mainwindow.cpp
+
+HEADERS += mainwindow.h
+
+FORMS    += mainwindow.ui
+
+QT += serialport
 
 CONFIG(debug, debug|release) {
    # message(Debug)
