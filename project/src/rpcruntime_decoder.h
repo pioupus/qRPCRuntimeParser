@@ -10,6 +10,10 @@
 /*
  * The RPCRuntimeDecoder decodes binary data into scrip-understandable Function calls and encodes the reply
  */
+struct RPCCallbackHandle{
+   const std::function<void (const RPCRuntimeDecodedFunctionCall &)> *callback_function;
+   const RPCRuntimeFunction *rpc_function;
+};
 
 class RPCRuntimeDecoder {
 	public:
@@ -25,12 +29,14 @@ class RPCRuntimeDecoder {
 
 	RPCRunTimeProtocolDescription *get_description();
 	const RPCRunTimeProtocolDescription *get_description() const;
-	void set_reply_callback(const RPCRuntimeFunction &rpc_function, std::function<void(const RPCRuntimeDecodedFunctionCall &)> callback_function);
+    void set_description(RPCRunTimeProtocolDescription &description);
 
-	void set_description(RPCRunTimeProtocolDescription &description);
-
+    RPCCallbackHandle set_reply_callback(const RPCRuntimeFunction &rpc_function, std::function<void(const RPCRuntimeDecodedFunctionCall &)> callback_function);
+    void remove_reply_callback(const RPCRuntimeFunction &rpc_function, const std::function<void (const RPCRuntimeDecodedFunctionCall &)> *callback_function);
     bool has_callbacks();
-	private:
+
+
+private:
 	RPCRunTimeProtocolDescription *description = nullptr;
 	friend class RPCRuntimeTransfer;
 	std::map<const RPCRuntimeFunction *, std::vector<std::function<void(const RPCRuntimeDecodedFunctionCall &)>>> callbacks;

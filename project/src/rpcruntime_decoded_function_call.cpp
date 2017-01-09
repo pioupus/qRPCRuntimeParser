@@ -41,7 +41,7 @@ bool RPCRuntimeDecodedFunctionCall::is_reply() const
     return id % 2 == 1;
 }
 
-std::unique_ptr<RPCRuntimeDecodedParam> RPCRuntimeDecodedFunctionCall::get_param_by_field_id(const std::string &field_id)
+std::unique_ptr<RPCRuntimeDecodedParam> RPCRuntimeDecodedFunctionCall::get_param_by_field_id(const std::string &field_id) const
 {
     std::vector<std::string> tokens;
     std::istringstream f(field_id);
