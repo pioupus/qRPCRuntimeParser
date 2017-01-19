@@ -1375,3 +1375,32 @@ void TestRPCRuntimeInterpreter::create_callback() {
 
 	QCOMPARE(value, -16);
 }
+
+#include "channel_codec/channel_codec.h"
+
+namespace global{
+	namespace detail{
+		extern std::map<channel_codec_instance_t *, Channel_codec_wrapper *> wrapper_instances;
+	}
+}
+
+void TestRPCRuntimeInterpreter::channel_codec_test()
+{
+	channel_codec_instance_t cci;
+	const auto buffer_size = 1024;
+	const auto data_size = 513;
+	char read_buffer[buffer_size];
+	char write_buffer[buffer_size];
+	RPCRunTimeProtocolDescription rpcinterpreter;
+	RPCRuntimeDecoder decoder{rpcinterpreter};
+	Channel_codec_wrapper ccw{decoder};
+	global::detail::wrapper_instances[&cci] = &ccw;
+	channel_init_instance(&cci, read_buffer, buffer_size, write_buffer, buffer_size);
+	channel_start_message_from_RPC(&cci, data_size);
+	for (int i = 0; i < data_size; i++) {
+		channel_push_byte_from_RPC(&cci, i);
+	}
+	channel_commit_from_RPC(&cci);
+	auto encoded_data = ccw.get_encoded_data();
+	//TODO: get the channel codec to decode the data and compare with input
+}
