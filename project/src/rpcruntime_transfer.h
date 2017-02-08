@@ -38,8 +38,8 @@ class RPCRuntimeTransfer {
 
 	private:
 	std::vector<unsigned char> data;
-	const RPCRunTimeProtocolDescription *protocol;
-	const RPCRuntimeDecoder *decoder;
+	const RPCRunTimeProtocolDescription *protocol = nullptr;
+	const RPCRuntimeDecoder *decoder = nullptr;
 };
 
 #endif //RPCRUNTIMETRANSFER_H
