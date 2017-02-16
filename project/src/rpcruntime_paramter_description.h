@@ -77,7 +77,7 @@ struct RPCRuntimeEnumerationParameter {
 		int to_int() const; //will throw a std::domain_error if value is not convertible to int
 		bool is_int() const;
 	};
-
+	std::string enum_name;
 	std::vector<Enum_value> values;
 };
 
