@@ -64,6 +64,7 @@ static RPCRuntimeParameterDescription parse_integer_parameter(QXmlStreamReader &
 static RPCRuntimeParameterDescription parse_enum_parameter(QXmlStreamReader &xml_reader) {
 	Common_parameter_attributes common_attributes = parse_common_parameter_attributes(xml_reader);
 	RPCRuntimeEnumerationParameter enumeration;
+	enumeration.enum_name = common_attributes.parameter_ctype;
 
 	while (xml_reader.readNextStartElement()) {
 		assert(xml_reader.name() == "enum");

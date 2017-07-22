@@ -52,6 +52,7 @@ private slots:
 	void encode_hash_request_without_protocol();
 	void decode_hash_request_without_protocol();
 	void create_callback();
+	void channel_codec_test();
 
 private:
     QString callBack_FieldID;

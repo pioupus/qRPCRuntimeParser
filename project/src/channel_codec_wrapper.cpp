@@ -1,7 +1,6 @@
 #include "channel_codec_wrapper.h"
 #include "channel_codec/channel_codec.h"
 #include "errorlogger/generic_eeprom_errorlogger.h"
-#include "global.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
 #include "rpcruntime_encoded_function_call.h"
@@ -12,7 +11,15 @@
 #include <map>
 
 using Wrapper_instances = std::map<channel_codec_instance_t *, Channel_codec_wrapper *>;
-GLOBAL(Wrapper_instances, wrapper_instances)
+
+namespace Wrapper_instance {
+	//Workaround to avoid static initialization order fiasco
+	auto &get() {
+		static Wrapper_instances wrapper_instances;
+		return wrapper_instances;
+	}
+	static auto &wrapper_instances = get();
+}
 
 Channel_codec_wrapper::Channel_codec_wrapper(const RPCRuntimeDecoder &decoder)
 	: decoder(&decoder)
@@ -20,7 +27,7 @@ Channel_codec_wrapper::Channel_codec_wrapper(const RPCRuntimeDecoder &decoder)
 	, log("log.dat", std::ios::binary) {
 	transfers.emplace_back(*decoder.get_description(), decoder);
 	channel_init_instance(cci.get(), input_buffer, sizeof input_buffer, output_buffer, sizeof output_buffer);
-	global::detail::getwrapper_instances()[cci.get()] = this;
+	Wrapper_instance::get()[cci.get()] = this;
 }
 
 Channel_codec_wrapper::~Channel_codec_wrapper() {
@@ -80,9 +87,12 @@ const channel_codec_instance_t *Channel_codec_wrapper::debug_get_instance() cons
 	return cci.get();
 }
 
-const RPCRuntimeTransfer &Channel_codec_wrapper::current_transfer() const
-{
+const RPCRuntimeTransfer &Channel_codec_wrapper::current_transfer() const {
 	return transfers.front();
+}
+
+const std::vector<unsigned char> &Channel_codec_wrapper::get_encoded_data() const {
+	return encoded_data;
 }
 
 void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size) {
@@ -110,7 +120,7 @@ EXTERNC void RPC_CHANNEL_CODEC_parser_init(channel_codec_instance_t *instance) {
 
 EXTERNC RPC_SIZE_RESULT RPC_CHANNEL_CODEC_get_answer_length(channel_codec_instance_t *instance, const void *buffer, size_t size) {
 	RPC_SIZE_RESULT retval;
-	auto transfer = global::wrapper_instances[instance]->get_decoder()->decode(static_cast<const unsigned char *>(buffer), size);
+	auto transfer = Wrapper_instance::wrapper_instances[instance]->get_decoder()->decode(static_cast<const unsigned char *>(buffer), size);
 	retval.result = transfer.is_complete() ? RPC_SUCCESS : RPC_COMMAND_INCOMPLETE;
 	retval.size = transfer.get_min_number_of_bytes();
 	return retval;
@@ -118,22 +128,22 @@ EXTERNC RPC_SIZE_RESULT RPC_CHANNEL_CODEC_get_answer_length(channel_codec_instan
 
 EXTERNC RPC_SIZE_RESULT RPC_CHANNEL_CODEC_get_request_size(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes) {
 	RPC_SIZE_RESULT retval;
-	auto transfer = global::wrapper_instances[instance]->get_decoder()->decode(static_cast<const unsigned char *>(buffer), size_bytes);
+	auto transfer = Wrapper_instance::wrapper_instances[instance]->get_decoder()->decode(static_cast<const unsigned char *>(buffer), size_bytes);
 	retval.result = transfer.is_complete() ? RPC_SUCCESS : RPC_COMMAND_INCOMPLETE;
 	retval.size = transfer.get_min_number_of_bytes();
 	return retval;
 }
 
 EXTERNC void RPC_CHANNEL_CODEC_parse_answer(channel_codec_instance_t *instance, const void *buffer, size_t size) {
-	push_data(*global::wrapper_instances[instance], static_cast<const unsigned char *>(buffer), size);
+	push_data(*Wrapper_instance::wrapper_instances[instance], static_cast<const unsigned char *>(buffer), size);
 }
 
 EXTERNC void RPC_CHANNEL_CODEC_parse_request(channel_codec_instance_t *instance, const void *buffer, size_t size_bytes) {
-	push_data(*global::wrapper_instances[instance], static_cast<const unsigned char *>(buffer), size_bytes);
+	push_data(*Wrapper_instance::wrapper_instances[instance], static_cast<const unsigned char *>(buffer), size_bytes);
 }
 
 void ChannelCodec_errorHandler(channel_codec_instance_t *instance, channelCodecErrorNum_t errNum) {
-	global::wrapper_instances[instance]->reset_current_transfer();
+	Wrapper_instance::wrapper_instances[instance]->reset_current_transfer();
 	(void)errNum;
 }
 
@@ -142,7 +152,7 @@ void set_output(Channel_codec_wrapper &ccw, const unsigned char *data, std::size
 }
 
 EXTERNC RPC_RESULT phyPushDataBuffer(channel_codec_instance_t *instance, const char *buffer, size_t length) {
-	set_output(*global::wrapper_instances[instance], reinterpret_cast<const unsigned char *>(buffer), length);
+	set_output(*Wrapper_instance::wrapper_instances[instance], reinterpret_cast<const unsigned char *>(buffer), length);
 	return RPC_SUCCESS;
 }
 
