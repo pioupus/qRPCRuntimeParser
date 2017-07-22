@@ -6,9 +6,10 @@ class RPCRuntimeEncodedFunctionCall;
 
 #include <QList>
 #include <QStringList>
-#include <QTreeWidgetItem>
 
 #include <memory>
+
+class QTreeWidgetItem;
 
 std::unique_ptr<QTreeWidgetItem> getTreeWidgetReport(const RPCRuntimeDecodedFunctionCall &function);
 
