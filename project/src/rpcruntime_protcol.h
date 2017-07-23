@@ -19,13 +19,17 @@ public:
     RPCIODevice();
     virtual void send(std::vector<unsigned char> data, std::vector<unsigned char> pre_encodec_data);
 
-    virtual bool waitReceived(std::chrono::steady_clock::duration timeout = std::chrono::seconds(1), int bytes = 1);
+
+    virtual bool waitReceived(std::chrono::steady_clock::duration timeout = std::chrono::seconds(1), int bytes = 1, bool isPolling=false);
 
 signals:
     void decoded_received(const QByteArray &);
     void message(const QByteArray &);
 
     void received(const QByteArray &);
+
+    void sent(const QByteArray &);
+    void decoded_sent(const QByteArray &);
 
 };
 

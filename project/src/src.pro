@@ -16,3 +16,5 @@ include($$QPROTOCOL_INTERPRETER_PATH/qProtocollInterpreter_static.pri)
 TEMPLATE = lib
 
 DEFINES += EXPORT_LIBRARY USE_UI
+
+

@@ -17,6 +17,7 @@ RPCRuntimeProtocol::RPCRuntimeProtocol(RPCIODevice &device, std::chrono::steady_
         cc.add_data(reinterpret_cast<const unsigned char *>(data.data()), data.size());
     });
     assert(connection);
+
 }
 
 std::unique_ptr<RPCRuntimeDecodedFunctionCall> RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedFunctionCall &call) {
@@ -121,9 +122,10 @@ void RPCIODevice::send(std::vector<unsigned char> data, std::vector<unsigned cha
     (void)pre_encodec_data;
 }
 
-bool RPCIODevice::waitReceived(std::chrono::_V2::steady_clock::duration timeout, int bytes)
+bool RPCIODevice::waitReceived(std::chrono::_V2::steady_clock::duration timeout, int bytes, bool isPolling)
 {
     (void)timeout;
     (void)bytes;
+    (void)isPolling;
     return false;
 }
