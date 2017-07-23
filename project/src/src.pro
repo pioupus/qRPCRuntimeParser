@@ -10,9 +10,9 @@ CONFIG( debug, debug|release ) {
 }
 
 
-QPROTOCOL_INTERPRETER_PATH = ../..
+QPROTOCOL_INTERPRETER_PATH = $$PWD/../..
 include($$QPROTOCOL_INTERPRETER_PATH/qProtocollInterpreter_static.pri)
 
 TEMPLATE = lib
 
-DEFINES += EXPORT_LIBRARY
+DEFINES += EXPORT_LIBRARY USE_UI
