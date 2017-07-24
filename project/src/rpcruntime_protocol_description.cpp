@@ -229,27 +229,43 @@ RPCRunTimeProtocolDescription::RPCRunTimeProtocolDescription() {
 	//if we have no protocol description just load a dummy that contains only the hash function
 	std::istringstream iss(R"(<?xml version='1.0' encoding='utf-8'?>
 	<RPC>
-		<function name="get_hash">
-			<declaration>RPC_RESULT get_hash(unsigned char hash_out[16], unsigned char start_command_id_out[1], uint16_t version_out[1]);</declaration>
-			<request ID="0" />
-			<reply ID="1">
-				<parameter bits="128" ctype="unsigned char [16]" name="hash_out" position="1" type="array">
-					<array bits="8" ctype="unsigned char" elements="16" type="integer">
-						<integer signed="False" />
-					</array>
-				</parameter>
-				<parameter bits="8" ctype="unsigned char [1]" name="start_command_id_out" position="2" type="array">
-					<array bits="8" ctype="unsigned char" elements="1" type="integer">
-						<integer signed="False" />
-					</array>
-				</parameter>
-				<parameter bits="16" ctype="uint16_t [1]" name="version_out" position="3" type="array">
-					<array bits="16" ctype="uint16_t" elements="1" type="integer">
-						<integer signed="False" />
-					</array>
-				</parameter>
-			</reply>
-		</function>
+       <function name="RPC_SERVICE_get_hash">
+           <declaration>RPC_RESULT RPC_SERVICE_get_hash(unsigned char hash_inout[16], uint32_t hash_index_inout[1], unsigned char start_command_id_out[1], uint16_t version_out[1]);</declaration>
+           <request ID="0">
+               <parameter bits="128" ctype="unsigned char [16]" name="hash_inout" position="1" type="array">
+                   <array bits="8" ctype="unsigned char" elements="16" type="integer">
+                       <integer signed="False"/>
+                   </array>
+               </parameter>
+               <parameter bits="32" ctype="uint32_t [1]" name="hash_index_inout" position="2" type="array">
+                   <array bits="32" ctype="uint32_t" elements="1" type="integer">
+                       <integer signed="False"/>
+                   </array>
+               </parameter>
+           </request>
+           <reply ID="1">
+               <parameter bits="128" ctype="unsigned char [16]" name="hash_inout" position="1" type="array">
+                   <array bits="8" ctype="unsigned char" elements="16" type="integer">
+                       <integer signed="False"/>
+                   </array>
+               </parameter>
+               <parameter bits="32" ctype="uint32_t [1]" name="hash_index_inout" position="2" type="array">
+                   <array bits="32" ctype="uint32_t" elements="1" type="integer">
+                       <integer signed="False"/>
+                   </array>
+               </parameter>
+               <parameter bits="8" ctype="unsigned char [1]" name="start_command_id_out" position="3" type="array">
+                   <array bits="8" ctype="unsigned char" elements="1" type="integer">
+                       <integer signed="False"/>
+                   </array>
+               </parameter>
+               <parameter bits="16" ctype="uint16_t [1]" name="version_out" position="4" type="array">
+                   <array bits="16" ctype="uint16_t" elements="1" type="integer">
+                       <integer signed="False"/>
+                   </array>
+               </parameter>
+           </reply>
+       </function>
 	</RPC>)");
 	auto success = open_description(iss);
 	assert(success);
