@@ -36,6 +36,7 @@ class Channel_codec_wrapper {
 	const RPCRuntimeTransfer &current_transfer() const;
 	const std::vector<unsigned char> &get_encoded_data() const;
 
+    channel_codec_instance_t * get_cci();
 	private:
 	const RPCRuntimeDecoder *decoder;
 	std::deque<RPCRuntimeTransfer> transfers;

@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
+
 #include "channel_codec_wrapper.h"
-#include "global.h"
+//#include "global.h"
 #include "rpc_ui.h"
 #include "rpcruntime_decoded_function_call.h"
 #include "rpcruntime_decoder.h"
@@ -26,11 +28,17 @@
 #include <cassert>
 #include <fstream>
 
+#if 0
 GLOBAL(RPCRunTimeProtocolDescription, protocol)
 GLOBAL(RPCRuntimeEncoder, encoder, global::protocol)
 GLOBAL(RPCRuntimeDecoder, decoder, global::protocol)
 GLOBAL(Channel_codec_wrapper, channel_codec, global::decoder)
-
+#else
+RPCRunTimeProtocolDescription protocol;
+RPCRuntimeEncoder  encoder(protocol);//, global::protocol
+RPCRuntimeDecoder  decoder(protocol);//, global::protocol
+Channel_codec_wrapper  channel_codec(decoder);//, global::decoder
+#endif
 static void write_all_data(QSerialPort &comport, const char *data, int size) {
 	if (size == 0) {
 		return;
@@ -52,7 +60,7 @@ static void load_protocol_description(QWidget *parent, const std::string &hex_ha
 		QMessageBox::warning(parent, "Invalid Hash", ("The file " + xml_path + " was not found.").c_str());
 		return;
 	}
-	if (global::protocol.openProtocolDescription(xml_file) == false) {
+    if (protocol.openProtocolDescription(xml_file) == false) {
 		QMessageBox::warning(parent, "Parsing error", ("The file " + xml_path + " is not a valid protocol description.").c_str());
 	}
 }
@@ -90,7 +98,7 @@ void MainWindow::open_comport() {
 				comport.setBaudRate(QSerialPort::BaudRate::Baud115200);
 				ui->open_comport->hide();
 				ui->close_button->show();
-				write_all_data(comport, global::channel_codec.encode(global::encoder.encode(0)));
+                write_all_data(comport, channel_codec.encode(encoder.encode(0)));
 				QTimer::singleShot(0, this, &MainWindow::poll);
 			}
 			return;
@@ -116,9 +124,9 @@ void MainWindow::send_request() {
 		item = item->parent();
 	}
 	const auto &function_name = item->text(0).toStdString();
-	RPCRuntimeEncodedFunctionCall function_call = global::encoder.encode(function_name);
+    RPCRuntimeEncodedFunctionCall function_call = encoder.encode(function_name);
 	if (function_call.are_all_values_set()) {
-		const auto &data = global::channel_codec.encode(function_call);
+        const auto &data = channel_codec.encode(function_call);
 		write_all_data(comport, data);
 	} else {
 		QMessageBox::information(this, "RPC Error", "Required parameters for the request " +
@@ -152,9 +160,9 @@ void MainWindow::poll() {
 	new_cursor.movePosition(QTextCursor::End);
 	ui->log->setTextCursor(new_cursor);
 	const auto &data = comport.readAll();
-	global::channel_codec.add_data(reinterpret_cast<const unsigned char *>(data.data()), data.size());
-	if (global::channel_codec.transfer_complete()) {
-		RPCRuntimeDecodedFunctionCall function_call = global::channel_codec.pop();
+    channel_codec.add_data(reinterpret_cast<const unsigned char *>(data.data()), data.size());
+    if (channel_codec.transfer_complete()) {
+        RPCRuntimeDecodedFunctionCall function_call = channel_codec.pop();
 		ui->replies->addTopLevelItem(getTreeWidgetReport(function_call).release());
 		if (function_call.get_declaration()->get_reply_id() == 1) { //got a hash reply
 			const auto &hash_array = function_call.get_decoded_parameters()[0].as_array();
@@ -166,10 +174,10 @@ void MainWindow::poll() {
 				hash += to_hex_char(byte_value & 0x0F);
 			}
 			std::ifstream f("../../protocols/" + hash + ".xml");
-			if (global::protocol.openProtocolDescription(f)) { //successfully loaded protocol
+            if (protocol.openProtocolDescription(f)) { //successfully loaded protocol
 				ui->requests->clear();
-				for (auto &f : global::protocol.get_functions()) {
-					ui->requests->addTopLevelItem(getTreeWidgetReport(global::encoder.encode(f.get_request_id())).release());
+                for (auto &f : protocol.get_functions()) {
+                    ui->requests->addTopLevelItem(getTreeWidgetReport(encoder.encode(f.get_request_id())).release());
 				}
 				ui->requests->header()->resizeSections(QHeaderView::ResizeMode::ResizeToContents);
 			} else { //failed loading protocol
