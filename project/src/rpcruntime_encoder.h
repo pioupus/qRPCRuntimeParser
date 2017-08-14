@@ -15,10 +15,13 @@ struct RPCRuntimeEncoder {
 
 	RPCRuntimeEncodedFunctionCall encode(int id) const;
 	RPCRuntimeEncodedFunctionCall encode(const std::string &function_name) const;
+    bool function_exists_for_encoding(const std::string &function_name) const;
 
 	void set_description(const RPCRunTimeProtocolDescription &description);
 
-	private:
+
+
+private:
 	const RPCRunTimeProtocolDescription *description = nullptr;
 };
 
