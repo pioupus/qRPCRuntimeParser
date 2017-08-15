@@ -33,6 +33,15 @@ signals:
 
 };
 
+enum class RPCError{success, timeout_happened};
+
+struct RPCFunctionCallResult{
+    std::unique_ptr<RPCRuntimeDecodedFunctionCall> decoded_function_call_reply = nullptr;
+    uint trials_needed = 0;
+    std::chrono::steady_clock::duration duration_needed;
+    RPCError error=RPCError::success;
+};
+
 class RPCRuntimeProtocol : public QObject
 {
     Q_OBJECT
@@ -40,10 +49,11 @@ public:
     RPCRuntimeProtocol(RPCIODevice &device, std::chrono::steady_clock::duration timeout);
 
 
-    std::unique_ptr<RPCRuntimeDecodedFunctionCall> call_and_wait(const RPCRuntimeEncodedFunctionCall &call);
-    std::unique_ptr<RPCRuntimeDecodedFunctionCall> call_and_wait(const RPCRuntimeEncodedFunctionCall &call, std::chrono::steady_clock::duration duration);
+    RPCFunctionCallResult call_and_wait(const RPCRuntimeEncodedFunctionCall &call);
+    RPCFunctionCallResult call_and_wait(const RPCRuntimeEncodedFunctionCall &call, std::chrono::steady_clock::duration timeout);
     void clear();
     RPCRuntimeEncodedFunctionCall encode_function(const std::string &name) const;
+    bool function_exists_for_encoding(const std::string &name) const;
     const channel_codec_instance_t *debug_get_channel_codec_instance() const;
     bool load_xml_file(QString search_dir);
     int retries_per_transmission{2};

@@ -17,13 +17,17 @@ RPCRuntimeProtocol::RPCRuntimeProtocol(RPCIODevice &device, std::chrono::steady_
     assert(connection);
 }
 
-std::unique_ptr<RPCRuntimeDecodedFunctionCall> RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedFunctionCall &call) {
+RPCFunctionCallResult RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedFunctionCall &call) {
     return call_and_wait(call, device_timeout);
 }
 
-std::unique_ptr<RPCRuntimeDecodedFunctionCall> RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedFunctionCall &call,
-                                                                                 std::chrono::steady_clock::duration duration) {
-    for (int try_count = 0; try_count <= retries_per_transmission; try_count++) {
+RPCFunctionCallResult RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedFunctionCall &call,
+                                                                                std::chrono::steady_clock::duration timeout) {
+    RPCFunctionCallResult result;
+    result.decoded_function_call_reply = nullptr;
+    int try_count = 0;
+    std::chrono::steady_clock::duration duration;
+    for (try_count=0; try_count <= retries_per_transmission; try_count++) {
         if (try_count != 0) {
             emit console_message(
                 RPCConsoleLevel::debug,
@@ -35,15 +39,17 @@ std::unique_ptr<RPCRuntimeDecodedFunctionCall> RPCRuntimeProtocol::call_and_wait
         //                      [ device = this->device, data = channel_codec.encode(call), display_data = call.encode() ] { device->send(data, display_data);
         //                      });
         auto start = std::chrono::high_resolution_clock::now();
-        auto check_received = [this, &start, &duration, &call]() -> std::unique_ptr<RPCRuntimeDecodedFunctionCall> {
-            device->waitReceived(duration - (std::chrono::high_resolution_clock::now() - start), 1);
+        auto check_received = [this, &start, &timeout, &call, &result, try_count]() -> std::unique_ptr<RPCRuntimeDecodedFunctionCall> {
+            device->waitReceived(timeout - (std::chrono::high_resolution_clock::now() - start), 1);
             if (channel_codec.transfer_complete()) { //found a reply
                 auto transfer = channel_codec.pop_completed_transfer();
                 auto &raw_data = transfer.get_raw_data();
                 emit device->decoded_received(QByteArray(reinterpret_cast<const char *>(raw_data.data()), raw_data.size()));
                 auto decoded_call = transfer.decode();
                 if (decoded_call.get_id() == call.get_description()->get_reply_id()) { //found correct reply
+
                     return std::make_unique<RPCRuntimeDecodedFunctionCall>(std::move(decoded_call));
+
                 } else { //found reply to something else, just gonna quietly ignore it
                     emit console_message(
                         RPCConsoleLevel::debug,
@@ -53,14 +59,23 @@ std::unique_ptr<RPCRuntimeDecodedFunctionCall> RPCRuntimeProtocol::call_and_wait
             }
             return nullptr;
         };
+        duration = std::chrono::high_resolution_clock::now() - start;
         do {
             auto retval = check_received();
+            duration = std::chrono::high_resolution_clock::now() - start;
             if (retval) {
-                return retval;
+                result.trials_needed = try_count;
+                result.decoded_function_call_reply = std::move(retval);
+                result.duration_needed = duration;
+                result.error = RPCError::success;
+                return result;
             }
-        } while (std::chrono::high_resolution_clock::now() - start < duration);
+        } while (duration < timeout);
     }
-    return nullptr;
+    result.trials_needed = try_count;
+    result.duration_needed = duration;
+    result.error = RPCError::timeout_happened;
+    return result;
 }
 
 void RPCRuntimeProtocol::clear() {
@@ -68,6 +83,10 @@ void RPCRuntimeProtocol::clear() {
         channel_codec.pop_completed_transfer();
     }
     channel_codec.reset_current_transfer();
+}
+
+bool RPCRuntimeProtocol::function_exists_for_encoding(const std::string &name) const {
+    return encoder.function_exists_for_encoding(name);
 }
 
 RPCRuntimeEncodedFunctionCall RPCRuntimeProtocol::encode_function(const std::string &name) const {
@@ -93,8 +112,8 @@ bool RPCRuntimeProtocol::load_xml_file(QString search_dir) {
 
     auto result = call_and_wait(get_hash_function, device_timeout);
     retries_per_transmission = retries_per_transmission_backup;
-    if (result) {
-        const auto &hash = QByteArray::fromStdString(result->get_parameter_by_name("hash_inout")->as_full_string()).toHex();
+    if (result.decoded_function_call_reply) {
+        const auto &hash = QByteArray::fromStdString(result.decoded_function_call_reply->get_parameter_by_name("hash_inout")->as_full_string()).toHex();
         device->message(QObject::tr("Received Hash: ").toUtf8() + hash);
         QString folder = search_dir;
         QString filename = hash + ".xml";
@@ -115,7 +134,7 @@ bool RPCRuntimeProtocol::load_xml_file(QString search_dir) {
         }
     }
 
-    return result != nullptr;
+    return result.error == RPCError::success;
 }
 
 RPCIODevice::RPCIODevice() {}
