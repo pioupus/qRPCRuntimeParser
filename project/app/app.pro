@@ -12,6 +12,8 @@ FORMS    += mainwindow.ui
 
 QT += serialport
 
+
+
 CONFIG(debug, debug|release) {
    # message(Debug)
 }

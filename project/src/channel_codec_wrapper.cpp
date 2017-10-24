@@ -92,7 +92,12 @@ const RPCRuntimeTransfer &Channel_codec_wrapper::current_transfer() const {
 }
 
 const std::vector<unsigned char> &Channel_codec_wrapper::get_encoded_data() const {
-	return encoded_data;
+    return encoded_data;
+}
+
+channel_codec_instance_t *Channel_codec_wrapper::get_cci()
+{
+    return cci.get();
 }
 
 void push_data(Channel_codec_wrapper &ccw, const unsigned char *data, std::size_t size) {

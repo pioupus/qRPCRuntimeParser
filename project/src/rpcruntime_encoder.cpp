@@ -8,7 +8,7 @@ RPCRuntimeEncoder::RPCRuntimeEncoder(const RPCRunTimeProtocolDescription &descri
 RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(int id) const {
 	for (auto &function : description->get_functions()) {
 		if (function.get_request_id() == id) {
-			return {function};
+            return RPCRuntimeEncodedFunctionCall{function};
 		}
 	}
 	throw std::runtime_error("unknown function name");
@@ -17,10 +17,19 @@ RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(int id) const {
 RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(const std::string &function_name) const {
 	for (auto &function : description->get_functions()) {
 		if (function.get_function_name() == function_name) {
-			return {function};
+            return RPCRuntimeEncodedFunctionCall{function};
 		}
 	}
 	throw std::runtime_error("unknown function name: " + function_name);
+}
+
+bool RPCRuntimeEncoder::function_exists_for_encoding(const std::string &function_name) const {
+    for (auto &function : description->get_functions()) {
+        if (function.get_function_name() == function_name) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void RPCRuntimeEncoder::set_description(const RPCRunTimeProtocolDescription &description) {

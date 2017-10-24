@@ -7,6 +7,9 @@
 #include "rpcruntime_function.h"
 #include "rpcruntime_paramter_description.h"
 
+#ifdef USE_UI
+#include <QTreeWidget>
+
 static void fill_array_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
 static void fill_character_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
 static void fill_enumeration_child(QTreeWidgetItem *item, const RPCRuntimeDecodedParam &param);
@@ -212,4 +215,6 @@ std::unique_ptr<QTreeWidgetItem> getTreeWidgetReport(const RPCRuntimeEncodedFunc
 	}
 	return item;
 }
+#endif
+
 #endif
