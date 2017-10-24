@@ -162,7 +162,7 @@ void RPCRuntimeDecodedParam::set_data(const unsigned char *begin, int size)
 }
 
 std::istream &operator>>(std::istream &is, RPCRuntimeDecodedParam &param) {
-    auto byte_size = param.get_desciption()->get_bit_size() / 8;
+	const auto byte_size = param.get_desciption()->get_bit_size() / 8;
     std::vector<unsigned char> data;
 	data.resize(byte_size);
 	is.read(reinterpret_cast<char *>(data.data()), byte_size);

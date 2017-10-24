@@ -33,21 +33,22 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	ss.str({reinterpret_cast<const char *>(data.data()), data.size()});
 	unsigned char id;
 	ss >> id;
+	ss.exceptions(std::stringstream::badbit | std::stringstream::failbit | std::stringstream::eofbit);
 	if (!ss) {
 		throw std::runtime_error("No available data to decode");
 	}
 
-	auto &function = protocol->get_function(data[0]);
-	auto &parameter_descriptions = protocol->get_parameters(data[0]);
+	auto &function = protocol->get_function(id);
+	auto &parameter_descriptions = protocol->get_parameters(id);
 	for (auto &pd : parameter_descriptions) {
-        decoded_parameters.emplace_back(pd, std::to_string(id)+"."+pd.get_parameter_name());
+		decoded_parameters.emplace_back(pd, std::to_string(id) + "." + pd.get_parameter_name());
 		ss >> decoded_parameters.back();
 	}
 
 	assert(ss);
 	RPCRuntimeDecodedFunctionCall retval{id, std::move(decoded_parameters), function};
 	auto callbacks_it = decoder->callbacks.find(&function);
-	if (callbacks_it != std::end(decoder->callbacks)){
+	if (callbacks_it != std::end(decoder->callbacks)) {
 		for (auto &callback : callbacks_it->second) {
 			callback(retval);
 		}
@@ -59,7 +60,6 @@ void RPCRuntimeTransfer::reset() {
 	data.clear();
 }
 
-const std::vector<unsigned char> &RPCRuntimeTransfer::get_raw_data() const
-{
+const std::vector<unsigned char> &RPCRuntimeTransfer::get_raw_data() const {
 	return data;
 }
