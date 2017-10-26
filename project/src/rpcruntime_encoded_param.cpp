@@ -56,9 +56,9 @@ void RPCRuntimeEncodedParam::set_value(int64_t value) {
 			set_integer_value(value);
 			break;
 		case RPCRuntimeParameterDescription::Type::array:
-			throw std::runtime_error("improper value type for this value: Given integer to array");
+            throw std::runtime_error("RPC: improper value type for this value: Given integer to array");
 		case RPCRuntimeParameterDescription::Type::structure:
-			throw std::runtime_error("improper value type for this value: Given integer to structure");
+            throw std::runtime_error("RPC: improper value type for this value: Given integer to structure");
 	}
 }
 
@@ -71,11 +71,11 @@ void RPCRuntimeEncodedParam::set_value(const std::string &value) {
 			set_array_value(value);
 			break;
 		case RPCRuntimeParameterDescription::Type::integer:
-			throw std::runtime_error("improper value type for this value: Given string to integer");
+            throw std::runtime_error("RPC: improper value type for this value: Given string to integer");
 		case RPCRuntimeParameterDescription::Type::character:
-			throw std::runtime_error("improper value type for this value: Given string to character");
+            throw std::runtime_error("RPC: improper value type for this value: Given string to character");
 		case RPCRuntimeParameterDescription::Type::structure:
-			throw std::runtime_error("improper value type for this value: Given string to structure");
+            throw std::runtime_error("RPC: improper value type for this value: Given string to structure");
 	}
 }
 
@@ -84,28 +84,28 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(int index) {
 		case RPCRuntimeParameterDescription::Type::array: {
 			int elements = description->as_array().number_of_elements;
 			if (index < 0 || index > elements) {
-				throw std::runtime_error("invalid index for given array");
+                throw std::runtime_error("RPC: invalid index for given array");
 			}
 			return child_parameters[index];
 		} break;
 		case RPCRuntimeParameterDescription::Type::structure:
-			throw std::runtime_error("TODO");
+            throw std::runtime_error("RPC: TODO");
 			break;
 		default:
-			throw std::runtime_error("parameter does not have sub-parameters");
+            throw std::runtime_error("RPC: parameter does not have sub-parameters");
 	}
 }
 
 RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::get_parameter(const std::string &name) {
 	if (description->get_type() != RPCRuntimeParameterDescription::Type::structure) {
-		throw std::runtime_error("parameter does not have named sub-parameters");
+        throw std::runtime_error("RPC: parameter does not have named sub-parameters");
 	}
 	for (auto &child : child_parameters) {
 		if (child.get_description()->get_parameter_name() == name) {
 			return child;
 		}
 	}
-	throw std::runtime_error("invalid parameter name \"" + name + "\" for struct of type \"" + description->get_parameter_type() + "\"");
+    throw std::runtime_error("RPC: invalid parameter name \"" + name + "\" for struct of type \"" + description->get_parameter_type() + "\"");
 }
 
 RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator[](int index) {
@@ -129,7 +129,7 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator=(const std::string &nam
 RPCRuntimeEncodedParam &RPCRuntimeEncodedParam::operator=(std::initializer_list<int64_t> data) {
 	int index = 0;
 	if (child_parameters.size() < data.size()) {
-		throw std::runtime_error("Gave " + std::to_string(data.size()) + " values to a parameter of type " + description->get_parameter_type());
+        throw std::runtime_error("RPC: Gave " + std::to_string(data.size()) + " values to a parameter of type " + description->get_parameter_type());
 	}
 	for (auto &n : data) {
 		child_parameters[index++] = n;
@@ -156,15 +156,15 @@ void RPCRuntimeEncodedParam::set_enum_value(const std::string &value) {
 			return;
 		}
 	}
-	throw std::runtime_error("invalid enum value " + value);
+    throw std::runtime_error("RPC: invalid enum value " + value);
 }
 
 void RPCRuntimeEncodedParam::set_array_value(const std::string &array) {
 	if (description->as_array().type.get_type() != RPCRuntimeParameterDescription::Type::character) {
-		throw std::runtime_error("Assigning a string to an array is only supported for arrays of characters, but got " + description->get_parameter_type());
+        throw std::runtime_error("RPC: Assigning a string to an array is only supported for arrays of characters, but got " + description->get_parameter_type());
 	}
 	if (array.size() > child_parameters.size()) {
-		throw std::runtime_error("Given string \"" + array + "\" of length " + std::to_string(array.size()) + " doesn't fit into " +
+        throw std::runtime_error("RPC: Given string \"" + array + "\" of length " + std::to_string(array.size()) + " doesn't fit into " +
 								 description->get_parameter_type());
 	}
 	for (unsigned int i = 0; i < array.size(); i++) {

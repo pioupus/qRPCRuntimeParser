@@ -1,6 +1,7 @@
 #include "rpcruntime_encoder.h"
 #include "rpcruntime_encoded_function_call.h"
 #include "rpcruntime_protocol_description.h"
+#include <string>
 
 RPCRuntimeEncoder::RPCRuntimeEncoder(const RPCRunTimeProtocolDescription &description)
 	: description(&description) {}
@@ -11,7 +12,7 @@ RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(int id) const {
             return RPCRuntimeEncodedFunctionCall{function};
 		}
 	}
-	throw std::runtime_error("unknown function name");
+    throw std::runtime_error("RPC: unknown function id "+std::to_string(id));
 }
 
 RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(const std::string &function_name) const {
@@ -20,7 +21,7 @@ RPCRuntimeEncodedFunctionCall RPCRuntimeEncoder::encode(const std::string &funct
             return RPCRuntimeEncodedFunctionCall{function};
 		}
 	}
-	throw std::runtime_error("unknown function name: " + function_name);
+    throw std::runtime_error("RPC: unknown function name: " + function_name);
 }
 
 bool RPCRuntimeEncoder::function_exists_for_encoding(const std::string &function_name) const {

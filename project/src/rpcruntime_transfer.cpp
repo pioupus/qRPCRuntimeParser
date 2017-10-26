@@ -32,10 +32,10 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	std::stringstream ss;
 	ss.str({reinterpret_cast<const char *>(data.data()), data.size()});
 	unsigned char id;
-	ss >> id;
+    ss >> std::noskipws >> id;
 	ss.exceptions(std::stringstream::badbit | std::stringstream::failbit | std::stringstream::eofbit);
 	if (!ss) {
-		throw std::runtime_error("No available data to decode");
+        throw std::runtime_error("RPC: No available data to decode");
 	}
 
 	auto &function = protocol->get_function(id);

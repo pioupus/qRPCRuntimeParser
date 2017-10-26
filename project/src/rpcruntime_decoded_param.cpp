@@ -67,7 +67,7 @@ int64_t RPCRuntimeDecodedParam::as_signed_integer() const {
 		case 8:
 			return parse_signed_int<int64_t>(data);
 	}
-	throw std::domain_error("Invalid amount of data to parse signed integer");
+    throw std::domain_error("RPC: Invalid amount of data to parse signed integer");
 }
 
 int64_t RPCRuntimeDecodedParam::as_integer() const

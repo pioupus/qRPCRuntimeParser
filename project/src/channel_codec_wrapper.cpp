@@ -57,7 +57,7 @@ RPCRuntimeDecodedFunctionCall Channel_codec_wrapper::pop() {
 
 RPCRuntimeTransfer Channel_codec_wrapper::pop_completed_transfer() {
 	if (transfers.front().is_complete() == false) {
-		throw std::runtime_error("Tried to pop from an incomplete transfer");
+        throw std::runtime_error("RPC channelcodec: Tried to pop from an incomplete transfer");
 	}
 	auto transfer = std::move(transfers.front());
 	transfers.pop_front();

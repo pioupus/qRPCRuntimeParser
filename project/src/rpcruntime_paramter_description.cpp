@@ -186,8 +186,8 @@ int RPCRuntimeEnumerationParameter::Enum_value::to_int() const
 {
 	int retval;
 	std::stringstream ss(value);
-	if (!(ss >> retval)){
-		throw std::domain_error("empty string cannot be converted to int");
+    if (!(ss >> std::noskipws >> retval)){
+        throw std::domain_error("RPC: empty enum string cannot be converted to int");
 	}
 	return retval;
 }
@@ -196,5 +196,5 @@ bool RPCRuntimeEnumerationParameter::Enum_value::is_int() const
 {
 	int retval = 0;
 	std::stringstream ss(value);
-	return static_cast<bool>(ss >> retval);
+    return static_cast<bool>(ss >> std::noskipws >> retval);
 }

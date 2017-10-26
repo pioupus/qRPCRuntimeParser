@@ -49,7 +49,7 @@ RPCRuntimeEncodedParam &RPCRuntimeEncodedFunctionCall::get_parameter(const std::
 			return param;
 		}
 	}
-	throw std::runtime_error("invalid name: " + name);
+    throw std::runtime_error("RPC: invalid parameter name: " + name);
 }
 
 const RPCRuntimeFunction *RPCRuntimeEncodedFunctionCall::get_description() const

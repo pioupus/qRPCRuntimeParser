@@ -50,7 +50,7 @@ static RPCRuntimeParameterDescription parse_integer_parameter(QXmlStreamReader &
 	} else if (signed_string == "False" || signed_string == "false") {
 		integer_parameter.is_signed = false;
 	} else {
-		throw std::runtime_error("Integer parameter has no propper signed attribute");
+        throw std::runtime_error("RPC: Integer parameter has no propper signed attribute");
 	}
 	xml_reader.skipCurrentElement(); //integer
 
@@ -165,7 +165,7 @@ static RPCRuntimeParameterDescription parse_parameter(QXmlStreamReader &xml_read
 	}
 	//unknown type
 	qDebug() << "unknown parameter type" << type_name;
-	throw std::runtime_error("unknown parameter type: " + type_name.toString().toStdString());
+    throw std::runtime_error("RPC: unknown parameter type: " + type_name.toString().toStdString());
 }
 
 static std::vector<RPCRuntimeParameterDescription> parse_parameters(QXmlStreamReader &xml_reader) {
@@ -329,7 +329,7 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(int id) co
 		}
 	}
 	//don't have a function with the appropriate ID
-	throw std::runtime_error(std::to_string(id) + " is not a valid reply- or request ID");
+    throw std::runtime_error("RPC: " +std::to_string(id) + " is not a valid reply- or request ID");
 }
 
 const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(const std::string &name) const {
@@ -339,7 +339,7 @@ const RPCRuntimeFunction &RPCRunTimeProtocolDescription::get_function(const std:
 		}
 	}
 	//don't have a function with the appropriate name
-	throw std::runtime_error("\"" + name + "\" is not a valid function name");
+    throw std::runtime_error("RPC: \"" + name + "\" is not a valid function name");
 }
 
 bool RPCRunTimeProtocolDescription::has_function(const std::string &name) const {
