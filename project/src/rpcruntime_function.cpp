@@ -1,6 +1,7 @@
 #include "rpcruntime_function.h"
 
 #include <algorithm>
+#include <numeric>
 
 RPCRuntimeFunction::RPCRuntimeFunction(int request_id, int reply_id, std::vector<RPCRuntimeParameterDescription> request_parameters,
 									   std::vector<RPCRuntimeParameterDescription> reply_parameters, std::string function_name,

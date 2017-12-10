@@ -59,9 +59,11 @@ public:
     int retries_per_transmission{2};
 
     RPCRunTimeProtocolDescription description;
+    QString get_client_hash();
 signals:
     void console_message(RPCConsoleLevel level,QString message);
 private:
+    QString client_hash;
     RPCRuntimeDecoder decoder;
     RPCRuntimeEncoder encoder;
     Channel_codec_wrapper channel_codec;

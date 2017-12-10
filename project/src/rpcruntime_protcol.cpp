@@ -3,6 +3,7 @@
 #include "rpcruntime_encoded_function_call.h"
 #include <QDirIterator>
 #include <assert.h>
+#include <QDebug>
 
 RPCRuntimeProtocol::RPCRuntimeProtocol(RPCIODevice &device, std::chrono::steady_clock::duration timeout)
     : decoder{description}
@@ -21,13 +22,12 @@ RPCFunctionCallResult RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedF
     return call_and_wait(call, device_timeout);
 }
 
-RPCFunctionCallResult RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedFunctionCall &call,
-                                                                                std::chrono::steady_clock::duration timeout) {
+RPCFunctionCallResult RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedFunctionCall &call, std::chrono::steady_clock::duration timeout) {
     RPCFunctionCallResult result;
     result.decoded_function_call_reply = nullptr;
     int try_count = 0;
     std::chrono::steady_clock::duration duration;
-    for (try_count=0; try_count <= retries_per_transmission; try_count++) {
+    for (try_count = 0; try_count <= retries_per_transmission; try_count++) {
         if (try_count != 0) {
             emit console_message(
                 RPCConsoleLevel::debug,
@@ -47,7 +47,7 @@ RPCFunctionCallResult RPCRuntimeProtocol::call_and_wait(const RPCRuntimeEncodedF
                 emit device->decoded_received(QByteArray(reinterpret_cast<const char *>(raw_data.data()), raw_data.size()));
                 auto decoded_call = transfer.decode();
                 if (decoded_call.get_id() == call.get_description()->get_reply_id()) { //found correct reply
-
+                    qDebug() << "get_decoded_parameters" << decoded_call.get_decoded_parameters().size();
                     return std::make_unique<RPCRuntimeDecodedFunctionCall>(std::move(decoded_call));
 
                 } else { //found reply to something else, just gonna quietly ignore it
@@ -101,6 +101,7 @@ bool RPCRuntimeProtocol::load_xml_file(QString search_dir) {
     // const CommunicationDevice::Duration TIMEOUT = std::chrono::milliseconds{100};
     int retries_per_transmission_backup = retries_per_transmission;
     retries_per_transmission = 0;
+    client_hash = "";
     RPCRuntimeEncodedFunctionCall get_hash_function = encoder.encode(0);
     RPCRuntimeEncodedParam &param_hash = get_hash_function.get_parameter(0);
     RPCRuntimeEncodedParam &param_hash_index = get_hash_function.get_parameter(1);
@@ -115,6 +116,7 @@ bool RPCRuntimeProtocol::load_xml_file(QString search_dir) {
     if (result.decoded_function_call_reply) {
         const auto &hash = QByteArray::fromStdString(result.decoded_function_call_reply->get_parameter_by_name("hash_inout")->as_full_string()).toHex();
         device->message(QObject::tr("Received Hash: ").toUtf8() + hash);
+        client_hash = hash;
         QString folder = search_dir;
         QString filename = hash + ".xml";
         QDirIterator directory_iterator(folder, QStringList{} << filename, QDir::Files, QDirIterator::Subdirectories);
@@ -133,8 +135,11 @@ bool RPCRuntimeProtocol::load_xml_file(QString search_dir) {
             return false;
         }
     }
-
     return result.error == RPCError::success;
+}
+
+QString RPCRuntimeProtocol::get_client_hash() {
+    return client_hash;
 }
 
 RPCIODevice::RPCIODevice() {}

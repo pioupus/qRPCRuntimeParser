@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <QDebug>
 #include <sstream>
 
 RPCRuntimeTransfer::RPCRuntimeTransfer(const RPCRunTimeProtocolDescription &protocol, const RPCRuntimeDecoder &decoder)
@@ -42,9 +43,10 @@ RPCRuntimeDecodedFunctionCall RPCRuntimeTransfer::decode() const {
 	auto &parameter_descriptions = protocol->get_parameters(id);
 	for (auto &pd : parameter_descriptions) {
 		decoded_parameters.emplace_back(pd, std::to_string(id) + "." + pd.get_parameter_name());
+        qDebug() << QString::fromStdString(std::to_string(id) + "." + pd.get_parameter_name());
 		ss >> decoded_parameters.back();
 	}
-
+    qDebug() << "decoded_parameters.size" << decoded_parameters.size();
 	assert(ss);
 	RPCRuntimeDecodedFunctionCall retval{id, std::move(decoded_parameters), function};
 	auto callbacks_it = decoder->callbacks.find(&function);
